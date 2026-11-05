@@ -205,12 +205,14 @@ export class AdminCatalogService {
           values: await syncValues(tx, optionId, o.values, existingValues),
         });
       }
+      const inCart = await this.repo.variantIdsInCarts(id);
       const plan = planVariantSync(
         finalOptions,
         agg.variants.map((v) => ({
           id: v.id,
           combinationKey: v.combinationKey,
           isActive: v.isActive,
+          inCart: inCart.has(v.id),
         })),
       );
       if (plan.create.length) {
@@ -232,6 +234,8 @@ export class AdminCatalogService {
           .update(productVariant)
           .set({ isActive: false })
           .where(inArray(productVariant.id, plan.deactivate));
+      if (plan.remove.length)
+        await tx.delete(productVariant).where(inArray(productVariant.id, plan.remove));
     });
     await this.audit.log(actorId, "catalog.product.options", "product", id, { after: options });
     return this.get(id);

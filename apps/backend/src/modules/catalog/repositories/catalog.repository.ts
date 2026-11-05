@@ -115,6 +115,16 @@ export class CatalogRepository {
     return Boolean(row);
   }
 
+  /** Variantes du produit présentes dans au moins un panier. */
+  async variantIdsInCarts(productId: string): Promise<Set<string>> {
+    const rows = await this.db
+      .selectDistinct({ id: cartItem.variantId })
+      .from(cartItem)
+      .innerJoin(productVariant, eq(productVariant.id, cartItem.variantId))
+      .where(eq(productVariant.productId, productId));
+    return new Set(rows.map((r) => r.id));
+  }
+
   async isInAnyCart(productId: string) {
     const [row] = await this.db
       .select({ n: count() })

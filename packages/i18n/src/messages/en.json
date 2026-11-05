@@ -243,7 +243,8 @@
     "verifyEmailError": "This confirmation link is no longer valid.",
     "twoFactorPasswordHelp": "Your password confirms it is really you.",
     "twoFactorStart": "Continue",
-    "twoFactorQr": "QR code to scan with your authenticator app"
+    "twoFactorQr": "QR code to scan with your authenticator app",
+    "twoFactorManualKey": "Key to enter manually"
   },
   "account": {
     "title": "My account",

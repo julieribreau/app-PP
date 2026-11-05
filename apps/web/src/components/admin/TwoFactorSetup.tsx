@@ -40,6 +40,15 @@ function PasswordStep({
   );
 }
 
+/** Le secret base32 de l'URI otpauth://, pour qui ne peut pas scanner le QR code. */
+export function totpSecret(uri: string): string {
+  try {
+    return new URL(uri).searchParams.get("secret") ?? "";
+  } catch {
+    return "";
+  }
+}
+
 function VerifyStep({
   uri,
   codes,
@@ -62,6 +71,18 @@ function VerifyStep({
     <form onSubmit={submit} className="flex flex-col gap-4">
       <div className="w-fit rounded-[14px] bg-white p-3">
         <QRCodeSVG value={uri} size={176} title={t("twoFactorQr")} />
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium" id="tfa-manual-label">
+          {t("twoFactorManualKey")}
+        </span>
+        <code
+          aria-labelledby="tfa-manual-label"
+          data-testid="tfa-secret"
+          className="font-numeric text-sm break-all select-all"
+        >
+          {totpSecret(uri)}
+        </code>
       </div>
       <div className="flex flex-col gap-1">
         <span className="text-sm font-medium">{t("twoFactorBackupCodes")}</span>

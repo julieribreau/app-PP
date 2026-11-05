@@ -45,7 +45,24 @@ describe("combinaisons de variantes", () => {
       { o1: "noisette", o2: "boite" },
     ]);
     expect(plan.reactivate).toEqual(["v-cb"]);
-    expect(plan.deactivate.sort()).toEqual(["v-0", "v-mu"]);
+    expect(plan.deactivate).toEqual([]);
+    expect(plan.remove.sort()).toEqual(["v-0", "v-mu"]);
+  });
+
+  it("supprime la variante unique d'origine, mais garde désactivée une orpheline au panier", () => {
+    const existing = [
+      { id: "v-unique", combinationKey: "", isActive: true },
+      {
+        id: "v-vieille",
+        combinationKey: combinationKey({ o1: "myrtille", o2: "unite" }),
+        isActive: true,
+        inCart: true,
+      },
+    ];
+    const plan = planVariantSync([saveur, format], existing);
+    expect(plan.create).toHaveLength(4);
+    expect(plan.remove).toEqual(["v-unique"]);
+    expect(plan.deactivate).toEqual(["v-vieille"]);
   });
 });
 

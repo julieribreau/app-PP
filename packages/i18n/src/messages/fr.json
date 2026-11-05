@@ -243,7 +243,8 @@
     "verifyEmailError": "Ce lien de confirmation n'est plus valable.",
     "twoFactorPasswordHelp": "Votre mot de passe confirme que c'est bien vous.",
     "twoFactorStart": "Continuer",
-    "twoFactorQr": "QR code à scanner avec votre application d'authentification"
+    "twoFactorQr": "QR code à scanner avec votre application d'authentification",
+    "twoFactorManualKey": "Clé à saisir manuellement"
   },
   "account": {
     "title": "Mon compte",

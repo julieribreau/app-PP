@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, LayoutDashboard, ListChecks, Package, Tag, Users } from "lucide-react";
+import { Bell, LayoutDashboard, ListChecks, LogOut, Package, Tag, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "@/hooks/useSession";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/cn";
 
 const NAV = [
@@ -57,14 +58,37 @@ function Sidebar() {
         })}
       </nav>
       <div className="border-border mt-auto flex items-center gap-2.5 border-t p-3">
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <strong className="truncate text-sm">{user?.name}</strong>
           <span className="text-muted-foreground text-[13px] leading-[18px]">
             {t("twoFactorActive")}
           </span>
         </div>
+        <SignOutButton />
       </div>
     </aside>
+  );
+}
+
+/** Déconnexion du back-office : la session est révoquée, retour à la page de connexion. */
+function SignOutButton() {
+  const ta = useTranslations("auth");
+  const router = useRouter();
+  return (
+    <Button
+      variant="ghost"
+      size="iconSm"
+      aria-label={ta("signOut")}
+      title={ta("signOut")}
+      onClick={() =>
+        void authClient.signOut().then(() => {
+          router.replace("/connexion");
+          router.refresh();
+        })
+      }
+    >
+      <LogOut aria-hidden="true" strokeWidth={1.75} />
+    </Button>
   );
 }
 

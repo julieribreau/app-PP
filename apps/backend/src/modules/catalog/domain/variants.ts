@@ -18,17 +18,27 @@ export function combinations(options: OptionDef[]): OptionValues[] {
   );
 }
 
-export type ExistingVariant = { id: string; combinationKey: string; isActive: boolean };
+export type ExistingVariant = {
+  id: string;
+  combinationKey: string;
+  isActive: boolean;
+  /** Présente dans au moins un panier : on la garde (désactivée) plutôt que de la supprimer. */
+  inCart?: boolean;
+};
 
 /**
  * Ce qu'il faut faire des variantes quand les axes changent : les combinaisons connues sont
- * gardées (avec leur prix, SKU et stock), les nouvelles créées actives, celles qui ont perdu
- * une valeur désactivées (jamais supprimées : un panier peut encore les référencer).
+ * gardées (avec leur prix, SKU et stock), les nouvelles créées actives. Celles qui ne
+ * correspondent plus à aucune combinaison sont supprimées, sauf si un panier les référence
+ * encore : celles-là sont seulement désactivées (le panier les retire à sa prochaine lecture).
+ * Sans cela, la variante unique d'un produit créé sans axe restait au back-office comme une
+ * ligne inactive sans libellé.
  */
 export function planVariantSync(options: OptionDef[], existing: ExistingVariant[]) {
   const wanted = combinations(options);
   const byKey = new Map(existing.map((v) => [v.combinationKey, v]));
   const wantedKeys = new Set(wanted.map(combinationKey));
+  const orphans = existing.filter((v) => !wantedKeys.has(v.combinationKey));
   return {
     create: wanted
       .filter((ov) => !byKey.has(combinationKey(ov)))
@@ -36,9 +46,8 @@ export function planVariantSync(options: OptionDef[], existing: ExistingVariant[
     reactivate: existing
       .filter((v) => wantedKeys.has(v.combinationKey) && !v.isActive)
       .map((v) => v.id),
-    deactivate: existing
-      .filter((v) => !wantedKeys.has(v.combinationKey) && v.isActive)
-      .map((v) => v.id),
+    deactivate: orphans.filter((v) => v.inCart && v.isActive).map((v) => v.id),
+    remove: orphans.filter((v) => !v.inCart).map((v) => v.id),
   };
 }
 

@@ -228,7 +228,7 @@ Chaque écriture ajoute une ligne au journal d'audit.
 - `PUT /v1/admin/products/:id/image` (multipart) ; `DELETE /v1/admin/products/:id/image`.
 - `PUT /v1/admin/products/:id/options` `[{ id?, name: {fr,en}, values: [{ id?, label: {fr,en} }] }]`
   → régénère les combinaisons : les variantes existantes sont gardées, les nouvelles créées
-  actives, celles dont une valeur disparaît désactivées (jamais supprimées si elles ont servi).
+  actives, celles qui ne correspondent plus à aucune combinaison supprimées, ou seulement désactivées si un panier les référence encore.
 - `PATCH /v1/admin/products/:id/variants` `{ variants: [{ id, isActive?, sku?, priceCents?, stock? }] }`.
 - `POST /v1/admin/products/:id/archive`, `DELETE /v1/admin/products/:id` → 204 (409
   `PRODUCT_IN_CART` si une variante est dans un panier : l'archiver).
