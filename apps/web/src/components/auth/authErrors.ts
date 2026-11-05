@@ -9,6 +9,6 @@ export function authErrorKey(error: { code?: string; status?: number } | null | 
   const code = error?.code ?? "";
   if (code === "EMAIL_NOT_VERIFIED") return "emailNotVerified";
   if (isLocked(code, error?.status)) return "locked";
-  if (code.includes("INVALID") || error?.status === 401) return "invalidCredentials";
+  if (/^INVALID_(EMAIL|PASSWORD)/.test(code) || error?.status === 401) return "invalidCredentials";
   return "error";
 }

@@ -7,7 +7,7 @@ import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
 
 const tab =
-  "h-11 flex-1 cursor-pointer rounded-full text-[15px] font-medium text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-[0_1px_2px_rgba(42,29,22,.12)]";
+  "h-11 flex-1 cursor-pointer rounded-full text-[15px] font-medium text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:ring-1 data-[state=active]:ring-input data-[state=active]:shadow-[0_1px_2px_rgba(42,29,22,.12)]";
 
 /** Onglets « Se connecter » / « Créer un compte » (flèches au clavier, RGAA 7.1). */
 export function AuthTabs({ initial = "signin" }: { readonly initial?: "signin" | "signup" }) {

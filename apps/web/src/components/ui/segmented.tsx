@@ -27,7 +27,7 @@ export function Segmented<T extends string>({ label, value, options, onChange, c
         <R.Item
           key={option.value}
           value={option.value}
-          className="h-10 cursor-pointer rounded-full px-4 text-sm font-medium text-foreground data-[state=checked]:bg-card data-[state=checked]:shadow-[0_1px_2px_rgba(42,29,22,.12)]"
+          className="h-10 cursor-pointer rounded-full px-4 text-sm font-medium text-foreground data-[state=checked]:bg-card data-[state=checked]:ring-1 data-[state=checked]:ring-input data-[state=checked]:shadow-[0_1px_2px_rgba(42,29,22,.12)]"
         >
           {option.label}
         </R.Item>
