@@ -2,6 +2,11 @@
 # d'iOS d'enregistrer le mot de passe, dans l'ordre où elles viennent.
 appId: io.bullify.nutrion-app
 ---
+# La proposition du trousseau arrive parfois quelques secondes après la fermeture de la feuille.
+- extendedWaitUntil:
+    visible: "Save Password\\?|Enregistrer le mot de passe \\?|Turn on Face ID\\?|Activer Face ID \\?"
+    timeout: 6000
+    optional: true
 - repeat:
     times: 2
     commands:

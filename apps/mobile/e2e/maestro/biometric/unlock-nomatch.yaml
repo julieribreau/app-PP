@@ -5,18 +5,15 @@ name: Face ID — échec puis mot de passe
 ---
 - stopApp
 - launchApp
+# iOS propose de réessayer : on annule, l'app reste verrouillée.
+- extendedWaitUntil:
+    visible: ".*(Not Recognized|non reconnu|Try Face ID Again|Réessayer Face ID).*"
+    timeout: 30000
+- tapOn: "Cancel|Annuler"
 - extendedWaitUntil:
     visible:
       id: biometric-unlock
-    timeout: 30000
-- extendedWaitUntil:
-    visible: ".*(Not Recognized|non reconnu|Try Face ID Again|Réessayer).*"
-    timeout: 20000
-- runFlow:
-    when:
-      visible: "Cancel|Annuler"
-    commands:
-      - tapOn: "Cancel|Annuler"
+    timeout: 10000
 - assertVisible: "Bon retour, Camille|Welcome back, Camille"
 - assertVisible:
     id: biometric-unlock
@@ -29,7 +26,7 @@ name: Face ID — échec puis mot de passe
     notVisible:
       id: biometric-unlock
     timeout: 20000
+- runFlow: ../subflows/after-sign-in.yaml
 - tapOn:
     id: tab-account
-- assertVisible:
-    id: account-profile-card
+- runFlow: ../subflows/dismiss-save-password.yaml

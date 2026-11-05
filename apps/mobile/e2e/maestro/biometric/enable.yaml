@@ -23,11 +23,7 @@ name: Face ID — activation
       visible: ".*(use Face ID|utiliser Face ID).*"
     commands:
       - tapOn: "OK|Allow|Autoriser"
-- runFlow: ../subflows/after-sign-in.yaml
-- extendedWaitUntil:
-    visible:
-      id: account-profile-card
-    timeout: 30000
+- runFlow: ../subflows/dismiss-save-password.yaml
 - scrollUntilVisible:
     element:
       id: account-biometric

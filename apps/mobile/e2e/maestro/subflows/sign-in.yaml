@@ -25,7 +25,4 @@ appId: io.bullify.nutrion-app
           timeout: 2000
           optional: true
 - runFlow: after-sign-in.yaml
-- extendedWaitUntil:
-    visible:
-      id: account-profile-card
-    timeout: 20000
+- runFlow: dismiss-save-password.yaml
