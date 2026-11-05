@@ -77,9 +77,22 @@ function renderArgument(body: string, values: MessageValues, locale: string): st
   }
   const count = Number(values[name] ?? 0);
   const branches = parseBranches(rest.join(","));
-  const category = new Intl.PluralRules(locale).select(count);
+  const category = pluralCategory(count, locale);
   const branch = branches[`=${count}`] ?? branches[category] ?? branches["other"] ?? "";
   return formatMessage(branch.replace(/#/g, String(count)), values, locale);
+}
+
+/**
+ * Catégorie de pluriel CLDR. Hermes (moteur de l'app sur iOS et Android) n'a pas
+ * Intl.PluralRules : on s'en sert quand il existe, sinon règle fr / en (seules langues).
+ * fr : 0 et 1 au singulier ; en : 1 seul au singulier.
+ */
+export function pluralCategory(count: number, locale: string): string {
+  const Rules = (Intl as { PluralRules?: typeof Intl.PluralRules }).PluralRules;
+  if (typeof Rules === "function") return new Rules(locale).select(count);
+  const abs = Math.abs(count);
+  if (locale.startsWith("fr")) return abs < 2 ? "one" : "other";
+  return abs === 1 ? "one" : "other";
 }
 
 function parseBranches(text: string): Record<string, string> {
