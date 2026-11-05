@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { Note, Screen } from "@/components/layout/Screen";
 import { AppText } from "@/components/ui/AppText";
@@ -45,6 +45,8 @@ export function DataScreen() {
       await deleteMyAccount(confirm.trim());
       await signOut({ forget: true });
       router.replace("/account");
+      // Sans ce mot, l'usager se retrouvait déconnecté sans savoir si son compte était supprimé.
+      Alert.alert(t.mobile.account.deleted);
     } catch {
       setError(t.common.error);
     } finally {
