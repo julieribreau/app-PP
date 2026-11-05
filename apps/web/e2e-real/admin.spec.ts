@@ -253,6 +253,8 @@ test("produit FR/EN, axes saveur × format, variantes, mise en vente puis archiv
   // Archivage : il disparaît de la boutique
   await page.goto("/fr/admin/produits");
   await page.getByRole("link", { name: PRODUCT.fr }).click();
+  // La liste a aussi un filtre « Statut » : attendre l'éditeur avant de le chercher.
+  await expect(page.getByRole("button", { name: fr.admin.save })).toBeVisible();
   await page.getByLabel(fr.admin.status).selectOption("archived");
   await page.getByRole("button", { name: fr.admin.save }).click();
   await expect(page.getByText(fr.admin.productStatus.archived).first()).toBeVisible();
@@ -269,14 +271,16 @@ test("le journal d'audit liste les actions de l'admin", async () => {
   const table = page.getByRole("table", { name: fr.admin.audit });
   await expect(table.getByRole("row").nth(1)).toBeVisible();
   const text = await table.innerText();
-  for (const action of [
-    "account.suspend",
-    "account.reactivate",
-    "account.role",
-    "catalog.category",
-    "catalog.product",
+  // Actions traduites, plus jamais le code brut (cf finition-site : /en sans clé brute).
+  const labels = fr.admin.auditActions;
+  for (const label of [
+    labels.account_suspend,
+    labels.account_reactivate,
+    labels.account_role,
+    labels.catalog_category_create,
+    labels.catalog_product_create,
   ]) {
-    expect(text, `action ${action}`).toMatch(new RegExp(action.replace(".", "\\.")));
+    expect(text, `action ${label}`).toContain(label);
   }
   await shot("05-journal");
   done();
@@ -292,7 +296,7 @@ test("déconnexion puis reconnexion admin avec défi TOTP", async () => {
   // Mauvais code refusé, bon code accepté (on attend la fenêtre suivante si besoin)
   await page.getByLabel(fr.auth.twoFactorCode).fill("000000");
   await page.getByRole("button", { name: fr.auth.twoFactorVerify }).click();
-  await expect(page.getByText(fr.auth.invalidCredentials)).toBeVisible();
+  await expect(page.getByText(fr.auth.invalidCode)).toBeVisible();
   await page.getByLabel(fr.auth.twoFactorCode).fill(totp(secret));
   await page.getByRole("button", { name: fr.auth.twoFactorVerify }).click();
   await expect(page).toHaveURL(/\/fr\/compte$/);

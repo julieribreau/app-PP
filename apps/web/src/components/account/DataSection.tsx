@@ -10,7 +10,6 @@ import { SectionTitle } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "@/i18n/navigation";
 import { saveBlob } from "@/lib/api/http";
 import { authClient } from "@/lib/auth-client";
 import { useApi } from "@/providers/ApiProvider";
@@ -28,15 +27,15 @@ function DeleteDialog({
   const tc = useTranslations("common");
   const locale = useLocale();
   const api = useApi();
-  const router = useRouter();
   const [value, setValue] = React.useState("");
   const word = WORD[locale] ?? "DELETE";
   const confirm = async () => {
     try {
       await api.account.deleteAccount(value);
       await authClient.signOut();
-      router.replace("/");
-      router.refresh();
+      // Navigation complète : la page compte, encore montée, redirigerait sinon vers la
+      // connexion (session disparue) avant que l'accueil ne s'affiche.
+      window.location.replace(`/${locale}`);
     } catch {
       toast.error(tc("error"));
     }
