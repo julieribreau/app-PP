@@ -13,7 +13,7 @@ import { Input, Select } from "@/components/ui/input";
 import { ErrorNote, Loading } from "@/components/ui/spinner";
 import { useUrlState } from "@/hooks/useUrlState";
 import { Link } from "@/i18n/navigation";
-import type { AdminProductRow, ProductStatus } from "@/lib/api/types";
+import type { AdminCategory, AdminProductRow, ProductStatus } from "@/lib/api/types";
 import { formatPrice, formatVatRate } from "@/lib/format";
 import { useApi } from "@/providers/ApiProvider";
 
@@ -89,6 +89,66 @@ function useColumns(locale: string): DataColumn<AdminProductRow>[] {
   );
 }
 
+type UrlState = ReturnType<typeof useUrlState<(typeof KEYS)[number]>>;
+
+function ProductFilters({
+  state,
+  set,
+  categories,
+}: {
+  readonly state: UrlState[0];
+  readonly set: UrlState[1];
+  readonly categories: AdminCategory[];
+}) {
+  const t = useTranslations("admin");
+  const locale = useLocale();
+  return (
+    <div role="search" className="flex flex-wrap items-center gap-2.5">
+      <label htmlFor="products-q" className="sr-only">
+        {t("searchProducts")}
+      </label>
+      <Input
+        id="products-q"
+        type="search"
+        className="h-10 w-[260px]"
+        placeholder={t("searchProducts")}
+        defaultValue={state.q}
+        onChange={(e) => set({ q: e.target.value })}
+      />
+      <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
+        {t("col.category")}
+        <Select
+          className="h-10 w-auto"
+          value={state.category}
+          onChange={(e) => set({ category: e.target.value })}
+        >
+          <option value="">{t("all")}</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.slug}>
+              {c.name[locale as "fr" | "en"] ?? c.name.fr}
+            </option>
+          ))}
+        </Select>
+      </label>
+      <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
+        {t("status")}
+        <Select
+          className="h-10 w-auto"
+          value={state.status}
+          onChange={(e) => set({ status: e.target.value })}
+        >
+          <option value="">{t("all")}</option>
+          {(["active", "draft", "archived"] as const).map((s) => (
+            <option key={s} value={s}>
+              {t(`productStatus.${s}`)}
+            </option>
+          ))}
+        </Select>
+      </label>
+    </div>
+  );
+}
+
 /** Catalogue du back-office : liste filtrable des produits. */
 export function ProductsPage() {
   const t = useTranslations("admin");
@@ -126,49 +186,7 @@ export function ProductsPage() {
           </Button>
         }
       />
-      <div role="search" className="flex flex-wrap items-center gap-2.5">
-        <label htmlFor="products-q" className="sr-only">
-          {t("searchProducts")}
-        </label>
-        <Input
-          id="products-q"
-          type="search"
-          className="h-10 w-[260px]"
-          placeholder={t("searchProducts")}
-          defaultValue={state.q}
-          onChange={(e) => set({ q: e.target.value })}
-        />
-        <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
-          {t("col.category")}
-          <Select
-            className="h-10 w-auto"
-            value={state.category}
-            onChange={(e) => set({ category: e.target.value })}
-          >
-            <option value="">{t("all")}</option>
-            {(categories.data ?? []).map((c) => (
-              <option key={c.id} value={c.slug}>
-                {c.name[locale as "fr" | "en"] ?? c.name.fr}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
-          {t("status")}
-          <Select
-            className="h-10 w-auto"
-            value={state.status}
-            onChange={(e) => set({ status: e.target.value })}
-          >
-            <option value="">{t("all")}</option>
-            {(["active", "draft", "archived"] as const).map((s) => (
-              <option key={s} value={s}>
-                {t(`productStatus.${s}`)}
-              </option>
-            ))}
-          </Select>
-        </label>
-      </div>
+      <ProductFilters state={state} set={set} categories={categories.data ?? []} />
       {products.isPending ? (
         <Loading />
       ) : products.isError ? (

@@ -69,6 +69,59 @@ function PriceFields({
   );
 }
 
+/** Titre de la fiche et choix de la langue du contenu. */
+function SheetHeader({
+  lang,
+  onLang,
+}: {
+  readonly lang: Lang;
+  readonly onLang: (lang: Lang) => void;
+}) {
+  const t = useTranslations("admin");
+  const tl = useTranslations("locale");
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="pm-title" className="m-0 text-[17px] leading-6 font-semibold">
+        {t("productSheet")}
+      </h2>
+      <Segmented<Lang>
+        label={t("contentLanguage")}
+        value={lang}
+        onChange={onLang}
+        options={[
+          { value: "fr", label: tl("fr") },
+          { value: "en", label: tl("en") },
+        ]}
+      />
+    </div>
+  );
+}
+
+function StatusField({
+  value,
+  onChange,
+}: {
+  readonly value: ProductStatus;
+  readonly onChange: (status: ProductStatus) => void;
+}) {
+  const t = useTranslations("admin");
+  return (
+    <Field id="pf-status" label={t("status")}>
+      <Select
+        className="h-10 w-auto"
+        value={value}
+        onChange={(e) => onChange(e.target.value as ProductStatus)}
+      >
+        {(["draft", "active", "archived"] as const).map((s) => (
+          <option key={s} value={s}>
+            {t(`productStatus.${s}`)}
+          </option>
+        ))}
+      </Select>
+    </Field>
+  );
+}
+
 /** Fiche produit : textes par langue, catégorie, prix, TVA, statut. */
 export function ProductMainFields({
   input,
@@ -84,7 +137,6 @@ export function ProductMainFields({
   readonly onChange: (patch: Partial<AdminProductInput>) => void;
 }) {
   const t = useTranslations("admin");
-  const tl = useTranslations("locale");
   const setText = (key: "name" | "summary" | "description", value: string) =>
     onChange({ [key]: { ...input[key], [lang]: value } });
   return (
@@ -92,20 +144,7 @@ export function ProductMainFields({
       aria-labelledby="pm-title"
       className="border-border bg-card flex min-w-0 flex-[999_1_460px] flex-col gap-4 rounded-[18px] border p-6"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="pm-title" className="m-0 text-[17px] leading-6 font-semibold">
-          {t("productSheet")}
-        </h2>
-        <Segmented<Lang>
-          label={t("contentLanguage")}
-          value={lang}
-          onChange={onLang}
-          options={[
-            { value: "fr", label: tl("fr") },
-            { value: "en", label: tl("en") },
-          ]}
-        />
-      </div>
+      <SheetHeader lang={lang} onLang={onLang} />
       <div className="grid grid-cols-2 gap-3.5">
         <Field id="pf-name" label={`${t("name")} (${lang.toUpperCase()})`}>
           <Input
@@ -145,19 +184,7 @@ export function ProductMainFields({
         onChange={(html) => setText("description", html)}
       />
       <PriceFields input={input} onChange={onChange} />
-      <Field id="pf-status" label={t("status")}>
-        <Select
-          className="h-10 w-auto"
-          value={input.status}
-          onChange={(e) => onChange({ status: e.target.value as ProductStatus })}
-        >
-          {(["draft", "active", "archived"] as const).map((s) => (
-            <option key={s} value={s}>
-              {t(`productStatus.${s}`)}
-            </option>
-          ))}
-        </Select>
-      </Field>
+      <StatusField value={input.status} onChange={(status) => onChange({ status })} />
     </section>
   );
 }

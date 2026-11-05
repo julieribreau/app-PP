@@ -111,18 +111,12 @@ function CategoryDialog({
   );
 }
 
-/** Catégories de la boutique : création, renommage FR/EN, activation, suppression si vide. */
-export function CategoriesPage() {
+function useRemoveCategory(): (c: AdminCategory) => Promise<void> {
   const t = useTranslations("admin");
   const tc = useTranslations("common");
   const api = useApi();
   const client = useQueryClient();
-  const [editing, setEditing] = React.useState<AdminCategory | null | undefined>(undefined);
-  const { data, isPending, isError, refetch } = useQuery({
-    queryKey: KEY,
-    queryFn: () => api.admin.categories(),
-  });
-  const remove = async (c: AdminCategory) => {
+  return async (c) => {
     try {
       await api.admin.deleteCategory(c.id);
       void client.invalidateQueries({ queryKey: KEY });
@@ -130,7 +124,13 @@ export function CategoriesPage() {
       toast.error(errorCode(e) ? t("deleteCategoryError") : tc("error"));
     }
   };
-  const columns: DataColumn<AdminCategory>[] = [
+}
+
+function useCategoryColumns(onEdit: (c: AdminCategory) => void): DataColumn<AdminCategory>[] {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
+  const remove = useRemoveCategory();
+  return [
     {
       id: "name",
       header: t("col.name"),
@@ -164,7 +164,7 @@ export function CategoriesPage() {
       align: "right",
       cell: (c) => (
         <span className="inline-flex gap-1">
-          <Button variant="ghost" size="sm" onClick={() => setEditing(c)}>
+          <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
             {tc("edit")}
           </Button>
           <Button
@@ -179,6 +179,18 @@ export function CategoriesPage() {
       ),
     },
   ];
+}
+
+/** Catégories de la boutique : création, renommage FR/EN, activation, suppression si vide. */
+export function CategoriesPage() {
+  const t = useTranslations("admin");
+  const api = useApi();
+  const [editing, setEditing] = React.useState<AdminCategory | null | undefined>(undefined);
+  const columns = useCategoryColumns(setEditing);
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: KEY,
+    queryFn: () => api.admin.categories(),
+  });
   return (
     <>
       <AdminHeading

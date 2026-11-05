@@ -21,23 +21,10 @@ function diffSummary(diff: AuditEntry["diff"]): string {
   return text.length > 60 ? `${text.slice(0, 57)}…` : text || "—";
 }
 
-/** Journal d'audit du back-office : lecture seule, du plus récent au plus ancien. */
-export function AuditPage() {
+function useAuditColumns(): DataColumn<AuditEntry>[] {
   const t = useTranslations("admin");
   const locale = useLocale();
-  const api = useApi();
-  const [state, set] = useUrlState(KEYS);
-  const query = {
-    targetType: state.targetType || undefined,
-    page: Math.max(1, Number(state.page) || 1),
-    pageSize: 25,
-  };
-  const { data, isPending, isError, refetch } = useQuery({
-    queryKey: ["admin", "audit", query],
-    queryFn: () => api.admin.audit(query),
-    placeholderData: keepPreviousData,
-  });
-  const columns: DataColumn<AuditEntry>[] = [
+  return [
     {
       id: "date",
       header: t("auditDate"),
@@ -64,24 +51,55 @@ export function AuditPage() {
       cell: (e) => diffSummary(e.diff),
     },
   ];
+}
+
+function AuditTargetFilter({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const t = useTranslations("admin");
+  return (
+    <label className="text-muted-foreground flex w-fit items-center gap-1.5 text-sm">
+      {t("auditTarget")}
+      <select
+        className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">{t("all")}</option>
+        {["user", "product", "category"].map((k) => (
+          <option key={k} value={k}>
+            {t(`auditTargets.${k}`)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+/** Journal d'audit du back-office : lecture seule, du plus récent au plus ancien. */
+export function AuditPage() {
+  const t = useTranslations("admin");
+  const api = useApi();
+  const columns = useAuditColumns();
+  const [state, set] = useUrlState(KEYS);
+  const query = {
+    targetType: state.targetType || undefined,
+    page: Math.max(1, Number(state.page) || 1),
+    pageSize: 25,
+  };
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["admin", "audit", query],
+    queryFn: () => api.admin.audit(query),
+    placeholderData: keepPreviousData,
+  });
   return (
     <>
       <AdminHeading title={t("audit")} />
-      <label className="text-muted-foreground flex w-fit items-center gap-1.5 text-sm">
-        {t("auditTarget")}
-        <select
-          className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
-          value={state.targetType}
-          onChange={(e) => set({ targetType: e.target.value })}
-        >
-          <option value="">{t("all")}</option>
-          {["user", "product", "category"].map((k) => (
-            <option key={k} value={k}>
-              {t(`auditTargets.${k}`)}
-            </option>
-          ))}
-        </select>
-      </label>
+      <AuditTargetFilter value={state.targetType} onChange={(v) => set({ targetType: v })} />
       {isPending ? (
         <Loading />
       ) : isError ? (

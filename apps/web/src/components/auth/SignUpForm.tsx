@@ -18,6 +18,56 @@ function validate(form: FormData, t: (k: string) => string): Errors {
   return errors;
 }
 
+/** Case CGU et confidentialité, obligatoire, avec son message d'erreur. */
+function TermsCheckbox({ error }: { readonly error?: string }) {
+  const t = useTranslations("auth");
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="flex items-start gap-2.5 text-sm leading-5">
+        <input
+          type="checkbox"
+          name="terms"
+          className="mt-0 size-5 shrink-0 accent-[var(--primary)]"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "su-terms-error" : undefined}
+        />
+        <span>
+          {t.rich("acceptTermsRich", {
+            terms: (chunks) => (
+              <Link href="/cgu" className="underline">
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link href="/confidentialite" className="underline">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </span>
+      </label>
+      {error ? (
+        <span id="su-terms-error" className="text-destructive text-sm">
+          {error}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function SentNotice({ email }: { readonly email: string }) {
+  const t = useTranslations("auth");
+  return (
+    <div
+      role="status"
+      className="border-border bg-card flex flex-col gap-4 rounded-[24px] border p-6"
+    >
+      <h1 className="display m-0 text-3xl">{t("signUpTitle")}</h1>
+      <p className="m-0">{t("verifyEmailSent", { email })}</p>
+    </div>
+  );
+}
+
 /** Création de compte ; l'e-mail doit être confirmé avant la première connexion. */
 export function SignUpForm() {
   const t = useTranslations("auth");
@@ -52,15 +102,7 @@ export function SignUpForm() {
   };
 
   if (sentTo) {
-    return (
-      <div
-        role="status"
-        className="border-border bg-card flex flex-col gap-4 rounded-[24px] border p-6"
-      >
-        <h1 className="display m-0 text-3xl">{t("signUpTitle")}</h1>
-        <p className="m-0">{t("verifyEmailSent", { email: sentTo })}</p>
-      </div>
-    );
+    return <SentNotice email={sentTo} />;
   }
   return (
     <form onSubmit={submit} className="flex flex-col gap-[18px]" noValidate>
@@ -87,36 +129,7 @@ export function SignUpForm() {
       >
         <Input name="password" type="password" autoComplete="new-password" required />
       </Field>
-      <div className="flex flex-col gap-1">
-        <label className="flex items-start gap-2.5 text-sm leading-5">
-          <input
-            type="checkbox"
-            name="terms"
-            className="mt-0 size-5 shrink-0 accent-[var(--primary)]"
-            aria-invalid={errors.terms ? true : undefined}
-            aria-describedby={errors.terms ? "su-terms-error" : undefined}
-          />
-          <span>
-            {t.rich("acceptTermsRich", {
-              terms: (chunks) => (
-                <Link href="/cgu" className="underline">
-                  {chunks}
-                </Link>
-              ),
-              privacy: (chunks) => (
-                <Link href="/confidentialite" className="underline">
-                  {chunks}
-                </Link>
-              ),
-            })}
-          </span>
-        </label>
-        {errors.terms ? (
-          <span id="su-terms-error" className="text-destructive text-sm">
-            {errors.terms}
-          </span>
-        ) : null}
-      </div>
+      <TermsCheckbox error={errors.terms} />
       <div role="alert" className="text-destructive text-sm empty:hidden">
         {errors.form}
       </div>

@@ -33,6 +33,61 @@ function toQuery(s: Record<(typeof KEYS)[number], string>): AdminUsersQuery {
   };
 }
 
+/** Bas de tableau : plage affichée, lignes par page, pagination. */
+function UsersFooter({
+  page,
+  pageSize,
+  total,
+  itemCount,
+  rowsPerPage,
+  onPageSize,
+  onPage,
+}: {
+  readonly page: number;
+  readonly pageSize: number;
+  readonly total: number;
+  readonly itemCount: number;
+  readonly rowsPerPage: number;
+  readonly onPageSize: (n: string) => void;
+  readonly onPage: (p: number) => void;
+}) {
+  const t = useTranslations("admin");
+  const from = (page - 1) * pageSize + 1;
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <span className="text-muted-foreground text-sm">
+        {t("range", {
+          from: total ? from : 0,
+          to: Math.min(from + itemCount - 1, total),
+          total,
+        })}
+      </span>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
+          {t("rows")}
+          <select
+            className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
+            value={rowsPerPage}
+            onChange={(e) => onPageSize(e.target.value)}
+          >
+            {[10, 25, 50].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+        <Pagination
+          page={page}
+          pageCount={Math.ceil(total / pageSize)}
+          onPage={onPage}
+          label={t("pagination")}
+        />
+      </div>
+    </div>
+  );
+}
+
 /** Usagers : recherche, filtres, tri, pagination côté serveur, export CSV, actions par ligne. */
 export function UsersPage() {
   const t = useTranslations("admin");
@@ -57,7 +112,6 @@ export function UsersPage() {
       toast.error(tc("error"));
     }
   };
-  const from = data ? (data.page - 1) * data.pageSize + 1 : 0;
   return (
     <>
       <AdminHeading
@@ -86,37 +140,15 @@ export function UsersPage() {
         />
       )}
       {data ? (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-muted-foreground text-sm">
-            {t("range", {
-              from: data.total ? from : 0,
-              to: Math.min(from + data.items.length - 1, data.total),
-              total: data.total,
-            })}
-          </span>
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
-              {t("rows")}
-              <select
-                className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
-                value={query.pageSize}
-                onChange={(e) => set({ pageSize: e.target.value })}
-              >
-                {[10, 25, 50].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Pagination
-              page={data.page}
-              pageCount={Math.ceil(data.total / data.pageSize)}
-              onPage={(p) => set({ page: p }, false)}
-              label={t("pagination")}
-            />
-          </div>
-        </div>
+        <UsersFooter
+          page={data.page}
+          pageSize={data.pageSize}
+          total={data.total}
+          itemCount={data.items.length}
+          rowsPerPage={query.pageSize ?? 10}
+          onPageSize={(n) => set({ pageSize: n })}
+          onPage={(p) => set({ page: p }, false)}
+        />
       ) : null}
     </>
   );

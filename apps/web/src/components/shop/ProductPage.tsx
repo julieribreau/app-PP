@@ -6,10 +6,38 @@ import { useTranslations } from "next-intl";
 import { ErrorNote, Loading } from "@/components/ui/spinner";
 import { Link } from "@/i18n/navigation";
 import { errorCode } from "@/lib/api/http";
+import type { ProductDetail } from "@/lib/api/types";
 import { useApi } from "@/providers/ApiProvider";
 
 import { BuyBox } from "./BuyBox";
 import { ProductImage } from "./ProductImage";
+
+function ProductBreadcrumb({ product }: { readonly product: ProductDetail }) {
+  const t = useTranslations("product");
+  const ts = useTranslations("shop");
+  return (
+    <nav
+      aria-label={t("breadcrumb")}
+      className="text-muted-foreground flex flex-wrap gap-2 text-sm"
+    >
+      <Link href="/boutique" className="hover:text-primary">
+        {ts("title")}
+      </Link>
+      {product.category ? (
+        <>
+          <span aria-hidden="true">/</span>
+          <Link href={`/boutique?category=${product.category.slug}`} className="hover:text-primary">
+            {product.category.name}
+          </Link>
+        </>
+      ) : null}
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="text-foreground">
+        {product.name}
+      </span>
+    </nav>
+  );
+}
 
 /** Fiche produit : visuel, nom, prix, choix de la variante, description. */
 export function ProductPage({ slug }: { readonly slug: string }) {
@@ -40,29 +68,7 @@ export function ProductPage({ slug }: { readonly slug: string }) {
   }
   return (
     <main className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 pt-6 pb-20 md:px-12">
-      <nav
-        aria-label={t("breadcrumb")}
-        className="text-muted-foreground flex flex-wrap gap-2 text-sm"
-      >
-        <Link href="/boutique" className="hover:text-primary">
-          {ts("title")}
-        </Link>
-        {product.category ? (
-          <>
-            <span aria-hidden="true">/</span>
-            <Link
-              href={`/boutique?category=${product.category.slug}`}
-              className="hover:text-primary"
-            >
-              {product.category.name}
-            </Link>
-          </>
-        ) : null}
-        <span aria-hidden="true">/</span>
-        <span aria-current="page" className="text-foreground">
-          {product.name}
-        </span>
-      </nav>
+      <ProductBreadcrumb product={product} />
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-14">
         <ProductImage
           name={product.name}

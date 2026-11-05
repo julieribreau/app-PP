@@ -58,6 +58,21 @@ function VariantsSection({
   );
 }
 
+function ProductBreadcrumb({ title }: { readonly title: string }) {
+  const t = useTranslations("admin");
+  return (
+    <nav aria-label={t("breadcrumb")} className="text-muted-foreground flex gap-1.5 text-sm">
+      <Link href="/admin/produits" className="hover:text-primary">
+        {t("products")}
+      </Link>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="text-foreground">
+        {title}
+      </span>
+    </nav>
+  );
+}
+
 /** Fiche produit du back-office (création si `product` est null). */
 export function ProductEditor({ product: initial }: { readonly product: AdminProduct | null }) {
   const t = useTranslations("admin");
@@ -85,15 +100,7 @@ export function ProductEditor({ product: initial }: { readonly product: AdminPro
         save.mutate(draft);
       }}
     >
-      <nav aria-label={t("breadcrumb")} className="text-muted-foreground flex gap-1.5 text-sm">
-        <Link href="/admin/produits" className="hover:text-primary">
-          {t("products")}
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page" className="text-foreground">
-          {title}
-        </span>
-      </nav>
+      <ProductBreadcrumb title={title} />
       <AdminHeading
         title={
           <span className="inline-flex items-center gap-3">
