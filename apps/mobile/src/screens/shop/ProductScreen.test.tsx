@@ -64,7 +64,9 @@ const product: ProductDetail = {
   ],
 };
 
-const price = (euros: string) => screen.getAllByText(new RegExp(`^${euros}\\s€$`));
+// Prix formaté avec une espace insécable avant « € » : le normaliseur par défaut ramène les
+// blancs à une espace simple, la chaîne exacte suffit (pas de RegExp construite).
+const price = (euros: string) => screen.getAllByText(`${euros} €`);
 
 describe("fiche produit", () => {
   beforeEach(() => {
