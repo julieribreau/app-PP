@@ -87,6 +87,13 @@ describe("fiche produit", () => {
     expect(screen.getByTestId("add-to-cart")).toBeDisabled();
   });
 
+  it("annonce la rupture avec le prix aux lecteurs d'écran", async () => {
+    await renderWithProviders(<ProductView product={product} />);
+    expect(screen.getByLabelText(/^2,90\s€ TTC$/)).toBeTruthy();
+    await fireEvent.press(screen.getByRole("radio", { name: "Noisette" }));
+    expect(screen.getByLabelText(/^2,90\s€ TTC, Rupture$/)).toBeTruthy();
+  });
+
   it("ajoute la variante et la quantité au panier", async () => {
     apiMock.post.mockResolvedValue({ ...EMPTY_CART, itemCount: 2 });
     await renderWithProviders(<ProductView product={product} />);

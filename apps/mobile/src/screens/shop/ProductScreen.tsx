@@ -136,7 +136,14 @@ function TitleBlock({
       <View
         style={styles.priceRow}
         accessible
-        accessibilityLabel={`${price(totalCents)} ${t.common.ttc}`}
+        // Le libellé du groupe remplace ceux de ses enfants : la rupture doit y figurer, sinon
+        // VoiceOver lit le prix sans dire que la variante n'est pas disponible.
+        accessibilityLabel={[
+          `${price(totalCents)} ${t.common.ttc}`,
+          purchasable ? null : t.common.outOfStock,
+        ]
+          .filter(Boolean)
+          .join(", ")}
       >
         <AppText testID="product-price" variant="priceLarge">
           {price(totalCents)}
