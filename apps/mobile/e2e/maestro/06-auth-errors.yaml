@@ -9,34 +9,33 @@ name: Erreurs de connexion et verrouillage
 - tapOn:
     id: account-sign-in
 # E-mail mal formé, puis mot de passe manquant : contrôlés avant tout appel.
-- tapOn:
-    id: sign-in-email
-- inputText: "camille@"
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: "camille@"
+      PASSWORD: "x"
 - assertVisible: "Invalid email address."
 - tapOn:
     id: sign-in-email
 - eraseText: 60
 - inputText: "camille.martin@exemple.fr"
-- tapOn:
-    id: sign-in-submit
+- pressKey: Enter
+- eraseText: 10
+- pressKey: Enter
 - assertVisible: "This field is required."
 # Mauvais mot de passe.
-- tapOn:
-    id: sign-in-password
-- inputText: "Mauvais-Mot-2026"
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: "camille.martin@exemple.fr"
+      PASSWORD: "Mauvais-Mot-2026"
 - extendedWaitUntil:
     visible: "Incorrect email or password."
     timeout: 15000
 # Mot de passe oublié : même message que le compte existe ou non, e-mail parti.
 - tapOn:
     id: sign-in-forgot
-- assertVisible:
-    id: forgot-email
-    text: "camille.martin@exemple.fr"
+- runFlow: { file: subflows/field.yaml, env: { ID: forgot-email, TEXT: camille.martin@exemple.fr } }
 - tapOn:
     id: forgot-submit
 - extendedWaitUntil:
@@ -51,7 +50,9 @@ name: Erreurs de connexion et verrouillage
 - extendedWaitUntil:
     visible: ".*(New password|Nouveau mot de passe).*"
     timeout: 30000
-- launchApp
+# Retour à l'app, sans la relancer (la feuille ouverte reste là).
+- launchApp:
+    stopApp: false
 - tapOn:
     id: forgot-back
 # Verrouillage : 5 échecs d'affilée, puis même le bon mot de passe est refusé 15 minutes.
@@ -59,32 +60,28 @@ name: Erreurs de connexion et verrouillage
     file: scripts/account.js
     env:
       PREFIX: lock
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: ${output.email}
-- tapOn:
-    id: sign-in-password
-- eraseText: 40
-- inputText: "Mauvais-Mot-2026"
 - repeat:
     times: 5
     commands:
-      - tapOn:
-          id: sign-in-submit
+      - runFlow:
+          file: subflows/fill-sign-in.yaml
+          env:
+            EMAIL: ${output.email}
+            PASSWORD: "Mauvais-Mot-2026"
       # Le bouton reste inactif pendant l'appel : on attend la réponse avant le suivant.
+      - extendedWaitUntil:
+          visible: "Incorrect email or password.|Too many attempts: account locked for 15 minutes."
+          timeout: 15000
       - extendedWaitUntil:
           visible:
             id: sign-in-submit
             enabled: true
           timeout: 15000
-      - assertVisible: "Incorrect email or password.|Too many attempts: account locked for 15 minutes."
-- tapOn:
-    id: sign-in-password
-- eraseText: 40
-- inputText: ${output.password}
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: ${output.email}
+      PASSWORD: ${output.password}
 - extendedWaitUntil:
     visible: "Too many attempts: account locked for 15 minutes."
     timeout: 15000

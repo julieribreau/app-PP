@@ -1,0 +1,14 @@
+# Remplit le champ ID avec TEXT (le vide d'abord). « Entrée » referme ensuite le clavier
+# (ou passe au champ suivant dans les formulaires enchaînés).
+appId: io.bullify.nutrion-app
+---
+- scrollUntilVisible:
+    element:
+      id: ${ID}
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: ${ID}
+- eraseText: 40
+- inputText: ${TEXT}
+- pressKey: Enter

@@ -3,17 +3,13 @@ appId: io.bullify.nutrion-app
 ---
 - tapOn:
     id: tab-account
-- scrollUntilVisible:
-    element:
-      id: account-theme
-    direction: DOWN
-- tapOn:
-    id: account-theme
+- runFlow: { file: tap-low.yaml, env: { ID: account-theme } }
 - tapOn:
     id: locale-${LOCALE}
 - tapOn:
     id: theme-${THEME}
-- back
+- tapOn:
+    id: BackButton
 - scrollUntilVisible:
     element:
       id: account-theme

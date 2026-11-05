@@ -1,5 +1,5 @@
-# Inscription : message de vérification, connexion refusée avant confirmation, lien lu dans
-# Mailpit et ouvert (page du site), puis connexion.
+# Inscription : erreurs du formulaire, message de vérification, connexion refusée avant
+# confirmation, lien lu dans Mailpit et ouvert (page du site), puis connexion.
 appId: io.bullify.nutrion-app
 name: Inscription
 ---
@@ -11,35 +11,34 @@ name: Inscription
 - tapOn:
     id: account-sign-up
 # Formulaire vide : chaque champ obligatoire le dit, les CGU aussi.
-- tapOn:
-    id: sign-up-submit
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: sign-up-submit } }
 - assertVisible: "Accept the terms to continue."
 - assertVisible: "This field is required."
+# Saisie enchaînée par « Suivant » ; mot de passe trop court refusé.
+- scrollUntilVisible:
+    element:
+      id: sign-up-first-name
+    direction: UP
 - tapOn:
     id: sign-up-first-name
 - inputText: "Alex"
-- tapOn:
-    id: sign-up-last-name
+- pressKey: Enter
 - inputText: "Durand"
-- tapOn:
-    id: sign-up-email
+- pressKey: Enter
 - inputText: ${output.email}
-- tapOn:
-    id: sign-up-password
+- pressKey: Enter
 - inputText: "court1"
-- hideKeyboard
-- tapOn:
-    id: sign-up-terms
-- tapOn:
-    id: sign-up-submit
+- pressKey: Enter
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: sign-up-terms } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: sign-up-submit } }
 - assertVisible: "At least 12 characters, including a digit."
 - tapOn:
     id: sign-up-password
 - eraseText: 20
 - inputText: ${output.password}
-- hideKeyboard
-- tapOn:
-    id: sign-up-submit
+- pressKey: Enter
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: sign-up-submit } }
+- runFlow: subflows/after-sign-in.yaml
 - extendedWaitUntil:
     visible: "Check your inbox"
     timeout: 15000
@@ -47,19 +46,15 @@ name: Inscription
 # Pas encore confirmé : connexion refusée.
 - tapOn:
     id: sign-up-back-to-sign-in
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: ${output.email}
-- tapOn:
-    id: sign-in-password
-- inputText: ${output.password}
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: ${output.email}
+      PASSWORD: ${output.password}
 - extendedWaitUntil:
     visible: "Please confirm your email address before signing in."
     timeout: 15000
-# L'e-mail est en anglais, la langue de l'app (bug corrigé : il partait en français).
+# L'e-mail est en anglais, la langue de l'app (il partait en français).
 - runScript:
     file: scripts/mail-link.js
     env:
@@ -67,20 +62,21 @@ name: Inscription
 - assertTrue: ${output.subject == "Confirm your email address"}
 - openLink: ${output.link}
 - extendedWaitUntil:
-    visible: "Email confirmed. You can now sign in."
+    visible: ".*Email confirmed. You can now sign in.*"
     timeout: 30000
-- launchApp
-- tapOn:
-    id: sign-in-submit
+# Retour à l'app, sans la relancer (la feuille ouverte reste là).
+- launchApp:
+    stopApp: false
 - runFlow:
-    when:
-      visible: "Turn on Face ID\\?"
-    commands:
-      - tapOn: "Not now"
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: ${output.email}
+      PASSWORD: ${output.password}
+- runFlow: subflows/after-sign-in.yaml
 - tapOn:
     id: tab-account
 - extendedWaitUntil:
     visible:
-      id: account-sign-out
+      id: account-profile-card
     timeout: 20000
-- assertVisible: "Alex Durand"
+- assertVisible: ".*Alex Durand.*"

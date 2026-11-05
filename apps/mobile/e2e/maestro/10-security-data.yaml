@@ -32,8 +32,16 @@ name: Sécurité et données
     timeout: 15000
 - assertVisible:
     id: session-current
-- tapOn:
-    id: session-revoke
+# Le lien de confirmation suivi par le script a ouvert une session lui aussi : on révoque les
+# autres sessions une à une jusqu'à celle de « Windows ».
+- repeat:
+    while:
+      visible: "Windows"
+    times: 4
+    commands:
+      - tapOn:
+          id: session-revoke
+      - waitForAnimationToEnd
 - extendedWaitUntil:
     notVisible: "Windows"
     timeout: 15000
@@ -43,34 +51,22 @@ name: Sécurité et données
       COOKIE: ${output.cookie}
 - assertTrue: ${output.alive == "false"}
 # Mot de passe : trop faible refusé, mauvais mot de passe actuel refusé, puis changé.
-- tapOn:
-    id: security-current-password
-- inputText: ${output.secret}
-- tapOn:
-    id: security-new-password
-- inputText: "court1"
-- hideKeyboard
-- tapOn:
-    id: security-change-password
+- runFlow:
+    { file: subflows/field.yaml, env: { ID: security-current-password, TEXT: "${output.secret}" } }
+- runFlow: { file: subflows/field.yaml, env: { ID: security-new-password, TEXT: "court1" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: security-change-password } }
 - assertVisible: "At least 12 characters, including a digit."
-- tapOn:
-    id: security-new-password
-- eraseText: 20
 - evalScript: ${output.newSecret = output.secret + "-New9"}
-- inputText: ${output.newSecret}
-- hideKeyboard
-- tapOn:
-    id: security-change-password
-- extendedWaitUntil:
-    visible: "Password changed."
-    timeout: 15000
-- back
+- runFlow:
+    { file: subflows/field.yaml, env: { ID: security-new-password, TEXT: "${output.newSecret}" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: security-change-password } }
 - scrollUntilVisible:
-    element:
-      id: account-sign-out
-    direction: DOWN
+    element: "Password changed."
+    direction: UP
+    timeout: 15000
 - tapOn:
-    id: account-sign-out
+    id: BackButton
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: account-sign-out } }
 - extendedWaitUntil:
     visible:
       id: account-sign-in
@@ -81,14 +77,8 @@ name: Sécurité et données
       EMAIL: ${output.account}
       PASSWORD: ${output.newSecret}
 # Export : l'archive part dans la feuille de partage du système.
-- scrollUntilVisible:
-    element:
-      id: account-data
-    direction: DOWN
-- tapOn:
-    id: account-data
-- tapOn:
-    id: data-export
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: account-data } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: data-export } }
 - extendedWaitUntil:
     visible: ".*(Save to Files|Enregistrer dans Fichiers|AirDrop|Copy|Copier).*"
     timeout: 30000
@@ -111,28 +101,21 @@ name: Sécurité et données
 - assertVisible:
     id: data-delete
     enabled: false
-- tapOn:
-    id: data-delete-confirm
-- inputText: "DELETE"
-- hideKeyboard
-- tapOn:
-    id: data-delete
+- runFlow: { file: subflows/field.yaml, env: { ID: data-delete-confirm, TEXT: "DELETE" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: data-delete } }
 - extendedWaitUntil:
     visible:
       id: account-sign-in
     timeout: 20000
 - assertVisible: "Your account has been deleted."
+- tapOn: "OK"
 - tapOn:
     id: account-sign-in
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: ${output.account}
-- tapOn:
-    id: sign-in-password
-- inputText: ${output.newSecret}
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: subflows/fill-sign-in.yaml
+    env:
+      EMAIL: ${output.account}
+      PASSWORD: ${output.newSecret}
 - extendedWaitUntil:
     visible: "Incorrect email or password."
     timeout: 15000

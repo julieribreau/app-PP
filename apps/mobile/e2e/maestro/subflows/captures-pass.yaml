@@ -50,8 +50,7 @@ appId: io.bullify.nutrion-app
     visible:
       id: sign-up-submit
     timeout: 15000
-- tapOn:
-    id: sign-up-submit
+- runFlow: { file: tap-low.yaml, env: { ID: sign-up-submit } }
 - runFlow: { file: screenshot.yaml, env: { NAME: 07-sign-up-errors } }
 - openLink: nutrion://auth/forgot-password
 - extendedWaitUntil:
@@ -66,15 +65,11 @@ appId: io.bullify.nutrion-app
     timeout: 15000
 - runFlow: { file: screenshot.yaml, env: { NAME: 09-sign-in } }
 # Connectée : Camille (sa langue et son thème s'appliquent, puis on remet ceux de la passe).
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: camille.martin@exemple.fr
-- tapOn:
-    id: sign-in-password
-- inputText: Nutrion-Demo-2026
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: fill-sign-in.yaml
+    env:
+      EMAIL: camille.martin@exemple.fr
+      PASSWORD: Nutrion-Demo-2026
 - runFlow:
     when:
       visible: "Turn on Face ID\\?|Activer Face ID \\?"
@@ -84,10 +79,11 @@ appId: io.bullify.nutrion-app
     notVisible:
       id: sign-in-submit
     timeout: 20000
+- runFlow: after-sign-in.yaml
 - openLink: nutrion://account
 - extendedWaitUntil:
     visible:
-      id: account-sign-out
+      id: account-profile-card
     timeout: 20000
 - openLink: nutrion://account/preferences
 - tapOn:
@@ -123,8 +119,7 @@ appId: io.bullify.nutrion-app
     visible:
       id: address-save
     timeout: 15000
-- tapOn:
-    id: address-save
+- runFlow: { file: tap-low.yaml, env: { ID: address-save } }
 - runFlow: { file: screenshot.yaml, env: { NAME: 15-address-form-errors } }
 - openLink: nutrion://account/preferences
 - extendedWaitUntil:

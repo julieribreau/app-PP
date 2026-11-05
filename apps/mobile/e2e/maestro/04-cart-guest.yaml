@@ -10,12 +10,7 @@ name: Panier invité
 - tapOn:
     id: tab-shop
 # Granola fruits rouges (7,90 €, TVA 5,5 %) et Électrolytes citron (9,90 €).
-- scrollUntilVisible:
-    element:
-      id: product-granola-fruits-rouges
-    direction: DOWN
-- tapOn:
-    id: product-granola-fruits-rouges
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: product-granola-fruits-rouges } }
 - tapOn:
     id: add-to-cart
 - extendedWaitUntil:
@@ -23,12 +18,7 @@ name: Panier invité
     timeout: 10000
 - tapOn:
     id: product-back
-- scrollUntilVisible:
-    element:
-      id: product-electrolytes
-    direction: DOWN
-- tapOn:
-    id: product-electrolytes
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: product-electrolytes } }
 - tapOn:
     id: add-to-cart
 - extendedWaitUntil:

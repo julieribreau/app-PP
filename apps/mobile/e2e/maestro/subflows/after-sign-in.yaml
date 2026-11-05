@@ -1,0 +1,17 @@
+# Après une connexion réussie : refuse l'offre Face ID de l'app et la proposition du trousseau
+# d'iOS d'enregistrer le mot de passe, dans l'ordre où elles viennent.
+appId: io.bullify.nutrion-app
+---
+- repeat:
+    times: 2
+    commands:
+      - runFlow:
+          when:
+            visible: "Turn on Face ID\\?|Activer Face ID \\?"
+          commands:
+            - tapOn: "Not now|Plus tard"
+      - runFlow:
+          when:
+            visible: "Save Password\\?|Enregistrer le mot de passe \\?"
+          commands:
+            - tapOn: "Not Now|Plus tard|Pas maintenant"

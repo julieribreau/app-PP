@@ -20,11 +20,11 @@ name: Face ID — échec puis mot de passe
 - assertVisible: "Bon retour, Camille|Welcome back, Camille"
 - assertVisible:
     id: biometric-unlock
-- tapOn:
-    id: sign-in-password
-- inputText: Nutrion-Demo-2026
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: ../subflows/fill-sign-in.yaml
+    env:
+      EMAIL: camille.martin@exemple.fr
+      PASSWORD: Nutrion-Demo-2026
 - extendedWaitUntil:
     notVisible:
       id: biometric-unlock
@@ -32,4 +32,4 @@ name: Face ID — échec puis mot de passe
 - tapOn:
     id: tab-account
 - assertVisible:
-    id: account-sign-out
+    id: account-profile-card

@@ -1,0 +1,16 @@
+# Remplit et envoie le formulaire de connexion affiché. Entrée : EMAIL, PASSWORD.
+# L'e-mail peut être prérempli (dernier compte) : la croix du champ l'efface.
+appId: io.bullify.nutrion-app
+---
+- tapOn:
+    id: sign-in-email
+- runFlow:
+    when:
+      visible: "Clear text|Effacer le texte"
+    commands:
+      - tapOn: "Clear text|Effacer le texte"
+- inputText: ${EMAIL}
+- pressKey: Enter
+- eraseText: 60
+- inputText: ${PASSWORD}
+- pressKey: Enter

@@ -54,12 +54,7 @@ name: Fiche produit
 # Produit sans variante en rupture.
 - tapOn:
     id: tab-shop
-- scrollUntilVisible:
-    element:
-      id: product-recuperation-cacao
-    direction: DOWN
-- tapOn:
-    id: product-recuperation-cacao
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: product-recuperation-cacao } }
 - assertVisible: ".*incl. VAT, Out of stock"
 - assertVisible:
     id: add-to-cart

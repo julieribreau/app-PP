@@ -8,15 +8,11 @@ name: Face ID — activation
     id: tab-account
 - tapOn:
     id: account-sign-in
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: camille.martin@exemple.fr
-- tapOn:
-    id: sign-in-password
-- inputText: Nutrion-Demo-2026
-- tapOn:
-    id: sign-in-submit
+- runFlow:
+    file: ../subflows/fill-sign-in.yaml
+    env:
+      EMAIL: camille.martin@exemple.fr
+      PASSWORD: Nutrion-Demo-2026
 - extendedWaitUntil:
     visible: "Turn on Face ID\\?|Activer Face ID \\?"
     timeout: 20000
@@ -27,10 +23,15 @@ name: Face ID — activation
       visible: ".*(use Face ID|utiliser Face ID).*"
     commands:
       - tapOn: "OK|Allow|Autoriser"
+- runFlow: ../subflows/after-sign-in.yaml
 - extendedWaitUntil:
     visible:
-      id: account-biometric
+      id: account-profile-card
     timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: account-biometric
+    direction: DOWN
 - assertVisible:
     id: account-biometric
     checked: true

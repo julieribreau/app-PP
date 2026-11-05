@@ -1,25 +1,22 @@
 # Connexion par l'onglet Compte. Entrée : EMAIL, PASSWORD. Refuse l'offre Face ID si elle vient.
+# « Suivant » passe au mot de passe (le clavier le recouvre), « Aller » envoie le formulaire.
 appId: io.bullify.nutrion-app
 ---
 - tapOn:
     id: tab-account
 - tapOn:
     id: account-sign-in
-- tapOn:
-    id: sign-in-email
-- eraseText: 60
-- inputText: ${EMAIL}
-- tapOn:
-    id: sign-in-password
-- inputText: ${PASSWORD}
-- tapOn:
-    id: sign-in-submit
 - runFlow:
-    when:
-      visible: "Turn on Face ID\\?|Activer Face ID \\?"
-    commands:
-      - tapOn: "Not now|Plus tard"
+    file: fill-sign-in.yaml
+    env:
+      EMAIL: ${EMAIL}
+      PASSWORD: ${PASSWORD}
+- extendedWaitUntil:
+    notVisible:
+      id: sign-in-submit
+    timeout: 20000
+- runFlow: after-sign-in.yaml
 - extendedWaitUntil:
     visible:
-      id: account-sign-out
+      id: account-profile-card
     timeout: 20000

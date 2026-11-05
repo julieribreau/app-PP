@@ -13,4 +13,4 @@ name: Face ID — déverrouillage réussi
 - tapOn:
     id: tab-account
 - assertVisible:
-    id: account-sign-out
+    id: account-profile-card

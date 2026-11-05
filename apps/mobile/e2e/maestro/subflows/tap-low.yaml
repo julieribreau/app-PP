@@ -1,0 +1,10 @@
+# Touche l'élément ID après avoir fait défiler jusqu'à lui (centré à l'écran).
+appId: io.bullify.nutrion-app
+---
+- scrollUntilVisible:
+    element:
+      id: ${ID}
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: ${ID}

@@ -1,0 +1,17 @@
+# Comme field.yaml, pour un pavé numérique ou téléphone (sans touche Entrée) : un glissement
+# vers le bas referme le clavier (keyboardDismissMode de l'écran).
+appId: io.bullify.nutrion-app
+---
+- scrollUntilVisible:
+    element:
+      id: ${ID}
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: ${ID}
+- eraseText: 40
+- inputText: ${TEXT}
+- swipe:
+    start: 50%, 30%
+    end: 50%, 70%
+    duration: 400

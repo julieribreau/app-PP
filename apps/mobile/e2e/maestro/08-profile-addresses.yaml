@@ -7,26 +7,19 @@ name: Profil, photo et adresses
 # Profil : prénom et téléphone modifiés, conservés après relancement.
 - tapOn:
     id: account-profile
-- tapOn:
-    id: profile-first-name
-- eraseText: 30
-- inputText: "Camille-QA"
-- tapOn:
-    id: profile-phone
-- eraseText: 30
-- inputText: "0700000000"
-- hideKeyboard
-- tapOn:
-    id: profile-save
-- extendedWaitUntil:
-    visible: "Profil enregistré."
+- runFlow: { file: subflows/field.yaml, env: { ID: profile-first-name, TEXT: "Camille-QA" } }
+- runFlow: { file: subflows/field-pad.yaml, env: { ID: profile-phone, TEXT: "0700000000" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: profile-save } }
+- scrollUntilVisible:
+    element: "Profil enregistré."
+    direction: UP
     timeout: 15000
 - stopApp
 - launchApp
 - tapOn:
     id: tab-account
 - extendedWaitUntil:
-    visible: "Camille-QA Martin"
+    visible: ".*Camille-QA Martin.*"
     timeout: 20000
 - tapOn:
     id: account-profile
@@ -37,92 +30,72 @@ name: Profil, photo et adresses
     id: profile-phone
     text: "0700000000"
 # Photo de profil : une image de la photothèque (ajoutée par le script avec simctl addmedia).
-- tapOn:
-    id: profile-change-photo
-- runFlow:
-    when:
-      visible: "Allow Full Access|Autoriser l’accès complet"
-    commands:
-      - tapOn: "Allow Full Access|Autoriser l’accès complet"
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: profile-change-photo } }
+# Le sélecteur de photos et l'écran de recadrage d'iOS tournent hors de l'app (invisibles dans
+# la hiérarchie) : premier carré (la photo ajoutée par simctl addmedia), puis « Choisir ».
 - extendedWaitUntil:
-    visible: "Photos|Collections|Recents|Récents"
-    timeout: 20000
+    visible: "attente du sélecteur"
+    timeout: 4000
+    optional: true
 - tapOn:
-    point: "16%,30%"
-- runFlow:
-    when:
-      visible: "Choose|Choisir"
-    commands:
-      - tapOn: "Choose|Choisir"
+    id: PXGGridLayout-Info
+    index: 0
+- extendedWaitUntil:
+    visible: "attente du recadrage"
+    timeout: 3000
+    optional: true
+- tapOn:
+    id: Done
 - extendedWaitUntil:
     visible:
       id: profile-remove-photo
     timeout: 30000
-- tapOn:
-    id: profile-remove-photo
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: profile-remove-photo } }
 - extendedWaitUntil:
     notVisible:
       id: profile-remove-photo
     timeout: 15000
 # Remise du profil du seed.
-- tapOn:
-    id: profile-first-name
-- eraseText: 30
-- inputText: "Camille"
-- tapOn:
-    id: profile-phone
-- eraseText: 30
-- inputText: "06 12 34 56 78"
-- hideKeyboard
-- tapOn:
-    id: profile-save
-- extendedWaitUntil:
-    visible: "Profil enregistré."
+- runFlow: { file: subflows/field.yaml, env: { ID: profile-first-name, TEXT: "Camille" } }
+- runFlow: { file: subflows/field-pad.yaml, env: { ID: profile-phone, TEXT: "06 12 34 56 78" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: profile-save } }
+- scrollUntilVisible:
+    element: "Profil enregistré."
+    direction: UP
     timeout: 15000
-- back
+- tapOn:
+    id: BackButton
 # Adresses : Maison (par défaut) et Bureau du seed, puis une nouvelle.
 - tapOn:
     id: account-addresses
 - assertVisible: "Maison"
 - assertVisible: "Bureau"
+# Adresse par défaut en tête de liste.
 - assertVisible:
-    id: address-0
-    containsChild: "Maison"
+    text: "Maison"
+    above: "Bureau"
 - tapOn:
     id: address-add
 # Champs obligatoires contrôlés.
-- tapOn:
-    id: address-save
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: address-save } }
 - assertVisible: "Ce champ est obligatoire."
-- tapOn:
-    id: address-label
-- inputText: "Atelier QA"
-- tapOn:
-    id: address-recipient
-- inputText: "Camille Martin"
-- tapOn:
-    id: address-line1
-- inputText: "5 rue de l'Essai"
-- tapOn:
-    id: address-postal-code
-- inputText: "75011"
-- tapOn:
-    id: address-city
-- inputText: "Paris"
-- hideKeyboard
-- tapOn:
-    id: address-save
+- runFlow: { file: subflows/field.yaml, env: { ID: address-label, TEXT: "Atelier QA" } }
+- runFlow: { file: subflows/field.yaml, env: { ID: address-recipient, TEXT: "Camille Martin" } }
+- runFlow: { file: subflows/field.yaml, env: { ID: address-line1, TEXT: "5 rue de l'Essai" } }
+- runFlow: { file: subflows/field-pad.yaml, env: { ID: address-postal-code, TEXT: "75011" } }
+- runFlow: { file: subflows/field.yaml, env: { ID: address-city, TEXT: "Paris" } }
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: address-save } }
 - extendedWaitUntil:
     visible: "Atelier QA"
     timeout: 15000
+# Le lien de la carte « Atelier QA » : le premier sous son nom.
 - tapOn:
-    text: "Définir par défaut"
-    childOf:
-      containsChild: "Atelier QA"
+    id: "address-\\d-default"
+    below: "Atelier QA"
 - extendedWaitUntil:
     visible:
-      id: address-0
-      containsChild: "Atelier QA"
+      text: "Atelier QA"
+      above: "Maison"
     timeout: 15000
 - stopApp
 - launchApp
@@ -132,23 +105,23 @@ name: Profil, photo et adresses
     id: account-addresses
 - extendedWaitUntil:
     visible:
-      id: address-0
-      containsChild: "Atelier QA"
+      text: "Atelier QA"
+      above: "Maison"
     timeout: 15000
 # Maison redevient l'adresse par défaut, Atelier QA est supprimée.
+# Le lien de la carte « Maison » : le premier sous son nom.
 - tapOn:
-    text: "Définir par défaut"
-    childOf:
-      containsChild: "Maison"
+    id: "address-\\d-default"
+    below: "Maison"
 - extendedWaitUntil:
     visible:
-      id: address-0
-      containsChild: "Maison"
+      text: "Maison"
+      above: "Atelier QA"
     timeout: 15000
+# Le lien de la carte « Atelier QA » : le premier sous son nom.
 - tapOn:
-    text: "Supprimer"
-    childOf:
-      containsChild: "Atelier QA"
+    id: "address-\\d-delete"
+    below: "Atelier QA"
 - assertVisible: "Supprimer cette adresse ?"
 - tapOn:
     text: "Supprimer"

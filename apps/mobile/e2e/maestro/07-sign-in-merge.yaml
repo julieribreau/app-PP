@@ -4,12 +4,7 @@ appId: io.bullify.nutrion-app
 name: Connexion et fusion du panier invité
 ---
 - runFlow: subflows/launch-accepted.yaml
-- scrollUntilVisible:
-    element:
-      id: product-granola-fruits-rouges
-    direction: DOWN
-- tapOn:
-    id: product-granola-fruits-rouges
+- runFlow: { file: subflows/tap-low.yaml, env: { ID: product-granola-fruits-rouges } }
 - tapOn:
     id: add-to-cart
 - extendedWaitUntil:
@@ -23,8 +18,8 @@ name: Connexion et fusion du panier invité
       EMAIL: camille.martin@exemple.fr
       PASSWORD: Nutrion-Demo-2026
 # Profil de Camille en français : l'app passe en français.
-- assertVisible: "Camille Martin"
-- assertVisible: "Se déconnecter"
+- assertVisible: ".*Camille Martin.*"
+- assertVisible: "Compte"
 - tapOn:
     id: tab-cart
 - assertVisible: "Votre panier invité a été ajouté à votre compte."
