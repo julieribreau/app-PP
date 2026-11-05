@@ -18,7 +18,9 @@ export function useCart() {
 
 /**
  * Noms de produits et libellés de variantes du panier arrivent dans la langue de la requête :
- * à un changement de langue, le panier est relu (il restait dans l'ancienne langue).
+ * à un changement de langue, le panier est relu (il restait dans l'ancienne langue). La fusion
+ * du panier invité est un fait de la connexion, que la relecture ne renvoie plus : on la garde,
+ * sinon la note « panier invité ajouté » disparaissait quand le profil passe l'app en français.
  */
 export function useCartFollowsLocale(): void {
   const { locale } = useI18n();
@@ -27,7 +29,10 @@ export function useCartFollowsLocale(): void {
   React.useEffect(() => {
     if (shown.current === locale) return;
     shown.current = locale;
-    void client.invalidateQueries({ queryKey: queryKeys.cart });
+    const merged = client.getQueryData<Cart>(queryKeys.cart)?.merged === true;
+    void client.invalidateQueries({ queryKey: queryKeys.cart }).then(() => {
+      if (merged) client.setQueryData<Cart>(queryKeys.cart, (cart) => cart && { ...cart, merged });
+    });
   }, [locale, client]);
 }
 
