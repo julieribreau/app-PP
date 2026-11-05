@@ -1,0 +1,56 @@
+{
+  "home": {
+    "title": "NutrionApp",
+    "welcome": "Bienvenue",
+    "card": {
+      "title": "Premier pas",
+      "description": "Exemple de carte : remplacez-la par le premier composant métier du projet."
+    }
+  },
+  "env": {
+    "preprod": "Préproduction : environnement de test, données fictives."
+  },
+  "consent": {
+    "banner": {
+      "title": "Cookies et mesure d'audience",
+      "body": "Nous utilisons des traceurs indispensables au fonctionnement du service. Avec votre accord, nous mesurons aussi sa fréquentation pour l'améliorer. Refuser n'empêche pas d'utiliser le service.",
+      "accept": "Accepter",
+      "reject": "Refuser",
+      "customize": "Personnaliser",
+      "policy": "Politique cookies"
+    },
+    "manager": {
+      "title": "Gérer mes cookies",
+      "intro": "Choisissez finalité par finalité. Vous pouvez changer d'avis à tout moment.",
+      "required": "Toujours actifs",
+      "acceptAll": "Tout accepter",
+      "rejectAll": "Tout refuser",
+      "save": "Enregistrer mes choix",
+      "saved": "Vos choix sont enregistrés.",
+      "close": "Fermer",
+      "savedOn": "Choix enregistré le {date}.",
+      "acceptedOn": "Accepté le {date}.",
+      "refusedOn": "Refusé le {date}."
+    },
+    "purposes": {
+      "essential": {
+        "label": "Strictement nécessaires",
+        "description": "Sécurité, session, mémorisation de vos choix et de vos préférences d'affichage. Sans eux, le service ne fonctionne pas."
+      },
+      "analytics": {
+        "label": "Mesure d'audience",
+        "description": "Pages ou écrans consultés et actions effectuées, mesurés avec PostHog, hébergé dans l'Union européenne, pour améliorer le service. Jamais de publicité."
+      }
+    },
+    "settingsLink": "Gérer mes cookies"
+  },
+  "settings": {
+    "title": "Réglages",
+    "privacy": "Confidentialité",
+    "privacyHint": "Cookies et mesure d'audience"
+  },
+  "tabs": {
+    "home": "Accueil",
+    "settings": "Réglages"
+  }
+}

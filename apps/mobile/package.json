@@ -1,0 +1,67 @@
+{
+  "name": "@nutrion/mobile",
+  "private": true,
+  "//": "Mobile = TOUJOURS Expo / React Native (SDK 58). Tests : Vitest pour la logique (*.test.ts), jest-expo et @testing-library/react-native pour les composants (*.test.tsx). Versions natives fixées par le SDK (`expo install --check`). Exclus du contrôle : AsyncStorage en 3 (le SDK annonce 2.2) et @sentry/react-native en dernière 8 (le SDK annonce ~8.28), même couple que les autres dépôts Bullify.",
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "jest --ci --passWithNoTests && vitest run"
+  },
+  "dependencies": {
+    "@nutrion/analytics": "workspace:*",
+    "@nutrion/api-port": "workspace:*",
+    "@nutrion/cmp": "workspace:*",
+    "@nutrion/i18n": "workspace:*",
+    "@nutrion/sentry": "workspace:*",
+    "@nutrion/ui": "workspace:*",
+    "@nutrion/ui-tokens": "workspace:*",
+    "@react-native-async-storage/async-storage": "^3.1.1",
+    "@sentry/react-native": "catalog:",
+    "expo": "catalog:",
+    "expo-constants": "~58.0.15",
+    "expo-linking": "~58.0.16",
+    "expo-router": "~58.0.30",
+    "posthog-react-native": "^4.85.3",
+    "react": "catalog:",
+    "react-native": "0.88.1",
+    "react-native-reanimated": "4.7.1",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "~4.30.1",
+    "react-native-worklets": "0.13.0",
+    "zustand": "^5.0.16",
+    "better-auth": "catalog:",
+    "@better-auth/expo": "catalog:",
+    "expo-secure-store": "~58.0.2",
+    "expo-local-authentication": "~58.0.2",
+    "expo-network": "~58.0.4",
+    "expo-web-browser": "~58.0.7",
+    "expo-image": "~58.0.18",
+    "expo-localization": "~58.0.5",
+    "expo-status-bar": "~58.0.4",
+    "expo-system-ui": "~58.0.7"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.5.2",
+    "@react-native/metro-config": "0.88.1",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/react": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "jest": "^30.5.2",
+    "jest-expo": "~58.0.14",
+    "test-renderer": "~1.3.1",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "@react-native-async-storage/async-storage",
+        "@sentry/react-native"
+      ]
+    }
+  }
+}

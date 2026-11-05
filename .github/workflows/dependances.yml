@@ -1,0 +1,141 @@
+name: Audit dependances
+
+# Toutes les nuits ; pas sur main, la nuit suffit.
+#
+# Sur pull request aussi, mais les licences seules : ni releve de fraicheur ni
+# commit du rapport, une proposition ne pousse rien. La fusion automatique
+# attend que tous les controles soient verts : une montee qui apporte une
+# licence interdite ou non identifiee echoue ici, avant la fusion. Pas de
+# filtre de chemins sur pull_request : au-dela de 300 fichiers modifies, GitHub
+# peut sauter le workflow sans le dire, et une montee passerait sans controle.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: licences-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Rapports remis au client (documents 07 et 08), prefixe fixe par repos.yml
+  # du depot bullify-documentation.
+  LICENSE_REPORT: docs/drive/nta-07-audit-licences.md
+  OUTDATED_REPORT: docs/drive/nta-08-versions-dependances.md
+
+jobs:
+  # Le passage de nuit ne tourne que si le code a bouge depuis le precedent :
+  # sans commit nouveau, il rendrait le meme releve. La comparaison se fait par
+  # commits, du main du passage precedent a celui-ci, et non par dates : un
+  # commit fait la veille et pousse apres le passage serait manque. Ne comptent
+  # pas les releves des robots ([skip ci]) ni la documentation de nuit ; une
+  # montee de dependances poussee par le robot, elle, compte. Tout autre
+  # declenchement (manuel, pull request) passe, et un doute aussi.
+  garde:
+    name: Le code a-t-il bouge ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      bouge: ${{ steps.garde.outputs.bouge }}
+    steps:
+      - id: garde
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENEMENT: ${{ github.event_name }}
+        run: |
+          bouge=true
+          if [ "$EVENEMENT" = schedule ]; then
+            flux=${GITHUB_WORKFLOW_REF%@*}
+            flux=${flux##*/}
+            prec=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$flux/runs?event=schedule&status=completed&per_page=1" \
+              --jq '.workflow_runs[0].head_sha // ""') || prec=""
+            if [ -n "$prec" ]; then
+              n=$(gh api "repos/$GITHUB_REPOSITORY/compare/$prec...$GITHUB_SHA" \
+                --jq '[.commits[] | select((.commit.message | contains("[skip ci]") | not) and .commit.author.name != "docs-nightly")] | length') || n=1
+              if [ "$n" = 0 ]; then bouge=false; fi
+            fi
+          fi
+          echo "bouge=$bouge" >> "$GITHUB_OUTPUT"
+          echo "Code modifie depuis le passage de nuit precedent : $bouge"
+
+  audit:
+    name: Licences des dependances de production
+    needs: garde
+    if: needs.garde.outputs.bouge == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # Version pnpm lue dans le champ packageManager du package.json.
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      # --ignore-scripts : l'audit lit l'arbre de dependances, il n'execute rien.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Audit des licences
+        id: audit
+        continue-on-error: true
+        run: |
+          # pnpm licenses list echoue en pnpm 11 (index du store) : ls marche partout.
+          pnpm ls -r --prod --depth Infinity --json > /tmp/licenses.json
+          node scripts/check-licenses.mjs /tmp/licenses.json
+
+      # Ce que le robot de montee tient a dessein (SDK Expo, correctif local,
+      # pair) n'est pas un retard : check-outdated le range en « Retenues
+      # volontaires », avec sa raison. Le robot tourne comme dans mise-a-jour.yml,
+      # majeures comprises, en simulation : il calcule sans rien ecrire. En echec
+      # (registre ou API Expo injoignable), le releve se fait sans, et ces paquets
+      # y reapparaissent en retard.
+      - name: Retenues du robot de montee
+        if: github.event_name != 'pull_request'
+        run: |
+          SIMULER=1 RETENUES_JSON=/tmp/retenues.json node scripts/maj-dependances.mjs $(git ls-files '*package.json') \
+            || echo "::warning::retenues du robot non calculees : le releve les montre en retard"
+
+      # Releve, pas verrou : sortir en erreur parce qu'une bibliotheque a
+      # publie une version rendrait la CI rouge en permanence. La regle « tout a
+      # la derniere version » est tenue par mise-a-jour.yml, chaque nuit.
+      - name: Fraicheur des versions
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RETENUES_JSON: /tmp/retenues.json
+        run: |
+          pnpm outdated -r --format json > /tmp/outdated.json || true
+          # L'inventaire complet : les deux outils ne listent que ce qui est en retard.
+          pnpm ls -r --depth 0 --json > /tmp/deps.json || true
+          node scripts/check-outdated.mjs /tmp/outdated.json /tmp/deps.json
+
+      # Le commit passe avant l'echec pour que le rapport parte meme quand une
+      # licence interdite est detectee. Pousse avec GITHUB_TOKEN : ne declenche
+      # aucun autre workflow, donc aucun risque de deploiement. Jamais sur pull
+      # request : la proposition ne pousse rien, l'echec ci-dessous suffit.
+      - name: Commit du rapport
+        if: github.event_name != 'pull_request'
+        env:
+          BRANCHE: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$LICENSE_REPORT" "$OUTDATED_REPORT"
+          git diff --cached --quiet && echo "Aucun changement de licence." && exit 0
+          git commit -m "chore(deps): mise a jour des audits de dependances [skip ci]"
+          git push origin "HEAD:$BRANCHE"
+
+      - name: Echec si licence interdite ou inconnue
+        if: steps.audit.outcome == 'failure'
+        run: |
+          echo "Licence interdite ou non identifiee : voir $LICENSE_REPORT" >&2
+          exit 1

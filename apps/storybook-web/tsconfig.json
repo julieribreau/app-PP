@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "types": ["node", "vite/client"],
+    "paths": { "@/*": ["../web/src/*"] },
+    // packages/ui exporte `./atoms/Button` : le web en lit la variante .web.tsx.
+    "moduleSuffixes": [".web", ""],
+    "composite": false,
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": [".storybook", "stories", "playwright.config.ts"]
+}

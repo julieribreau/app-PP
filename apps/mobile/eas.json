@@ -1,0 +1,45 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": { "EXPO_PUBLIC_APP_ENV": "development" }
+    },
+    "base": {
+      "credentialsSource": "local",
+      "autoIncrement": true
+    },
+    "nutrion-app-preprod": {
+      "extends": "base",
+      "distribution": "store",
+      "channel": "nutrion-app-preprod",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "preprod",
+        "EXPO_PUBLIC_TENANT_SLUG": "nutrion-app",
+        "EXPO_PUBLIC_API_BASE_URL": "https://nutrion-app.preprod.local/api/v1",
+        "OTA_URL": "https://nutrion-app.preprod.local/api/v1/updates/manifest",
+        "OTA_CHANNEL": "nutrion-app-preprod"
+      }
+    },
+    "nutrion-app-production": {
+      "extends": "base",
+      "distribution": "store",
+      "channel": "nutrion-app-production",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_TENANT_SLUG": "nutrion-app",
+        "EXPO_PUBLIC_API_BASE_URL": "https://nutrion-app.local/api/v1",
+        "OTA_URL": "https://nutrion-app.local/api/v1/updates/manifest",
+        "OTA_CHANNEL": "nutrion-app-production"
+      }
+    }
+  },
+  "submit": {
+    "nutrion-app-preprod": {},
+    "nutrion-app-production": {}
+  }
+}

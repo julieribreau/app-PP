@@ -1,0 +1,12 @@
+{
+  "name": "@nutrion/load-tests",
+  "version": "0.0.0",
+  "private": true,
+  "//": "Tests de charge k6 (skill load-testing) contre un backend déjà démarré : BACKEND_URL, sinon le backend local. k6 est un binaire (brew install k6), pas un paquet npm. Le smoke passe avant tout le reste.",
+  "type": "module",
+  "scripts": {
+    "load-test": "k6 run scenarios/00-smoke.js && k6 run scenarios/01-lecture-publique.js",
+    "smoke": "k6 run scenarios/00-smoke.js",
+    "check": "k6 inspect scenarios/00-smoke.js > /dev/null && k6 inspect scenarios/01-lecture-publique.js > /dev/null"
+  }
+}

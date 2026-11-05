@@ -1,0 +1,52 @@
+{
+  "name": "nutrion-app",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "prepare": "husky",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "storybook": "turbo run storybook",
+    "build-storybook": "turbo run build-storybook",
+    "visual": "turbo run visual",
+    "visual:update": "turbo run visual:update",
+    "load-test": "turbo run load-test",
+    "db:migrate": "pnpm --filter @nutrion/backend db:migrate",
+    "db:generate": "pnpm --filter @nutrion/db-schema db:generate",
+    "db:dbml": "pnpm --filter @nutrion/db-schema db:dbml",
+    "seed": "pnpm --filter @nutrion/backend seed",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "fallow": "fallow"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "^10.1.8",
+    "fallow": "^3.39.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "turbo": "^2.11.10",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.72.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs}": [
+      "prettier --write",
+      "eslint --fix --no-warn-ignored"
+    ],
+    "*.{json,md,yml,yaml,css}": [
+      "prettier --write"
+    ]
+  },
+  "//": "@types/node suit le Node des images (24), pas la derniere majeure des types."
+}

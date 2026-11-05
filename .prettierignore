@@ -1,0 +1,19 @@
+node_modules
+dist
+.next
+.expo
+.turbo
+coverage
+playwright-report
+storybook-static
+test-results
+public
+drizzle
+.fallow
+*.min.*
+pnpm-lock.yaml
+
+# Scripts partagés copiés à l'octet depuis bullify-documentation/scripts : leur style se règle à la source.
+scripts/check-*.mjs
+scripts/maj-*.mjs
+scripts/notify-ticketing.mjs

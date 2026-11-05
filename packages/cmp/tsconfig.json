@@ -1,0 +1,13 @@
+{
+  // Lu par le web (DOM) et par le mobile (React Native) : les deux jeux de types.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "composite": false,
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": ["src", "vitest.config.mts"]
+}

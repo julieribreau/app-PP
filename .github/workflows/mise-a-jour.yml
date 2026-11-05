@@ -1,0 +1,267 @@
+name: Mise a jour des dependances
+
+# Chaque nuit, deux propositions independantes, chacune ecrasee au passage
+# suivant : rien ne s'accumule.
+#
+# - deps/mise-a-jour-auto : les dependances npm, montees a la derniere version
+#   stable des sa publication, sans changer de majeure. Ce lot doit passer.
+# - deps/majeures-auto : les memes, majeures comprises. Rouge tant qu'une
+#   migration reste a faire, et c'est sa raison d'etre : une seule majeure non
+#   migree retenait sinon tout le lot.
+# - deps/briques-externes-auto : actions GitHub, images Docker, node et python
+#   des workflows. Separees de npm pour qu'une montee de node qui casse ne
+#   bloque pas les autres chaque nuit.
+#
+# Ce job ne lance pas les tests : il installe, ce qui prouve que la resolution
+# tient, puis propose. C'est la CI du depot qui verifie, sur la proposition,
+# avec ses bases et ses services. Reproduire ici l'installation de test de
+# chaque projet, c'etait sept configurations dupliquees qui divergent en
+# silence ; le premier essai, sur verif, echouait faute de PostgreSQL.
+#
+# D'ou le secret MAJ_WORKFLOWS_TOKEN, sans lequel rien ne peut se faire ici :
+# l'organisation interdit a GITHUB_TOKEN d'ouvrir une proposition (reglage
+# « Allow GitHub Actions to create and approve pull requests », laisse eteint
+# parce qu'il permettrait aussi d'approuver), une proposition ouverte avec lui
+# ne declencherait de toute facon aucune CI, et il ne peut pas pousser de
+# modification de .github/workflows. Sans ce secret, les deux jobs sont sautes
+# avec un avertissement, plutot que d'echouer chaque nuit.
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: maj-deps
+  cancel-in-progress: true
+
+jobs:
+  # Les secrets ne se testent ni dans un `if:` d'etape ni de job : on passe par
+  # l'environnement, et les deux autres jobs lisent la sortie.
+  jeton:
+    name: Jeton disponible ?
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.test.outputs.ok }}
+    steps:
+      - id: test
+        env:
+          JETON: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+        run: |
+          if [ -z "$JETON" ]; then
+            echo "::warning::Secret MAJ_WORKFLOWS_TOKEN absent : aucune montee proposee cette nuit."
+            echo "ok=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+  npm:
+    name: Dependances npm
+    needs: jeton
+    if: needs.jeton.outputs.ok == 'oui'
+    runs-on: ubuntu-latest
+    # Les hooks husky sont faits pour les humains : dans ce job, un pre-commit
+    # lancait le typecheck et empechait la proposition de s'ouvrir. C'est a la
+    # CI de la proposition de juger.
+    env:
+      SANS_MAJEURES: "1"
+      HUSKY: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+
+      - name: Monter ce qui est disponible et stable
+        id: monter
+        run: |
+          RETENUES_FICHIER="$RUNNER_TEMP/retenues.txt" node scripts/maj-dependances.mjs $(git ls-files '*package.json') | tee /tmp/montees.txt
+          # Les plages declarees admettent souvent plus recent que le lockfile (^11
+          # accepte 11.19, le lockfile garde 11.17) : sans ce passage, aucun
+          # package.json ne change, rien n'est propose, et le lockfile ne bouge
+          # jamais. Le lockfile seul, dans les plages du depot.
+          # Sauf ce que le robot fige : les paquets corriges (patchedDependencies ; leur
+          # correctif est rattache a nom@version et disparaissait sans erreur, simr #135), les
+          # retenus et les paquets du SDK Expo, ecrits par maj-dependances (un expo fige, ses
+          # voisins montes : deux copies d'expo, dix suites jest-expo mortes, simr #165).
+          exclus=$( { awk '/^patchedDependencies:/{b=1;next} b&&/^[^ #]/{b=0}
+            b&&/^  [^ #]/{k=$1; sub(/:$/,"",k); gsub(/"/,"",k);
+            if (match(k, /.@[^@]*$/)) k=substr(k,1,RSTART); print k}' pnpm-workspace.yaml 2>/dev/null
+            cat "$RUNNER_TEMP/retenues.txt" 2>/dev/null; } | sort -u | sed 's/^/!/')
+          pnpm update -r --lockfile-only --no-save $exclus \
+            || echo "::warning::lockfile non rafraichi (pnpm update)"
+
+      - name: Installer
+        run: |
+          pnpm install --no-frozen-lockfile
+          # Un paquet fige et ses voisins montes peuvent laisser deux copies : dedoublonner.
+          pnpm dedupe
+
+      - name: Reformater
+        # Toutes les nuits, meme sans montee : main n'est pas controle au format
+        # (ci.yml ne le verifie que sur PR), c'est ce passage qui le remet d'equerre.
+        # Une montee de prettier change parfois son rendu : sans ce passage, le
+        # format:check de la proposition tombe sur des fichiers qu'elle ne touche
+        # pas (36 sur draveil, prettier 3.8.3 vers 3.9.8).
+        run: pnpm run --if-present format
+
+      - name: Quelque chose a proposer ?
+        id: change
+        run: |
+          if git diff --quiet; then
+            echo "change=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "change=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Proposer
+        if: steps.change.outputs.change == 'oui'
+        env:
+          GH_TOKEN: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+        run: |
+          branche=deps/mise-a-jour-auto
+          ( echo "Montee nocturne des dependances npm sans rupture"; echo; echo "La CI de cette proposition verifie les montees : a fusionner si elle est verte."; echo "Inclut le reformatage Prettier de main."; echo; cat /tmp/montees.txt ) > /tmp/corps.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branche"
+          git add -A
+          git commit -q -m "chore(deps): montee nocturne des dependances npm sans rupture" -m "Detail dans la description de la proposition."
+          git push --force origin "$branche"
+          if [ -n "$(gh pr list --head "$branche" --state open --json number --jq '.[].number')" ]; then
+            gh pr edit "$branche" --body-file /tmp/corps.txt
+          else
+            gh pr create --base main --head "$branche" --title "Montee nocturne des dependances npm sans rupture" --body-file /tmp/corps.txt
+          fi
+
+  majeures:
+    name: Dependances npm, majeures comprises
+    needs: jeton
+    if: needs.jeton.outputs.ok == 'oui'
+    runs-on: ubuntu-latest
+    # Les hooks husky sont faits pour les humains : dans ce job, un pre-commit
+    # lancait le typecheck et empechait la proposition de s'ouvrir. C'est a la
+    # CI de la proposition de juger.
+    env:
+      HUSKY: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+
+      - name: Monter ce qui est disponible et stable
+        id: monter
+        run: |
+          RETENUES_FICHIER="$RUNNER_TEMP/retenues.txt" node scripts/maj-dependances.mjs $(git ls-files '*package.json') | tee /tmp/montees.txt
+          # Les plages declarees admettent souvent plus recent que le lockfile (^11
+          # accepte 11.19, le lockfile garde 11.17) : sans ce passage, aucun
+          # package.json ne change, rien n'est propose, et le lockfile ne bouge
+          # jamais. Le lockfile seul, dans les plages du depot.
+          # Sauf ce que le robot fige : les paquets corriges (patchedDependencies ; leur
+          # correctif est rattache a nom@version et disparaissait sans erreur, simr #135), les
+          # retenus et les paquets du SDK Expo, ecrits par maj-dependances (un expo fige, ses
+          # voisins montes : deux copies d'expo, dix suites jest-expo mortes, simr #165).
+          exclus=$( { awk '/^patchedDependencies:/{b=1;next} b&&/^[^ #]/{b=0}
+            b&&/^  [^ #]/{k=$1; sub(/:$/,"",k); gsub(/"/,"",k);
+            if (match(k, /.@[^@]*$/)) k=substr(k,1,RSTART); print k}' pnpm-workspace.yaml 2>/dev/null
+            cat "$RUNNER_TEMP/retenues.txt" 2>/dev/null; } | sort -u | sed 's/^/!/')
+          pnpm update -r --lockfile-only --no-save $exclus \
+            || echo "::warning::lockfile non rafraichi (pnpm update)"
+          if git diff --quiet; then
+            echo "change=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "change=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Installer
+        if: steps.monter.outputs.change == 'oui'
+        run: |
+          pnpm install --no-frozen-lockfile
+          # Un paquet fige et ses voisins montes peuvent laisser deux copies : dedoublonner.
+          pnpm dedupe
+
+      - name: Reformater
+        if: steps.monter.outputs.change == 'oui'
+        # Une montee de prettier change parfois son rendu : sans ce passage, le
+        # format:check de la proposition tombe sur des fichiers qu'elle ne touche
+        # pas (36 sur draveil, prettier 3.8.3 vers 3.9.8).
+        run: pnpm run --if-present format
+
+      - name: Proposer
+        if: steps.monter.outputs.change == 'oui'
+        env:
+          GH_TOKEN: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+        run: |
+          branche=deps/majeures-auto
+          ( echo "Montee nocturne des majeures"; echo; echo "La CI de cette proposition verifie les montees : a fusionner si elle est verte."; echo; cat /tmp/montees.txt ) > /tmp/corps.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branche"
+          git add -A
+          git commit -q -m "chore(deps): montee nocturne des majeures" -m "Detail dans la description de la proposition."
+          git push --force origin "$branche"
+          if [ -n "$(gh pr list --head "$branche" --state open --json number --jq '.[].number')" ]; then
+            gh pr edit "$branche" --body-file /tmp/corps.txt
+          else
+            gh pr create --base main --head "$branche" --title "Montee nocturne des majeures" --body-file /tmp/corps.txt
+          fi
+
+  externes:
+    name: Actions, images et runtimes
+    needs: jeton
+    if: needs.jeton.outputs.ok == 'oui'
+    runs-on: ubuntu-latest
+    # Les hooks husky sont faits pour les humains : dans ce job, un pre-commit
+    # lancait le typecheck et empechait la proposition de s'ouvrir. C'est a la
+    # CI de la proposition de juger.
+    env:
+      HUSKY: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+
+      - name: Monter actions, images et runtimes
+        id: monter
+        env:
+          GH_TOKEN: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+          EXTERNES_RESUME: /tmp/externes.txt
+        run: |
+          node scripts/maj-externes.mjs
+          if git diff --quiet; then
+            echo "change=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "change=oui" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Ce qui est marque « non verifie par la CI de la proposition » ne sert que
+      # dans un workflow qui ne tourne pas sur pull_request (deploiement, nuit)
+      # ou dans une image que la CI ne construit pas : a regarder avant fusion.
+      - name: Proposer
+        if: steps.monter.outputs.change == 'oui'
+        env:
+          GH_TOKEN: ${{ secrets.MAJ_WORKFLOWS_TOKEN }}
+        run: |
+          branche=deps/briques-externes-auto
+          ( echo "Montee nocturne des actions, images et runtimes"; echo; echo "La CI de cette proposition tourne avec les nouvelles versions : c'est elle qui verifie."; echo; cat /tmp/externes.txt ) > /tmp/corps.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branche"
+          git add -A
+          git commit -q -m "chore(deps): montee nocturne des actions, images et runtimes" -m "Detail dans la description de la proposition."
+          git push --force origin "$branche"
+          if [ -n "$(gh pr list --head "$branche" --state open --json number --jq '.[].number')" ]; then
+            gh pr edit "$branche" --body-file /tmp/corps.txt
+          else
+            gh pr create --base main --head "$branche" --title "Montee nocturne des actions, images et runtimes" --body-file /tmp/corps.txt
+          fi

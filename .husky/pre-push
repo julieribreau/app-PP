@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+# Avant chaque push : rien qui casse la compilation, le lint ou les tests unitaires, et pas de
+# changement de schéma de base sans sa migration. Les e2e, les images et les scans restent à
+# la CI. Jamais contourné par --no-verify sans GO explicite.
+set -e
+
+# Les refs poussées arrivent sur l'entrée standard : les lire AVANT tout sous-process qui
+# pourrait la consommer.
+refs="$(cat)"
+
+# Turbo met en cache : quasi instantané quand rien n'a changé.
+pnpm turbo run typecheck lint test
+
+# Schéma Drizzle modifié ⇒ une migration générée (pnpm db:generate) dans le même push.
+z40=0000000000000000000000000000000000000000
+schema=0
+migration=0
+while read -r _ref local _rref remote; do
+  [ -z "$local" ] && continue
+  [ "$local" = "$z40" ] && continue # suppression de branche
+  if [ "$remote" = "$z40" ] || [ -z "$remote" ]; then
+    remote=$(git merge-base "$local" origin/main 2>/dev/null) || continue
+  fi
+  changes=$(git diff --name-only "$remote" "$local" 2>/dev/null)
+  printf '%s\n' "$changes" | grep -q '^packages/db-schema/src/' && schema=1
+  printf '%s\n' "$changes" | grep -q '^packages/db-schema/migrations/' && migration=1
+done <<EOF
+$refs
+EOF
+
+if [ "$schema" = 1 ] && [ "$migration" = 0 ]; then
+  echo "✖ Le schéma de base a changé sans migration : pnpm db:generate, puis commit de la migration." >&2
+  exit 1
+fi

@@ -1,0 +1,32 @@
+{
+  "name": "@nutrion/sentry",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Suivi des erreurs partagé : init des process Node (API, cron), capture des 5xx, collecte coupée et nettoyage des événements pour toutes les surfaces.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./scrub": "./src/scrub.ts",
+    "./strip-query": "./src/strip-query.ts",
+    "./data-collection": "./src/data-collection.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sentry/node": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

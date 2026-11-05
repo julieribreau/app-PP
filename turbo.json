@@ -1,0 +1,47 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": ["**/.env", "tsconfig.base.json", "eslint.config.mjs"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_*", "RELEASE", "SENTRY_ORG", "SENTRY_PROJECT"],
+      // Turbo ne passe à une tâche que les variables déclarées (mode strict) : le jeton
+      // d'envoi des sourcemaps passe, sans entrer dans la clé de cache.
+      "passThroughEnv": ["SENTRY_AUTH_TOKEN"]
+    },
+    "dev": { "cache": false, "persistent": true },
+    "lint": { "dependsOn": ["^build"] },
+    "typecheck": { "dependsOn": ["^build"] },
+    "test": { "dependsOn": ["^build"], "outputs": ["coverage/**"] },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": ["playwright-report/**"],
+      // Base et Redis de test (services du job e2e), serveur web déjà lancé, navigateurs.
+      "passThroughEnv": ["DATABASE_URL", "REDIS_URL", "E2E_BASE_URL", "PLAYWRIGHT_*"]
+    },
+    // Les deux Storybook (6006 web, 6007 mobile), lancés ensemble par `pnpm storybook`.
+    "storybook": { "dependsOn": ["^build"], "cache": false, "persistent": true },
+    "build-storybook": { "dependsOn": ["^build"], "outputs": ["storybook-static/**"] },
+    // Captures comparées aux références commitées (visual/references), dans l'image
+    // Playwright du job `visual` de ci.yml ; `make visual` la lance en local.
+    "visual": {
+      "dependsOn": ["build-storybook"],
+      "cache": false,
+      "passThroughEnv": ["PLAYWRIGHT_*"]
+    },
+    "visual:update": {
+      "dependsOn": ["build-storybook"],
+      "cache": false,
+      "passThroughEnv": ["PLAYWRIGHT_*"]
+    },
+    // k6 contre un backend déjà démarré (BACKEND_URL), cf apps/load-tests.
+    "load-test": {
+      "cache": false,
+      "passThroughEnv": ["BACKEND_URL", "K6_*"]
+    }
+  }
+}

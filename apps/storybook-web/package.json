@@ -1,0 +1,37 @@
+{
+  "name": "@nutrion/storybook-web",
+  "version": "0.0.0",
+  "private": true,
+  "//": "Catalogue des composants web (packages/ui, packages/cmp/web, composants de apps/web), rangé en Atomic Design : pas de composant sans story. Régression visuelle : tools/storybook-visual.",
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "visual": "playwright test",
+    "visual:update": "playwright test --update-snapshots=changed"
+  },
+  "dependencies": {
+    "@nutrion/cmp": "workspace:*",
+    "@nutrion/i18n": "workspace:*",
+    "@nutrion/ui": "workspace:*",
+    "@nutrion/ui-tokens": "workspace:*",
+    "next-intl": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@nutrion/storybook-visual": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-docs": "catalog:",
+    "@storybook/react-vite": "catalog:",
+    "@types/node": "^24.19.2",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "storybook": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

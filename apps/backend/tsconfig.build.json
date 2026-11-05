@@ -1,0 +1,11 @@
+{
+  // Lu par `nest build` (son défaut) : dist/ ne contient que l'application.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.spec.ts"]
+}

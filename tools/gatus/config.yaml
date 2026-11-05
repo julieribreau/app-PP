@@ -1,0 +1,43 @@
+# Supervision Gatus (obligatoire, socle ; brique sante-services-supervision).
+# Gabarit à reporter dans bullify-infra/gatus/config.yaml : un service ajouté = ses sondes ajoutées.
+# Une condition par dépendance de /v1/health/ready, pour que l'alerte nomme ce qui est tombé.
+endpoints:
+  - name: "[1·Prod] API"
+    group: "NutrionApp"
+    url: "https://nutrion-app.local/api/v1/health"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == ok"
+      - "[RESPONSE_TIME] < 3000"
+    alerts:
+      - type: discord
+
+  - name: "[1·Prod] API + dépendances"
+    group: "NutrionApp"
+    url: "https://nutrion-app.local/api/v1/health/ready"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].details.db.status == up"
+      - "[BODY].details.redis.status == up"
+      # - "[BODY].details.storage.status == up"   (si stockage S3)
+      - "[RESPONSE_TIME] < 5000"
+    alerts:
+      - type: discord
+
+  # Process cron : pas de sonde Gatus. Sa santé (/v1/health sur CRON_HEALTH_PORT) n'est
+  # publiée ni sur la VM ni par Caddy ; le healthcheck Docker du service `cron` la lit
+  # (docker-compose.preprod.yml) et le redémarre. Une tâche planifiée critique se surveille
+  # par la date de son dernier succès, exposée par l'API (skill job-queues §9).
+
+  # - name: "[1·Prod] Web"   (si true)
+  #   group: "NutrionApp"
+  #   url: "https://nutrion-app.local/api/health"
+  #   interval: 1m
+  #   conditions: ["[STATUS] == 200", "[BODY].status == ok"]
+  #   alerts: [{ type: discord }]
+
+alerting:
+  discord:
+    webhook-url: "${GATUS_DISCORD_WEBHOOK}"

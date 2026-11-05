@@ -1,0 +1,20 @@
+{
+  "name": "@nutrion/api-port",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Port d'accès au backend, partagé web et mobile : le seul chemin vers l'API (jamais de fetch direct).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

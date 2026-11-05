@@ -1,0 +1,37 @@
+{
+  "name": "@nutrion/storybook-app",
+  "version": "0.0.0",
+  "private": true,
+  "//": "Catalogue des composants mobile (variantes .native.tsx de packages/ui, packages/cmp/native, composants de apps/mobile), rendus par react-native-web dans un navigateur : il se construit et se capture en CI comme le web. Le rendu sur l'appareil se vérifie dans l'app. react-native suit apps/mobile (SDK Expo).",
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6007",
+    "build-storybook": "storybook build -o storybook-static",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "visual": "playwright test",
+    "visual:update": "playwright test --update-snapshots=changed"
+  },
+  "dependencies": {
+    "@nutrion/cmp": "workspace:*",
+    "@nutrion/i18n": "workspace:*",
+    "@nutrion/ui": "workspace:*",
+    "@nutrion/ui-tokens": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-native": "0.88.1",
+    "react-native-web": "catalog:"
+  },
+  "devDependencies": {
+    "@nutrion/storybook-visual": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-docs": "catalog:",
+    "@storybook/react-native-web-vite": "catalog:",
+    "@types/node": "^24.19.2",
+    "@types/react": "catalog:",
+    "storybook": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

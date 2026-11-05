@@ -1,0 +1,50 @@
+# Dev local — tout dockerisé (cf socle). Preprod/prod : docker-compose.preprod/prod.yml (+ Helm si besoin).
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: "nutrion-app"
+    ports:
+      - "5432:5432"
+    volumes:
+      # Depuis la 18, l'image range ses donnees sous /var/lib/postgresql/18/docker et refuse
+      # de demarrer sur un volume monte a l'ancien emplacement /var/lib/postgresql/data.
+      - db-data:/var/lib/postgresql
+
+  redis:
+    image: redis:8
+    ports:
+      - "6379:6379"
+
+  # Stockage objet local (S3-compatible) — en prod : Scaleway Object Storage.
+  # adobe/s3mock et non MinIO, qui ne publie plus d'images libres (minio/minio
+  # retiré de Docker Hub, quay.io/minio/* sans manifeste). Le seau naît de la
+  # variable ci-dessous, sans client `mc` ; tout identifiant est accepté ; le
+  # client S3 doit passer en style chemin (forcePathStyle). Pas de console :
+  # `curl http://localhost:9000/nutrion-app-dev` liste les objets.
+  s3:
+    image: adobe/s3mock:5.2.3
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: "nutrion-app-dev"
+      # Racine dans le volume, conservée à l'arrêt : les objets survivent au
+      # redémarrage. /home/cnb appartient à l'utilisateur de l'image (1000) ; un
+      # volume monté sur un chemin absent de l'image naîtrait root, fermé en écriture.
+      COM_ADOBE_TESTING_S3MOCK_STORE_ROOT: /home/cnb/s3mock
+      COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT: "true"
+    ports:
+      - "9000:9090"
+    volumes:
+      - s3-data:/home/cnb
+    healthcheck:
+      # Le seau répond : serveur prêt, seau créé (wget de busybox, pas de curl).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9090/nutrion-app-dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  db-data:
+  s3-data:

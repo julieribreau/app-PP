@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "types": ["node", "vite/client"],
+    "paths": { "@/*": ["../mobile/src/*"] },
+    // packages/ui exporte `./atoms/Button` : le mobile en lit la variante .native.tsx.
+    "moduleSuffixes": [".native", ""],
+    "composite": false,
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": [".storybook", "stories", "playwright.config.ts"]
+}

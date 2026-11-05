@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+# Avant chaque commit : format et lint des fichiers indexés, puis aucun secret dans ce qui
+# est indexé. Un secret entre dans l'historique au commit : le bloquer ici évite une rotation.
+# Jamais contourné par --no-verify sans GO explicite.
+set -e
+pnpm lint-staged
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --staged --no-banner --redact
+else
+  echo "⚠ gitleaks absent (brew install gitleaks) : secrets non vérifiés avant commit ; sast.yml le fera." >&2
+fi

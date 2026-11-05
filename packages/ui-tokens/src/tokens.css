@@ -1,0 +1,37 @@
+/* Design tokens partagés — source unique de la charte NutrionApp.
+   Jamais de couleur en dur dans les composants : toujours via ces variables.
+   Mêmes valeurs que index.ts (lu par React Native) : modifier les deux ensemble.
+   Thème : celui du système par défaut ; le sélecteur pose data-theme="light" ou "dark"
+   sur <html> pour le forcer. Un tenant surcharge ces variables dans les deux thèmes. */
+:root {
+  --color-bg: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-primary: #2563eb;
+  --color-on-primary: #ffffff;
+  --color-muted: #6b7280;
+  --radius: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0a0a0a;
+  --color-fg: #fafafa;
+  --color-primary: #60a5fa;
+  --color-on-primary: #0a0a0a;
+  --color-muted: #9ca3af;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0a0a0a;
+    --color-fg: #fafafa;
+    --color-primary: #60a5fa;
+    --color-on-primary: #0a0a0a;
+    --color-muted: #9ca3af;
+    color-scheme: dark;
+  }
+}

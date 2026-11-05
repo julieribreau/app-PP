@@ -1,0 +1,41 @@
+table example {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  tenant_id uuid [not null]
+  name text [not null]
+  created_at "timestamp with time zone" [not null, default: `now()`]
+}
+
+table tenant {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  slug text [not null, unique]
+  name text [not null]
+  country_code text [not null, default: 'FR']
+  currency text [not null, default: 'EUR']
+  timezone text [not null, default: 'Europe/Paris']
+  default_locale text [not null, default: 'fr-FR']
+  branding jsonb
+  text_overrides jsonb
+  feature_flags jsonb
+  settings jsonb
+  created_at "timestamp with time zone" [not null, default: `now()`]
+}
+
+table tenant_domain {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  tenant_id uuid [not null]
+  host text [not null, unique]
+  kind text [not null]
+  is_primary boolean [not null, default: false]
+  bo_only boolean [not null, default: false]
+  status text [not null, default: 'pending']
+  verified_at "timestamp with time zone"
+  created_at "timestamp with time zone" [not null, default: `now()`]
+
+  indexes {
+    tenant_id [name: 'tenant_domain_primary_uq', unique]
+  }
+}
+
+ref example_tenant_id_tenant_id_fk: example.tenant_id > tenant.id [delete: no action, update: no action]
+
+ref tenant_domain_tenant_id_tenant_id_fk: tenant_domain.tenant_id > tenant.id [delete: cascade, update: no action]

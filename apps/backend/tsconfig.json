@@ -1,0 +1,20 @@
+{
+  // Typecheck : sources, tests d'intégration et configs Vitest. Le build (nest build) lit
+  // tsconfig.build.json, qui n'émet que src/ sans les tests.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Bundler",
+    // Application Nest compilée en CommonJS : verbatimModuleSyntax (base) y interdit les
+    // import/export ESM (TS1295). Une appli n'émet pas de .d.ts : declaration ferait
+    // échouer nest build sur les types inférés des DTO nestjs-zod (TS2883).
+    "verbatimModuleSyntax": false,
+    "declaration": false,
+    "composite": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["src", "test", "vitest.config.mts", "vitest.e2e.config.mts"]
+}

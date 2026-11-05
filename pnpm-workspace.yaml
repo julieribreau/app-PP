@@ -1,0 +1,138 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/*"
+
+# Versions centralisées — bumper ici se propage partout (cf architecture-reference §catalog).
+catalog:
+  # TypeScript 7 attendra typescript-eslint (8.72 exige typescript <6.1.0) : 6.0.3, derniere 6.
+  typescript: "6.0.3"
+  # NestJS (backend cible), tout en 12. Les paquets de la 12 sont publies en ESM pur ; le
+  # backend, compile en CommonJS, les charge par require(esm), actif sans drapeau en Node 24.
+  # nestjs-zod 5.5.0 declare encore la 11 : voir overrides. @nestjs/testing suit le coeur.
+  "@nestjs/core": 12.3.3
+  "@nestjs/common": 12.3.3
+  "@nestjs/platform-express": 12.3.3
+  "@nestjs/testing": 12.3.3
+  "nestjs-zod": "5.5.0"
+  "@nestjs/swagger": 12.1.0
+  "@nestjs/terminus": "12.1.0"
+  "@nestjs/throttler": "6.7.1"
+  "@scalar/nestjs-api-reference": 1.2.35
+  "nestjs-pino": "5.3.1"
+  pino: "10.4.0"
+  # ORM / DB (drizzle / postgresql)
+  "drizzle-orm": 0.45.4
+  "drizzle-kit": "0.31.11"
+  postgres: 4.0.0
+  # Validation / auth
+  zod: 4.6.7
+  "better-auth": "1.7.18"
+  "@better-auth/expo": "1.7.18"
+  # Front (web)
+  next: 16.4.5
+  "next-intl": "4.14.9"
+  # React suit le SDK Expo (19.3.0 en SDK 58, la 19.3.1 attendra le SDK suivant) : web et mobile partagent packages/ui, une
+  # seule copie de React dans le depot. A monter avec le SDK Expo.
+  react: "19.3.0"
+  "react-dom": "19.3.0"
+  "@types/react": ~19.3.0
+  "@types/react-dom": ~19.3.0
+  # Mobile (Expo). Le SDK fixe react, react-native et les modules
+  # natifs (expo/bundledNativeModules.json) : apps/mobile les suit, `expo install --check`.
+  expo: ~58.0.23
+  # Queue / cache
+  bullmq: 6.7.0
+  ioredis: "6.0.0"
+  # Mailer brevo (Mailpit en dev)
+  "@getbrevo/brevo": "6.2.0"
+  # Observabilite (toujours). @sentry/node et @sentry/nextjs en 11 : `sendDefaultPii`
+  # n'existe plus, chaque init pose `dataCollection: SANS_DONNEES_PERSONNELLES`
+  # (packages/sentry). @sentry/react-native 8 repose encore sur @sentry/core 10 :
+  # `sendDefaultPii: false` y reste la protection. La table du SDK Expo 58 annonce ~8.28 ;
+  # la derniere 8 tourne sur ce SDK (meme couple dans les autres depots Bullify).
+  "@sentry/node": 11.11.0
+  "@sentry/nextjs": 11.11.0
+  "@sentry/react-native": ~8.34.0
+  "posthog-node": "5.62.0"
+  # Tests
+  vitest: 5.1.0
+  "@vitest/coverage-v8": 5.1.0
+  # Monter avec l'image de la regression visuelle (meme version, nouvelle empreinte) :
+  # job `visual` de ci.yml et VISUAL_IMAGE du Makefile.
+  "@playwright/test": 1.64.1
+  "@testing-library/react": "16.3.3"
+  jsdom: 31.0.0
+  # Storybook (apps/storybook-web, apps/storybook-app) : meme version pour les deux, Vite 8 et
+  # React 19.2 acceptes. Le web passe par react-vite et non par le framework Next : les
+  # composants n'appellent aucune API de Next. Le mobile passe par react-native-web-vite :
+  # le catalogue tourne dans un navigateur, donc se capture en CI (regression visuelle).
+  storybook: 10.6.6
+  "@storybook/react-vite": 10.6.6
+  "@storybook/react-native-web-vite": 10.6.6
+  "@storybook/addon-a11y": 10.6.6
+  "@storybook/addon-docs": 10.6.6
+  vite: 8.3.6
+  "react-native-web": 0.21.4
+  # Lint
+  eslint: 10.14.0
+  prettier: 3.9.10
+
+autoInstallPeers: true
+
+# Pairs declares trop bas, sans effet ici. vite-plugin-rnw (tire par le framework Storybook
+# react-native-web-vite) et tsconfck (vite-tsconfig-paths) declarent typescript ^5 ; le depot
+# est en 6 et le catalogue mobile se construit avec (build-storybook, regression visuelle).
+peerDependencyRules:
+  allowedVersions:
+    "vite-plugin-rnw>typescript": "6"
+    "tsconfck>typescript": "6"
+
+# 0 et non absent : pnpm 11 et 12 appliquent sinon un delai d'un jour. Une premiere resolution
+# prend quand meme un paquet du jour, et l'installation suivante la refuse
+# (ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION). Le robot de mise a jour decide seul quand monter
+# (CARENCE_JOURS de scripts/maj-dependances.mjs). Meme reglage dans tous les projets Bullify.
+# Semgrep demande sept jours : ecarte, par la decision du 2026-09-22 (aucune carence),
+# confirmee le 2026-09-28. Un correctif de faille doit pouvoir s'installer le jour meme.
+minimumReleaseAge: 0 # nosemgrep: pnpm-minimum-release-age
+
+# Refuse une version publiee avec moins de preuves que les precedentes (provenance,
+# publication de confiance) : le signe d'un compte de mainteneur repris. Les exceptions
+# portent une version exacte, examinee le 2026-09-28 ; la suivante du meme paquet est
+# jugee a nouveau.
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # Publiee par le meme compte que la 3.2.1, qui portait la provenance.
+  - "why-is-node-running@3.2.2"
+  # Retroportage officiel du correctif de CVE-2022-25883 sur la branche 6, publie a la
+  # main par l'equipe npm en 2023, apres que la 7 eut adopte la provenance.
+  - "semver@6.3.1"
+
+# Refuse une dependance transitive tiree d'ailleurs que du registre declare (archive
+# distante, depot git, chemin local).
+blockExoticSubdeps: true
+
+# pnpm 11 et suivants refusent l'installation tant qu'un script de build n'est
+# ni permis ni refuse ici (ERR_PNPM_IGNORED_BUILDS).
+allowBuilds:
+  esbuild: true
+  "@swc/core": true
+  "@parcel/watcher": true
+  msgpackr-extract: true
+  # Les binaires arrivent par optionalDependencies : le postinstall ne sert pas.
+  "@sentry/cli": false
+  # Telemetrie de swagger-ui-dist, et banniere de core-js.
+  "@scarf/scarf": false
+  core-js: false
+
+overrides:
+  # drizzle-kit tire encore @esbuild-kit, qui fige esbuild 0.18 (GHSA-67mh-4wv8-2f99).
+  # Meme correctif que bullify-verif.
+  "@esbuild-kit/core-utils>esbuild": "^0.25.0"
+  # nestjs-zod 5.5.0 declare @nestjs/common ^10 || ^11 et @nestjs/swagger jusqu'a ^11, alors que
+  # le backend est en Nest 12 (catalog). Sans ces lignes, pnpm installe une seconde copie de Nest
+  # 11 pour lui, et son pipe et ses DTO parlent a un autre @nestjs/common que l'application.
+  # Bornes a la majeure : une 13 doit se decider, pas tomber toute seule. A retirer quand
+  # nestjs-zod declarera ^12 (PR amont BenLorantfy/nestjs-zod#472 et #478).
+  "nestjs-zod>@nestjs/common": "^12.1.0"
+  "nestjs-zod>@nestjs/swagger": "^12.0.2"

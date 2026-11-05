@@ -1,0 +1,43 @@
+{
+  "name": "@nutrion/backend",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "start:cron": "node dist/modules/cron/main.js",
+    "db:migrate": "MIGRATIONS_DIR=../../packages/db-schema/migrations tsx src/migrate.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.mts",
+    "seed": "tsx src/seed/seed.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nestjs/platform-express": "catalog:",
+    "@nestjs/swagger": "catalog:",
+    "@nestjs/terminus": "catalog:",
+    "@nestjs/throttler": "catalog:",
+    "@nutrion/sentry": "workspace:*",
+    "@scalar/nestjs-api-reference": "catalog:",
+    "bullmq": "catalog:",
+    "drizzle-orm": "catalog:",
+    "ioredis": "catalog:",
+    "nestjs-pino": "catalog:",
+    "nestjs-zod": "catalog:",
+    "pino": "catalog:",
+    "postgres": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.11",
+    "@nestjs/schematics": "^12.0.12",
+    "@nestjs/testing": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "tsx": "^4.23.15",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

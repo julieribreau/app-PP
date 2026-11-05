@@ -1,0 +1,26 @@
+{
+  "name": "@nutrion/storybook-visual",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Régression visuelle des deux Storybook, sans service tiers : chaque story, en thème clair et sombre et dans chaque langue, capturée par Playwright et comparée à la référence commitée de l'app, puis passée à axe (RGAA AA).",
+  "type": "module",
+  "exports": {
+    ".": "./src/config.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@nutrion/i18n": "workspace:*"
+  },
+  "peerDependencies": {
+    "@playwright/test": "*"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "catalog:",
+    "@types/node": "^24.19.2",
+    "typescript": "catalog:"
+  }
+}

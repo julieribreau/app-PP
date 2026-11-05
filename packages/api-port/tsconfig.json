@@ -1,0 +1,11 @@
+{
+  // Partagé web et mobile : fetch et Response viennent de la lib DOM, pas de Node.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"],
+    "composite": false,
+    "declaration": false,
+    "noEmit": true
+  },
+  "include": ["src", "vitest.config.mts"]
+}

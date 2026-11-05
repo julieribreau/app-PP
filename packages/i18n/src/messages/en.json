@@ -1,0 +1,56 @@
+{
+  "home": {
+    "title": "NutrionApp",
+    "welcome": "Welcome",
+    "card": {
+      "title": "First step",
+      "description": "Example card: replace it with the project's first business component."
+    }
+  },
+  "env": {
+    "preprod": "Pre-production: test environment, fictitious data."
+  },
+  "consent": {
+    "banner": {
+      "title": "Cookies and audience measurement",
+      "body": "We use trackers that the service needs to work. With your consent, we also measure its audience to improve it. Refusing does not prevent you from using the service.",
+      "accept": "Accept",
+      "reject": "Refuse",
+      "customize": "Customise",
+      "policy": "Cookie policy"
+    },
+    "manager": {
+      "title": "Manage my cookies",
+      "intro": "Choose purpose by purpose. You can change your mind at any time.",
+      "required": "Always active",
+      "acceptAll": "Accept all",
+      "rejectAll": "Refuse all",
+      "save": "Save my choices",
+      "saved": "Your choices are saved.",
+      "close": "Close",
+      "savedOn": "Choice saved on {date}.",
+      "acceptedOn": "Accepted on {date}.",
+      "refusedOn": "Refused on {date}."
+    },
+    "purposes": {
+      "essential": {
+        "label": "Strictly necessary",
+        "description": "Security, session, and remembering your choices and display preferences. The service does not work without them."
+      },
+      "analytics": {
+        "label": "Audience measurement",
+        "description": "Pages or screens viewed and actions taken, measured with PostHog, hosted in the European Union, to improve the service. Never advertising."
+      }
+    },
+    "settingsLink": "Manage my cookies"
+  },
+  "settings": {
+    "title": "Settings",
+    "privacy": "Privacy",
+    "privacyHint": "Cookies and audience measurement"
+  },
+  "tabs": {
+    "home": "Home",
+    "settings": "Settings"
+  }
+}

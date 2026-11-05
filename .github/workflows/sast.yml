@@ -1,0 +1,284 @@
+name: Analyse statique
+
+# Semgrep sur le code source, gitleaks sur tout l'historique. Les deux releves
+# partent dans docs/drive/, donc chez le client : le 13 pour Semgrep, le 14
+# pour gitleaks.
+#
+# Pourquoi pas CodeQL : ses conditions d'utilisation n'autorisent l'analyse
+# automatisee que sur du code open source, ou sur un depot privé couvert par une
+# licence GitHub Code Security, payante. Les depots Bullify sont prives et non
+# couverts. Semgrep, lui, est libre et sans compte.
+#
+# Deux portes. Sur pull request, seul ce que la branche ajoute est juge : une
+# alerte, quelle que soit sa gravite, ou un secret introduit bloque la fusion.
+# La nuit qui suit une modification du code, main entier est juge, historique
+# compris : le passage echoue s'il reste une alerte ou un secret non ecarte, et
+# cet echec est le signal a lire le matin. Sans modification, rien ne tourne :
+# le releve serait le meme que la veille (job garde). Rien ne tourne non plus a
+# la poussee sur main : ce qui y arrive est passe par la porte de la pull
+# request, et la nuit rattrape le reste.
+#
+# Un secret se traite en le revoquant, puis en inscrivant son empreinte dans
+# .gitleaksignore avec la date de revocation. Un faux positif deja dans
+# l'historique s'y inscrit de meme, avec sa justification. Un faux positif
+# dans du code neuf s'ecarte plutot par un commentaire `gitleaks:allow` en fin
+# de ligne : l'empreinte porte le commit, et une fusion par squash en fabrique
+# un autre, que la nuit releverait a nouveau. Jamais de chemin entier : un
+# vrai secret pose plus tard dans le meme fichier doit encore etre vu.
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sast-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Le prefixe des documents, tel que repos.yml du depot bullify-documentation
+  # le fixe. Vide pour un depot sans documents remis : les releves restent
+  # alors dans les artefacts de l'execution.
+  PREFIXE: "nta"
+  # Lue par Semgrep a la place de --config, une valeur par jeu de regles.
+  SEMGREP_RULES: p/owasp-top-ten p/javascript p/typescript p/python p/secrets
+  GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1
+
+jobs:
+  neuf:
+    name: Aucune alerte ni aucun secret introduit
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # --baseline-commit et la plage de commits de gitleaks comparent deux
+      # etats de l'arbre : il leur faut l'historique, pas le seul dernier commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      # Par la variable et non par l'interpolation : `${{ }}` dans un `run:`
+      # recopie la donnee dans le shell avant qu'il ne la lise, ce qui est
+      # injectable. C'est la regle run-shell-injection. L'affectation d'abord,
+      # pour qu'un merge-base en echec fasse echouer l'etape au lieu de
+      # transmettre une base vide.
+      - name: Point de comparaison
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          base=$(git merge-base "origin/$BASE_REF" HEAD)
+          echo "BASE=$base" >> "$GITHUB_ENV"
+
+      - run: pipx install semgrep
+
+      - name: Semgrep sur le delta
+        run: |
+          semgrep scan \
+            --metrics off \
+            --baseline-commit "$BASE" \
+            --error \
+            --exclude '*.test.*' --exclude '*.spec.*' \
+            --exclude dist --exclude .next --exclude coverage \
+            --exclude storybook-static --exclude '__generated__' \
+            .
+
+      # Les seuls commits de la branche. Un secret entre dans l'historique au
+      # commit, pas a la fusion : le retirer dans un commit suivant de la meme
+      # branche ne l'efface pas, et il reste bloque ici.
+      #
+      # Quand git echoue dans le conteneur, gitleaks annonce « 0 commits
+      # scanned », « no leaks found » et sort 0, meme avec --exit-code 1 : le
+      # compte de commits parcourus est la seule trace de l'echec. Meme piege
+      # que le Semgrep qui n'analyse aucun fichier, meme reponse.
+      #
+      # Meme quand Semgrep a echoue : les deux verdicts se lisent ensemble.
+      - name: Gitleaks sur les commits de la branche
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          docker run --rm -v "$PWD:/repo" -w /repo "$GITLEAKS_IMAGE" \
+            git --log-opts="$BASE..HEAD" --redact --no-banner --verbose --exit-code 1 . \
+            2>&1 | tee /tmp/gitleaks.log
+          n=$(grep -oE '[0-9]+ commits scanned' /tmp/gitleaks.log | grep -oE '^[0-9]+')
+          [ "${n:-0}" -gt 0 ] || { echo "gitleaks n'a parcouru aucun commit." >&2; exit 1; }
+
+  # Le passage de nuit ne tourne que si le code a bouge depuis le precedent :
+  # sans commit nouveau, il rendrait le meme releve. La comparaison se fait par
+  # commits, du main du passage precedent a celui-ci, et non par dates : un
+  # commit fait la veille et pousse apres le passage serait manque. Ne comptent
+  # pas les releves des robots ([skip ci]) ni la documentation de nuit ; une
+  # montee de dependances poussee par le robot, elle, compte. Tout autre
+  # declenchement (manuel, push) passe, et un doute aussi.
+  garde:
+    name: Le code a-t-il bouge ?
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      bouge: ${{ steps.garde.outputs.bouge }}
+    steps:
+      - id: garde
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENEMENT: ${{ github.event_name }}
+        run: |
+          bouge=true
+          if [ "$EVENEMENT" = schedule ]; then
+            flux=${GITHUB_WORKFLOW_REF%@*}
+            flux=${flux##*/}
+            prec=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$flux/runs?event=schedule&status=completed&per_page=1" \
+              --jq '.workflow_runs[0].head_sha // ""') || prec=""
+            if [ -n "$prec" ]; then
+              n=$(gh api "repos/$GITHUB_REPOSITORY/compare/$prec...$GITHUB_SHA" \
+                --jq '[.commits[] | select((.commit.message | contains("[skip ci]") | not) and .commit.author.name != "docs-nightly")] | length') || n=1
+              if [ "$n" = 0 ]; then bouge=false; fi
+            fi
+          fi
+          echo "bouge=$bouge" >> "$GITHUB_OUTPUT"
+          echo "Code modifie depuis le passage de nuit precedent : $bouge"
+
+  nuit:
+    name: Semgrep et gitleaks sur main
+    needs: garde
+    if: needs.garde.outputs.bouge == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+
+      - run: pipx install semgrep
+
+      # --metrics off : le code des clients ne quitte pas le runner. Sans ce
+      # drapeau, Semgrep remonte des statistiques d'usage a son editeur.
+      #
+      # Les exclusions suivent celles que portait la configuration CodeQL :
+      # tests, dossiers de construction et code genere ne sont pas la surface
+      # d'attaque, et leurs alertes noient les vraies.
+      - name: Semgrep
+        run: |
+          semgrep scan \
+            --metrics off \
+            --exclude '*.test.*' --exclude '*.spec.*' \
+            --exclude dist --exclude .next --exclude coverage \
+            --exclude storybook-static --exclude '__generated__' \
+            --json --output /tmp/semgrep.json \
+            .
+          # Le meme passage en SARIF, pour le Drive. Pas dans la meme commande :
+          # des qu'on lui demande un SARIF, Semgrep garde aussi dans son JSON les
+          # alertes ecartees par nosemgrep, sans les marquer, et le verdict les
+          # compterait.
+          semgrep scan \
+            --metrics off \
+            --exclude '*.test.*' --exclude '*.spec.*' \
+            --exclude dist --exclude .next --exclude coverage \
+            --exclude storybook-static --exclude '__generated__' \
+            --sarif --output /tmp/semgrep.sarif \
+            .
+
+      # Tout l'historique, pas seulement l'arbre courant : un secret retire du
+      # code reste lisible dans les commits qui l'ont porte. Les tests ne sont
+      # pas exclus ici, contrairement a Semgrep : une vraie cle posee dans un
+      # test fuit autant qu'ailleurs. --exit-code 0 : le verdict tombe plus bas,
+      # apres l'ecriture du document.
+      #
+      # --log-opts=HEAD : l'historique de main seul. Sans lui, gitleaks lit
+      # toutes les references, et fetch-depth: 0 les a toutes rapatriees : une
+      # branche de travail non fusionnee ferait echouer la nuit de main. Les
+      # branches passent par la porte de leur pull request.
+      #
+      # Le compte de commits parcourus garde, comme sur la pull request, contre
+      # un git en echec que gitleaks rapporterait comme un historique propre.
+      - name: Gitleaks
+        run: |
+          set -o pipefail
+          docker run --rm -v "$PWD:/repo" -v /tmp:/out -w /repo "$GITLEAKS_IMAGE" \
+            git --log-opts=HEAD --redact --no-banner --exit-code 0 \
+              --report-format json --report-path /out/gitleaks.json . \
+            2>&1 | tee /tmp/gitleaks.log
+          n=$(grep -oE '[0-9]+ commits scanned' /tmp/gitleaks.log | grep -oE '^[0-9]+')
+          [ "${n:-0}" -gt 0 ] || { echo "gitleaks n'a parcouru aucun commit." >&2; exit 1; }
+          echo "GITLEAKS_COMMITS=$n" >> "$GITHUB_ENV"
+
+      # Le releve complet, emplacement par emplacement, que les documents
+      # resument. Trente jours suffisent : le passage de la nuit suivante en
+      # produit un neuf, et les documents, eux, sont versionnes.
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: sast-${{ github.sha }}
+          path: |
+            /tmp/semgrep.json
+            /tmp/gitleaks.json
+            /tmp/semgrep.sarif
+          retention-days: 30
+
+      - name: Redaction des documents
+        if: env.PREFIXE != ''
+        run: |
+          regles=${SEMGREP_RULES//p\//}
+          SAST_REGLES=${regles// /, } \
+          SAST_REPORT="docs/drive/${PREFIXE}-13-analyse-statique.md" \
+            node scripts/rapport-sast.mjs /tmp/semgrep.json /tmp/semgrep.sarif
+          SECRETS_REPORT="docs/drive/${PREFIXE}-14-detection-secrets.md" \
+            node scripts/rapport-secrets.mjs /tmp/gitleaks.json
+          # Le releve Semgrep en SARIF, reduit, a cote du document 13 dans le
+          # Drive (dossier Analyse statique). Pas de SARIF pour gitleaks : il
+          # n'ajoutait rien au document 14 (les constats ecartes n'y figurent pas).
+          node scripts/sarif-reduit.mjs /tmp/semgrep.sarif "docs/drive/sarif/${PREFIXE}-13-analyse-statique.sarif"
+
+      # Pousse avec GITHUB_TOKEN : ne declenche aucun autre workflow, donc
+      # aucun risque de deploiement en chaine.
+      - name: Commit des rapports
+        if: env.PREFIXE != ''
+        env:
+          BRANCHE: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "docs/drive/${PREFIXE}-13-analyse-statique.md" "docs/drive/${PREFIXE}-14-detection-secrets.md" docs/drive/sarif
+          git diff --cached --quiet && echo "Aucun changement." && exit 0
+          git commit -m "chore(sast): mise a jour de l'analyse statique [skip ci]"
+          # main peut avancer pendant le passage, et le push perd alors la
+          # course (`! [rejected] ... fetch first`). Les releves se regenerent
+          # entierement a chaque fois : rejouer le commit sur la tete courante
+          # est toujours correct, il n'y a rien a fusionner.
+          for essai in 1 2 3; do
+            git push origin "HEAD:$BRANCHE" && exit 0
+            echo "Push refuse, la branche a bouge. Nouvelle tentative $essai."
+            git fetch origin "$BRANCHE"
+            git rebase "origin/$BRANCHE" || { git rebase --abort; exit 1; }
+          done
+          echo "Trois tentatives de push refusees." >&2
+          exit 1
+
+      # La porte de nuit. Apres le commit, pour que le document dise ce qui
+      # fait echouer le passage. Le seuil Semgrep est celui de la porte des pull
+      # requests : toute alerte, quelle que soit sa gravite. Une fausse alerte
+      # s'ecarte dans le code par un commentaire `nosemgrep: <regle>` qui dit
+      # pourquoi, et le document 13 la recense.
+      - name: Verdict
+        run: |
+          alertes=$(python3 -c "import json;d=json.load(open('/tmp/semgrep.json'));print(len(d['results']))")
+          secrets=$(python3 -c "import json;print(len(json.load(open('/tmp/gitleaks.json'))))")
+          {
+            echo "### Semgrep : $alertes alerte(s)"
+            echo "### gitleaks : $secrets secret(s) non ecarte(s)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Semgrep : $alertes alerte(s). gitleaks : $secrets secret(s)."
+          [ "$alertes" -eq 0 ] && [ "$secrets" -eq 0 ]

@@ -1,0 +1,269 @@
+# CI Bullify (cf socle §Workflows CI/CD). Adapter selon le périmètre du projet.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+
+  format:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # Le format se verifie sur PR ; sur main, le robot de nuit reformate (mise-a-jour.yml).
+      - if: github.event_name == 'pull_request'
+        run: pnpm format:check
+
+  typecheck:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
+  lint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      # i18n : chaque langue a exactement les clés de fr.json
+      - run: node scripts/i18n-drift.mjs
+
+  test:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test -- --coverage
+
+  # Intégration backend (vitest.e2e.config.mts, vrai PostgreSQL et vrai Redis) et bout en
+  # bout web (Playwright, Chromium, Firefox, WebKit, contre `next build` + `next start`).
+  e2e:
+    needs: install
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: "nutrion-app"
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:8
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/nutrion-app
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # Le binaire est celui d'apps/web : pas de playwright à la racine.
+      - run: pnpm --filter @nutrion/web exec playwright install --with-deps chromium firefox webkit
+      # Le schéma de test, posé par le même migrateur que l'image.
+      - run: pnpm db:migrate
+      - run: pnpm test:e2e
+      # Smoke k6 (apps/load-tests, skill load-testing) : l'API construite, démarrée sur les
+      # mêmes services, répond sur ses sondes de santé. La charge elle-même : charge.yml.
+      - uses: grafana/setup-k6-action@43b9fc21641a76002687994433dd586f56e791b1 # v1.2.2
+      - run: pnpm --filter @nutrion/backend build
+      - name: API en arrière-plan
+        env:
+          BREVO_API_KEY: non-utilisee
+        run: |
+          BETTER_AUTH_SECRET="$(openssl rand -hex 32)" nohup node apps/backend/dist/main.js > "$RUNNER_TEMP/api.log" 2>&1 &
+          for _ in $(seq 1 60); do
+            curl -fsS http://localhost:3001/v1/health/ready > /dev/null && exit 0
+            sleep 1
+          done
+          echo "::error::API non prête après 60 s"; tail -50 "$RUNNER_TEMP/api.log"; exit 1
+      - run: pnpm --filter @nutrion/load-tests smoke
+        env:
+          K6_SMOKE_DURATION: 15s
+      - if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  # Régression visuelle des deux Storybook (tools/storybook-visual), sans service tiers :
+  # chaque story, en clair et en sombre et dans chaque langue, capturée et comparée à
+  # apps/storybook-*/visual/references, puis passée à axe. Dans l'image qui a produit les
+  # références (`make visual` en local) : le rendu des polices change d'un système à l'autre.
+  visual:
+    needs: install
+    runs-on: ubuntu-latest
+    container:
+      # Même version que @playwright/test (catalog), épinglée par empreinte comme le Makefile.
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # Construit les deux Storybook (build-storybook), puis capture et compare.
+      - run: pnpm visual
+      - if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: visual-diff
+          path: |
+            apps/storybook-*/test-results
+            apps/storybook-*/playwright-report
+          retention-days: 7
+
+  # ERD (socle §Quality gates) : docs/architecture/schema.dbml, régénéré depuis le schéma
+  # Drizzle. Échoue s'il ne correspond plus au schéma ; publié en artefact.
+  erd:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:dbml
+      - run: |
+          if [ -n "$(git status --porcelain -- docs/architecture/schema.dbml)" ]; then
+            git diff -- docs/architecture/schema.dbml
+            echo "::error::ERD périmé : lancer pnpm db:dbml et commiter docs/architecture/schema.dbml"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: erd
+          path: docs/architecture/schema.dbml
+
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm dlx commitlint --from origin/main --to HEAD # Conventional Commits enforced
+
+  lighthouse:
+    needs: install
+    runs-on: ubuntu-latest
+    # true uniquement — budgets perf/SEO/a11y (lighthouserc.json)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @nutrion/web build
+      # Bloquant : budgets et URL dans lighthouserc.json, une par langue.
+      - run: pnpm dlx @lhci/cli autorun
+
+  # OSV-Scanner et l'audit du registre : dependances-securite.yml, a chaque passage.
+
+  sonar:
+    name: SonarQube (couverture + releve)
+    # Sur main seulement : le SonarQube Bullify est en edition communautaire, il
+    # ne connait qu'une branche, et le scan d'une PR remplacerait l'analyse de
+    # main. Sonar ne bloque jamais la CI (decision du 2026-09-22) : les objectifs
+    # du socle se lisent dans le releve, et un ecart se corrige dans la foulee.
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.SONAR_ENABLED == 'true' }}
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # L'historique complet : sans lui, Sonar ne sait pas quel code est neuf.
+          fetch-depth: 0
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+
+      # `--continue` et `reportOnFailure` : un test rouge ne prive ni son paquet
+      # ni les autres de leur lcov. Le test reste rouge dans le job `test`.
+      - name: Tests avec couverture (lcov)
+        run: pnpm exec turbo run test --continue -- --coverage --coverage.reporter=lcov --coverage.reporter=text-summary --coverage.reportOnFailure
+        continue-on-error: true
+
+      # Chemins lcov relatifs a la racine : sans eux, Sonar affiche 0 % sans erreur.
+      - run: node tools/sonar/normalize-lcov.mjs
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # Attend la tache du scanner, puis ecrit le document 12 remis au client.
+      - name: Releve de qualite
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_PROJECT_KEY: bullify-nutrion-app
+          QUALITE_REPORT: docs/drive/nta-12-qualite-du-code.md
+          SONAR_ALERTES: .qualite/sonar-alertes.json
+        run: node scripts/check-sonar.mjs .scannerwork/report-task.txt
+
+      # Pousse avec GITHUB_TOKEN : ne declenche aucun autre workflow. La branche a
+      # pu avancer pendant l'analyse, d'ou le rebase ; ce job seul ecrit ces fichiers.
+      - name: Commit du releve
+        env:
+          BRANCHE: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/drive/nta-12-qualite-du-code.md .qualite/sonar-alertes.json
+          git diff --cached --quiet && echo "Aucun changement de qualite." && exit 0
+          git commit -m "chore(qualite): mise a jour du releve SonarQube [skip ci]"
+          git pull --rebase origin "$BRANCHE"
+          git push origin "HEAD:$BRANCHE"
+
+# Jobs selon le périmètre : helm (Kubernetes), otp-build (transport). Mobile : build
+# local, cf Makefile. Charge k6 à la demande : charge.yml.

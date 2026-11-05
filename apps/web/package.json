@@ -1,0 +1,40 @@
+{
+  "name": "@nutrion/web",
+  "private": true,
+  "//": "Présent uniquement si true. Next.js = FRONT only (le back vit dans apps/backend).",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "start:standalone": "cp -R .next/static .next/standalone/apps/web/.next/ && cp -R public .next/standalone/apps/web/ && PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/apps/web/server.js",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@nutrion/analytics": "workspace:*",
+    "@nutrion/api-port": "workspace:*",
+    "@nutrion/cmp": "workspace:*",
+    "@nutrion/i18n": "workspace:*",
+    "@nutrion/sentry": "workspace:*",
+    "@nutrion/ui": "workspace:*",
+    "@nutrion/ui-tokens": "workspace:*",
+    "@sentry/nextjs": "catalog:",
+    "next": "catalog:",
+    "next-intl": "catalog:",
+    "posthog-js": "^1.446.3",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "jsdom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

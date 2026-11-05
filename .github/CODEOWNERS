@@ -1,0 +1,11 @@
+# Revue obligatoire par les owners sur les zones sensibles (cf socle §Hygiène).
+# Remplacer @digladieux par les vraies équipes/handles.
+
+*                       @digladieux
+
+# Zones critiques — revue renforcée
+/apps/backend/          @digladieux
+/packages/db-schema/    @digladieux
+/.github/               @digladieux
+/docs/architecture/     @digladieux
+/.sops.yaml             @digladieux

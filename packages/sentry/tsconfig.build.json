@@ -1,0 +1,13 @@
+{
+  // dist/ en CommonJS, pour le backend Nest compilé en CommonJS (cf apps/backend/tsconfig.json).
+  // Les déclarations y vont aussi : le backend a un rootDir, il ne peut pas compiler la source
+  // d'un autre paquet (TS6059), il lit dist/index.d.ts.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "verbatimModuleSyntax": false,
+    "composite": false,
+    "declaration": true
+  },
+  "exclude": ["dist", "node_modules", "src/**/*.spec.ts"]
+}

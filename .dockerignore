@@ -1,0 +1,27 @@
+# Contexte des images Docker : ni dépendances installées, ni builds, ni secrets.
+# Le contexte est un autre arbre que le dépôt : un fichier exclu ici et importé par une
+# config racine (playwright, vitest…) casse le build de l'image sans casser le tsc local.
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.expo
+**/coverage
+**/storybook-static
+playwright-report
+test-results
+.git
+.github
+.husky
+.fallow
+.qualite
+docs
+*.md
+!README.md
+
+# Secrets : jamais dans une image, même intermédiaire.
+.env
+.env.*
+!.env.example
+*.pem
+*.key

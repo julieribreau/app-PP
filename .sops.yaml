@@ -1,0 +1,7 @@
+# Secrets chiffrés avec SOPS + age (cf socle §Secrets, skill rotate-secret).
+# Aucun secret en clair dans le repo. Les .enc.* sont déchiffrés au déploiement.
+creation_rules:
+  - path_regex: \.enc\.(ya?ml|json|env)$
+    key_groups:
+      - age:
+          - "age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # clé age équipe — à renseigner

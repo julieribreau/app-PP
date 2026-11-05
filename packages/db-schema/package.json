@@ -1,0 +1,23 @@
+{
+  "name": "@nutrion/db-schema",
+  "version": "0.0.0",
+  "private": true,
+  "//": "Les migrations s'appliquent par apps/backend (src/migrate.ts) : le même code en dev et dans l'image.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:dbml": "tsx src/dbml.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:"
+  },
+  "devDependencies": {
+    "drizzle-dbml-generator": "^0.10.0",
+    "drizzle-kit": "catalog:",
+    "tsx": "^4.23.15"
+  }
+}

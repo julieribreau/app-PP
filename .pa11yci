@@ -1,0 +1,11 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "runners": ["htmlcs", "axe"],
+    "timeout": 45000,
+    "wait": 600,
+    "threshold": 0,
+    "chromeLaunchConfig": { "args": ["--no-sandbox", "--disable-setuid-sandbox"] }
+  },
+  "urls": ["http://localhost:3000/fr", "http://localhost:3000/en"]
+}

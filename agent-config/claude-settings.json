@@ -1,0 +1,20 @@
+{
+  "//": "→ à copier en .claude/settings.json à l'init du projet NutrionApp.",
+  "permissions": {
+    "allow": ["Read", "Edit", "Write", "Bash", "WebFetch", "WebSearch"],
+    "ask": ["Bash(git push*)"],
+    "deny": [
+      "Bash(git push*--force*)",
+      "Bash(git push*-f *)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(sudo:*)",
+      "Bash(terraform destroy*)",
+      "Bash(docker volume rm*)",
+      "Bash(docker system prune*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh secret delete*)"
+    ]
+  },
+  "//git": "Commit autorisé ; chaque git push demande confirmation (règle : pas de push sans GO). Force push et destructions refusés."
+}
