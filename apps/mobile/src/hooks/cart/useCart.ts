@@ -4,6 +4,7 @@ import * as React from "react";
 import { api, cartTokens } from "@/lib/api/client";
 import { queryKeys } from "@/lib/api/query";
 import { useI18n } from "@/lib/i18n/useI18n";
+import { useCartNoticeStore } from "@/stores/cart-notice.store";
 import { EMPTY_CART, type Cart } from "@/types/api";
 
 // Panier (contrat §Panier) : chaque écriture renvoie le panier complet, qui remplace le cache.
@@ -18,9 +19,8 @@ export function useCart() {
 
 /**
  * Noms de produits et libellés de variantes du panier arrivent dans la langue de la requête :
- * à un changement de langue, le panier est relu (il restait dans l'ancienne langue). La fusion
- * du panier invité est un fait de la connexion, que la relecture ne renvoie plus : on la garde,
- * sinon la note « panier invité ajouté » disparaissait quand le profil passe l'app en français.
+ * à un changement de langue, le panier est relu (il restait dans l'ancienne langue). La note de
+ * fusion n'en dépend pas (stores/cart-notice.store.ts).
  */
 export function useCartFollowsLocale(): void {
   const { locale } = useI18n();
@@ -29,10 +29,7 @@ export function useCartFollowsLocale(): void {
   React.useEffect(() => {
     if (shown.current === locale) return;
     shown.current = locale;
-    const merged = client.getQueryData<Cart>(queryKeys.cart)?.merged === true;
-    void client.invalidateQueries({ queryKey: queryKeys.cart }).then(() => {
-      if (merged) client.setQueryData<Cart>(queryKeys.cart, (cart) => cart && { ...cart, merged });
-    });
+    void client.invalidateQueries({ queryKey: queryKeys.cart });
   }, [locale, client]);
 }
 
@@ -40,7 +37,11 @@ function useCartWrite<V>(write: (vars: V) => Promise<Cart>) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: write,
-    onSuccess: (cart) => client.setQueryData(queryKeys.cart, cart),
+    onSuccess: (cart) => {
+      client.setQueryData(queryKeys.cart, cart);
+      // Comme avant : la note de fusion s'efface à la première modification du panier.
+      useCartNoticeStore.getState().setMerged(false);
+    },
   });
 }
 

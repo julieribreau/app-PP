@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor } from "@testing-library/react-native";
 import { apiMock } from "@/test/api-mock";
 import type * as mockApi from "@/test/api-mock";
 import { renderWithProviders } from "@/test/render";
+import { useCartNoticeStore } from "@/stores/cart-notice.store";
 import { EMPTY_CART, type Cart } from "@/types/api";
 
 import { CartScreen } from "./CartScreen";
@@ -74,5 +75,15 @@ describe("panier", () => {
     });
     await renderWithProviders(<CartScreen />);
     expect(await screen.findByText(/Votre panier a été mis à jour/)).toBeTruthy();
+  });
+
+  it("garde la note de fusion de la connexion même si le panier relu ne la porte plus", async () => {
+    useCartNoticeStore.setState({ merged: true });
+    apiMock.get.mockResolvedValue({ ...cart, merged: false });
+    await renderWithProviders(<CartScreen />);
+    expect(
+      await screen.findByText("Votre panier invité a été ajouté à votre compte."),
+    ).toBeTruthy();
+    useCartNoticeStore.setState({ merged: false });
   });
 });

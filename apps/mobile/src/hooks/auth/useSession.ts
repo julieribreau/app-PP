@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth/auth-client";
 import { authErrorKind, type AuthErrorKind } from "@/lib/auth/errors";
 import { requestPasswordReset } from "@/lib/auth/password-reset";
 import { signUpPayload, type SignUpInput } from "@/lib/auth/validation";
+import { useCartNoticeStore } from "@/stores/cart-notice.store";
 import { usePrefsStore } from "@/stores/prefs.store";
 
 // Session Better Auth et parcours de connexion. Après une connexion réussie : panier invité
@@ -32,6 +33,7 @@ export function useAuthActions() {
     try {
       const cart = await mergeGuestCart();
       merged = cart.merged;
+      useCartNoticeStore.getState().setMerged(merged);
       client.setQueryData(queryKeys.cart, cart);
     } catch (error) {
       if (!(error instanceof ApiError)) throw error;
@@ -65,6 +67,7 @@ export function useAuthActions() {
     async (opts: { forget?: boolean } = {}) => {
       await authClient.signOut();
       if (opts.forget) forgetAccount();
+      useCartNoticeStore.getState().setMerged(false);
       client.removeQueries({ queryKey: queryKeys.me });
       client.removeQueries({ queryKey: queryKeys.addresses });
       client.setQueryData(queryKeys.cart, undefined);

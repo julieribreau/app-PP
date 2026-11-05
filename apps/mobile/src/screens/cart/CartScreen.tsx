@@ -11,6 +11,7 @@ import { useSession } from "@/hooks/auth/useSession";
 import { useCart, useRemoveCartItem, useUpdateCartItem } from "@/hooks/cart/useCart";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { productRoute, SHOP_ROUTE, SIGN_IN_ROUTE } from "@/lib/routes";
+import { useCartNoticeStore } from "@/stores/cart-notice.store";
 import { useTheme } from "@/theme/useTheme";
 import { EMPTY_CART, type Cart, type CartItem } from "@/types/api";
 
@@ -78,10 +79,11 @@ function GuestNote() {
 
 function CartNotes({ cart }: { cart: Cart }) {
   const { t } = useI18n();
+  const mergedAtSignIn = useCartNoticeStore((s) => s.merged);
   return (
     <>
       {cart.adjustments.length > 0 ? <Note>{t.cart.adjusted}</Note> : null}
-      {cart.merged ? <Note>{t.cart.merged}</Note> : null}
+      {cart.merged || mergedAtSignIn ? <Note>{t.cart.merged}</Note> : null}
     </>
   );
 }
