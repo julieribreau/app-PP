@@ -17,3 +17,4 @@ pnpm-lock.yaml
 scripts/check-*.mjs
 scripts/maj-*.mjs
 scripts/notify-ticketing.mjs
+apps/web/e2e-real/.state
