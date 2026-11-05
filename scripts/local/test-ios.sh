@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Monte toute la stack NutrionApp sur ce Mac et lance l'app sur le simulateur iOS :
+# infra docker (postgres, redis, s3mock, mailpit), migrations, seed, API :3001, site :3000,
+# puis l'app Expo en build de développement sur un iPhone simulé.
+# Journaux : .local-test/*.log  ·  Arrêt : scripts/local/stop.sh
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+LOG=.local-test
+mkdir -p "$LOG"
+exec > >(tee "$LOG/test-ios.log") 2>&1
+
+need() { command -v "$1" >/dev/null 2>&1 || { echo "MANQUE : $1. $2"; exit 1; }; }
+step() { echo; echo "==> $*"; }
+
+step "Prérequis"
+need node "Installe Node 24 : brew install node@24"
+need docker "Ouvre Docker Desktop"
+need xcrun "Installe Xcode et ses outils en ligne de commande : xcode-select --install"
+need pod "Installe CocoaPods : brew install cocoapods"
+# pnpm à la version du dépôt (packageManager) ; répare un téléchargement corrompu de pnpm.
+PNPM_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+if ! pnpm -v >/dev/null 2>&1; then
+  echo "pnpm $PNPM_VERSION indisponible : nettoyage du cache et nouvel essai"
+  rm -rf "$HOME/Library/pnpm/.tools/pnpm/$PNPM_VERSION"
+fi
+if ! pnpm -v >/dev/null 2>&1; then
+  npm install -g "pnpm@$PNPM_VERSION"
+  hash -r
+fi
+pnpm -v >/dev/null 2>&1 || { echo "MANQUE : pnpm $PNPM_VERSION ne démarre pas (essaie : npm install -g pnpm@$PNPM_VERSION)."; exit 1; }
+docker info >/dev/null 2>&1 || { echo "MANQUE : Docker Desktop n'est pas démarré."; exit 1; }
+node -v; pnpm -v; xcodebuild -version 2>/dev/null | sed -n 1p || true; pod --version || true
+
+step "Dépendances"
+[ -f .env ] || cp .env.example .env
+pnpm install
+
+step "Infra docker, migrations, seed"
+# Ports de Postgres et Redis : si un autre service de ce Mac (hors Docker) écoute déjà sur
+# 5432 ou 6379, on prend le suivant de libre, dans .env (lu par compose et par l'API).
+free_port() {
+  local p=$1
+  while lsof -nP -iTCP:"$p" -sTCP:LISTEN 2>/dev/null | awk 'NR>1 {print $1}' | grep -qvi 'docke'; do p=$((p + 1)); done
+  echo "$p"
+}
+DB_PORT=$(free_port 5432)
+REDIS_PORT=$(free_port 6379)
+perl -ni -e 'print unless /^(DB_PORT|REDIS_PORT)=/' .env
+printf 'DB_PORT=%s\nREDIS_PORT=%s\n' "$DB_PORT" "$REDIS_PORT" >> .env
+perl -pi -e "s#^(DATABASE_URL=postgres://[^@]+\@localhost:)\d+#\${1}$DB_PORT#; s#^(REDIS_URL=redis://localhost:)\d+#\${1}$REDIS_PORT#" .env
+echo "Postgres sur :$DB_PORT · Redis sur :$REDIS_PORT"
+docker compose up -d
+for i in $(seq 1 30); do docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1 && break; sleep 2; done
+# Le conteneur ne crée la base qu'au premier démarrage de son volume : on la crée si elle manque.
+DB_NAME=$(sed -n 's#^DATABASE_URL=.*/\([^/?]*\).*#\1#p' .env | head -1)
+DB_NAME=${DB_NAME:-nutrion-app}
+docker compose exec -T db psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1 \
+  || docker compose exec -T db createdb -U postgres "$DB_NAME"
+if ! make db-migrate; then
+  echo
+  echo "La migration échoue alors que la base existe dans le conteneur : un autre PostgreSQL"
+  echo "écoute sans doute déjà sur le port 5432 de ce Mac (Homebrew, Postgres.app, autre projet)."
+  echo "Voir : lsof -nP -iTCP:5432 -sTCP:LISTEN   ·   arrêter : brew services stop postgresql"
+  exit 1
+fi
+make seed
+
+step "API (:3001) et site (:3000)"
+pkill -f "nest start" 2>/dev/null || true
+pkill -f "next dev" 2>/dev/null || true
+nohup make backend > "$LOG/backend.log" 2>&1 &
+echo $! > "$LOG/backend.pid"
+for i in $(seq 1 90); do curl -sf http://localhost:3001/v1/health >/dev/null && break; sleep 2; done
+curl -sf http://localhost:3001/v1/health >/dev/null || { echo "L'API ne répond pas : voir $LOG/backend.log"; exit 1; }
+echo "API OK"
+nohup make web > "$LOG/web.log" 2>&1 &
+echo $! > "$LOG/web.pid"
+
+step "App iOS sur le simulateur"
+# Le simulateur partage le réseau du Mac : localhost suffit (API et images S3).
+echo "EXPO_PUBLIC_API_URL=http://localhost:3001" > apps/mobile/.env.local
+cd apps/mobile
+npx expo run:ios 2>&1 | tee "../../$LOG/ios.log"

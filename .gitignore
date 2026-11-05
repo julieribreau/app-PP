@@ -35,3 +35,8 @@ apps/mobile/certs-private/
 
 # Généré par Next (next typegen, next build)
 next-env.d.ts
+.local-test/
+
+# Projets natifs générés par expo prebuild / expo run (CNG) : jamais commités
+apps/mobile/ios/
+apps/mobile/android/
