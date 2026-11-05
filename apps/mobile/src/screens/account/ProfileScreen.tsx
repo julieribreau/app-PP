@@ -71,6 +71,7 @@ function AvatarSection({ me, onError }: { me: Me; onError: () => void }) {
         </AppText>
         <View style={styles.photoButtons}>
           <Button
+            testID="profile-change-photo"
             label={t.account.changePhoto}
             variant="outline"
             icon="camera"
@@ -79,6 +80,7 @@ function AvatarSection({ me, onError }: { me: Me; onError: () => void }) {
           />
           {me.imageUrl ? (
             <Button
+              testID="profile-remove-photo"
               label={t.account.removePhoto}
               variant="ghost"
               onPress={() => removeAvatar.mutate()}
@@ -90,20 +92,14 @@ function AvatarSection({ me, onError }: { me: Me; onError: () => void }) {
   );
 }
 
-function ProfileForm({ me }: { me: Me }) {
+type ProfileValues = Record<"firstName" | "lastName" | "email" | "phone", string>;
+
+/** Enregistrement du profil ; un e-mail changé passe par la revérification de Better Auth. */
+function useProfileSave(me: Me, form: ProfileValues) {
   const { t } = useI18n();
   const update = useUpdateMe();
-  const [form, setForm] = React.useState({
-    firstName: me.firstName ?? "",
-    lastName: me.lastName ?? "",
-    email: me.email,
-    phone: me.phone ?? "",
-  });
   const [notice, setNotice] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const set = (key: keyof typeof form) => (value: string) =>
-    setForm((current) => ({ ...current, [key]: value }));
-
   const save = async () => {
     setError(null);
     setNotice(null);
@@ -128,24 +124,40 @@ function ProfileForm({ me }: { me: Me }) {
       setError(t.common.error);
     }
   };
+  return { save, notice, error, setError, saving: update.isPending };
+}
 
+function ProfileForm({ me }: { me: Me }) {
+  const { t } = useI18n();
+  const [form, setForm] = React.useState<ProfileValues>({
+    firstName: me.firstName ?? "",
+    lastName: me.lastName ?? "",
+    email: me.email,
+    phone: me.phone ?? "",
+  });
+  const { save, notice, error, setError, saving } = useProfileSave(me, form);
+  const set = (key: keyof ProfileValues) => (value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
   return (
     <Screen edges={["bottom"]}>
       <AvatarSection me={me} onError={() => setError(t.common.error)} />
       {notice ? <Note>{notice}</Note> : null}
       <TextField
+        testID="profile-first-name"
         label={t.auth.firstName}
         value={form.firstName}
         onChangeText={set("firstName")}
         autoComplete="given-name"
       />
       <TextField
+        testID="profile-last-name"
         label={t.auth.lastName}
         value={form.lastName}
         onChangeText={set("lastName")}
         autoComplete="family-name"
       />
       <TextField
+        testID="profile-email"
         label={t.auth.email}
         help={t.account.emailChangeHelp}
         value={form.email}
@@ -155,6 +167,7 @@ function ProfileForm({ me }: { me: Me }) {
         autoComplete="email"
       />
       <TextField
+        testID="profile-phone"
         label={t.account.phone}
         value={form.phone}
         onChangeText={set("phone")}
@@ -162,7 +175,12 @@ function ProfileForm({ me }: { me: Me }) {
         autoComplete="tel"
         error={error}
       />
-      <Button label={t.common.save} onPress={() => void save()} loading={update.isPending} />
+      <Button
+        testID="profile-save"
+        label={t.common.save}
+        onPress={() => void save()}
+        loading={saving}
+      />
     </Screen>
   );
 }

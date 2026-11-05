@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { authErrorKind } from "./errors";
-import { isEmail, isStrongPassword } from "./validation";
+import { isEmail, isStrongPassword, signUpPayload } from "./validation";
 
 describe("règles des formulaires d'accès", () => {
   it("valide l'e-mail", () => {
@@ -13,6 +13,23 @@ describe("règles des formulaires d'accès", () => {
     expect(isStrongPassword("Nutrion-Demo-2026")).toBe(true);
     expect(isStrongPassword("courtmais1")).toBe(false);
     expect(isStrongPassword("assezlongsanschiffre")).toBe(false);
+  });
+});
+
+describe("inscription", () => {
+  it("envoie la langue de l'app, pour l'e-mail de confirmation", () => {
+    const body = signUpPayload(
+      { firstName: " Alex ", lastName: "Durand ", email: " alex@exemple.fr", password: "x" },
+      "en",
+    );
+    expect(body).toEqual({
+      email: "alex@exemple.fr",
+      password: "x",
+      name: "Alex Durand",
+      firstName: "Alex",
+      lastName: "Durand",
+      locale: "en",
+    });
   });
 });
 

@@ -1,0 +1,138 @@
+# Compte jetable : appareils connectés (révoquer une autre session), mot de passe, export de
+# données (feuille de partage), suppression du compte, déconnexion.
+appId: io.bullify.nutrion-app
+name: Sécurité et données
+---
+- runScript:
+    file: scripts/account.js
+    env:
+      PREFIX: secu
+- evalScript: ${output.account = output.email; output.secret = output.password}
+- runFlow: subflows/launch-accepted.yaml
+- runFlow:
+    file: subflows/sign-in.yaml
+    env:
+      EMAIL: ${output.account}
+      PASSWORD: ${output.secret}
+# Une autre session, ouverte depuis « Windows », révoquée depuis l'app.
+- runScript:
+    file: scripts/other-session.js
+    env:
+      EMAIL: ${output.account}
+      PASSWORD: ${output.secret}
+- runScript:
+    file: scripts/session-alive.js
+    env:
+      COOKIE: ${output.cookie}
+- assertTrue: ${output.alive == "true"}
+- tapOn:
+    id: account-devices
+- extendedWaitUntil:
+    visible: "Windows"
+    timeout: 15000
+- assertVisible:
+    id: session-current
+- tapOn:
+    id: session-revoke
+- extendedWaitUntil:
+    notVisible: "Windows"
+    timeout: 15000
+- runScript:
+    file: scripts/session-alive.js
+    env:
+      COOKIE: ${output.cookie}
+- assertTrue: ${output.alive == "false"}
+# Mot de passe : trop faible refusé, mauvais mot de passe actuel refusé, puis changé.
+- tapOn:
+    id: security-current-password
+- inputText: ${output.secret}
+- tapOn:
+    id: security-new-password
+- inputText: "court1"
+- hideKeyboard
+- tapOn:
+    id: security-change-password
+- assertVisible: "At least 12 characters, including a digit."
+- tapOn:
+    id: security-new-password
+- eraseText: 20
+- evalScript: ${output.newSecret = output.secret + "-New9"}
+- inputText: ${output.newSecret}
+- hideKeyboard
+- tapOn:
+    id: security-change-password
+- extendedWaitUntil:
+    visible: "Password changed."
+    timeout: 15000
+- back
+- scrollUntilVisible:
+    element:
+      id: account-sign-out
+    direction: DOWN
+- tapOn:
+    id: account-sign-out
+- extendedWaitUntil:
+    visible:
+      id: account-sign-in
+    timeout: 15000
+- runFlow:
+    file: subflows/sign-in.yaml
+    env:
+      EMAIL: ${output.account}
+      PASSWORD: ${output.newSecret}
+# Export : l'archive part dans la feuille de partage du système.
+- scrollUntilVisible:
+    element:
+      id: account-data
+    direction: DOWN
+- tapOn:
+    id: account-data
+- tapOn:
+    id: data-export
+- extendedWaitUntil:
+    visible: ".*(Save to Files|Enregistrer dans Fichiers|AirDrop|Copy|Copier).*"
+    timeout: 30000
+- takeScreenshot: share-sheet
+- runFlow:
+    when:
+      visible: "Close|Fermer"
+    commands:
+      - tapOn: "Close|Fermer"
+- runFlow:
+    when:
+      visible: ".*(Save to Files|AirDrop).*"
+    commands:
+      - swipe:
+          direction: DOWN
+- extendedWaitUntil:
+    visible: "Your export is ready."
+    timeout: 15000
+# Suppression : le mot à saisir active le bouton ; le compte n'ouvre plus de session ensuite.
+- assertVisible:
+    id: data-delete
+    enabled: false
+- tapOn:
+    id: data-delete-confirm
+- inputText: "DELETE"
+- hideKeyboard
+- tapOn:
+    id: data-delete
+- extendedWaitUntil:
+    visible:
+      id: account-sign-in
+    timeout: 20000
+- assertVisible: "Your account has been deleted."
+- tapOn:
+    id: account-sign-in
+- tapOn:
+    id: sign-in-email
+- eraseText: 60
+- inputText: ${output.account}
+- tapOn:
+    id: sign-in-password
+- inputText: ${output.newSecret}
+- tapOn:
+    id: sign-in-submit
+- extendedWaitUntil:
+    visible: "Incorrect email or password."
+    timeout: 15000

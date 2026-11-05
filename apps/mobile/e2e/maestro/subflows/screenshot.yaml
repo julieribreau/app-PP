@@ -1,0 +1,6 @@
+# Capture nommée NAME, rangée par langue et thème (variables LOCALE et THEME).
+appId: io.bullify.nutrion-app
+---
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: captures/${DEVICE}/${LOCALE}-${THEME}/${NAME}

@@ -28,6 +28,7 @@ export function PreferencesScreen() {
           {locales.map((value) => (
             <RadioRow
               key={value}
+              testID={`locale-${value}`}
               label={t.locale[value]}
               selected={locale === value}
               onPress={() => changeLocale(value)}
@@ -41,6 +42,7 @@ export function PreferencesScreen() {
           {THEMES.map((value) => (
             <RadioRow
               key={value}
+              testID={`theme-${value}`}
               label={t.theme[value]}
               selected={theme === value}
               onPress={() => changeTheme(value)}
@@ -53,10 +55,12 @@ export function PreferencesScreen() {
 }
 
 function RadioRow({
+  testID,
   label,
   selected,
   onPress,
 }: {
+  testID: string;
   label: string;
   selected: boolean;
   onPress: () => void;
@@ -64,6 +68,7 @@ function RadioRow({
   const { color } = useTheme();
   return (
     <Pressable
+      testID={testID}
       accessibilityRole="radio"
       accessibilityLabel={label}
       accessibilityState={{ checked: selected }}

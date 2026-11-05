@@ -114,6 +114,7 @@ function CartContent({ cart }: { cart: Cart }) {
         {cart.items.map((item, index) => (
           <CartLine
             key={item.id}
+            index={index}
             item={item}
             last={index === cart.items.length - 1}
             busy={busy}
@@ -125,7 +126,7 @@ function CartContent({ cart }: { cart: Cart }) {
       <View style={styles.totals}>
         <View style={styles.totalRow}>
           <AppText variant="help">{t.cart.vat}</AppText>
-          <AppText variant="price" tone="muted">
+          <AppText testID="cart-vat" variant="price" tone="muted">
             {price(cart.vatCents)}
           </AppText>
         </View>
@@ -135,7 +136,9 @@ function CartContent({ cart }: { cart: Cart }) {
           accessibilityLabel={`${t.cart.total} ${price(cart.totalCents)}`}
         >
           <AppText variant="bodyStrong">{t.cart.total}</AppText>
-          <AppText variant="priceLarge">{price(cart.totalCents)}</AppText>
+          <AppText testID="cart-total" variant="priceLarge">
+            {price(cart.totalCents)}
+          </AppText>
         </View>
         <AppText variant="help">{t.cart.checkoutNote}</AppText>
       </View>
@@ -159,12 +162,14 @@ function CheckoutBar() {
 }
 
 function CartLine({
+  index,
   item,
   last,
   busy,
   onQuantity,
   onRemove,
 }: {
+  index: number;
   item: CartItem;
   last: boolean;
   busy: boolean;
@@ -197,6 +202,7 @@ function CartLine({
         <View style={styles.lineFoot}>
           <QuantityStepper
             size="sm"
+            testID={`cart-line-${index}`}
             value={item.quantity}
             max={item.maxQuantity ?? 99}
             itemName={item.productName}
@@ -204,7 +210,9 @@ function CartLine({
             onChange={onQuantity}
             onRemove={onRemove}
           />
-          <AppText variant="price">{price(item.lineTotalCents)}</AppText>
+          <AppText testID={`cart-line-${index}-total`} variant="price">
+            {price(item.lineTotalCents)}
+          </AppText>
         </View>
       </View>
     </View>

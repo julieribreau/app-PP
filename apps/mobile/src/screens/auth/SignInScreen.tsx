@@ -61,6 +61,7 @@ export function SignInForm({
   return (
     <View style={styles.form}>
       <TextField
+        testID="sign-in-email"
         label={t.auth.email}
         value={email}
         onChangeText={setEmail}
@@ -70,6 +71,7 @@ export function SignInForm({
         textContentType="username"
       />
       <TextField
+        testID="sign-in-password"
         label={t.auth.password}
         value={password}
         onChangeText={setPassword}
@@ -102,8 +104,17 @@ export function SignInScreen() {
         onSignedIn={() => (router.canGoBack() ? router.back() : router.replace("/"))}
       />
       <View style={styles.links}>
-        <TextLink label={t.auth.forgot} onPress={() => router.push(FORGOT_PASSWORD_ROUTE)} />
-        <TextLink strong label={t.auth.signUpTab} onPress={() => router.replace(SIGN_UP_ROUTE)} />
+        <TextLink
+          testID="sign-in-forgot"
+          label={t.auth.forgot}
+          onPress={() => router.push(FORGOT_PASSWORD_ROUTE)}
+        />
+        <TextLink
+          testID="sign-in-to-sign-up"
+          strong
+          label={t.auth.signUpTab}
+          onPress={() => router.replace(SIGN_UP_ROUTE)}
+        />
       </View>
     </AuthLayout>
   );

@@ -104,6 +104,7 @@ function BrandBar({ searchOpen, onToggle }: { searchOpen: boolean; onToggle: () 
         {t.common.appName}
       </AppText>
       <Pressable
+        testID="shop-search-toggle"
         accessibilityRole="button"
         accessibilityLabel={searchOpen ? t.mobile.shop.closeSearch : t.mobile.shop.openSearch}
         accessibilityState={{ expanded: searchOpen }}
@@ -141,6 +142,7 @@ function ShopHeader(props: {
         <View style={[styles.search, { borderColor: color.input, backgroundColor: color.card }]}>
           <Icon name="search" color={color.mutedForeground} size={18} />
           <TextInput
+            testID="shop-search-input"
             autoFocus
             value={props.query}
             onChangeText={props.onQuery}

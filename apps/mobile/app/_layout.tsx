@@ -10,6 +10,7 @@ import { AnalyticsGate } from "@/components/consent/AnalyticsGate";
 import { ConsentSheet } from "@/components/consent/ConsentSheet";
 import { AppProviders } from "@/components/layout/AppProviders";
 import { buildPostHogSettings } from "@/lib/analytics/posthog";
+import { sentryRoot } from "@/lib/analytics/sentry-root";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { useTheme } from "@/theme/useTheme";
 
@@ -90,5 +91,7 @@ function RootLayout() {
   );
 }
 
-// Plantage du rendu, erreurs non rattrapées : capturés par l'enveloppe du SDK.
-export default Sentry.wrap(RootLayout);
+// Plantage du rendu, erreurs non rattrapées : capturés par l'enveloppe du SDK. Sans DSN (dev,
+// tests), pas d'enveloppe : `Sentry.wrap` sans `Sentry.init` avertit à chaque lancement, et le
+// bandeau d'avertissement du mode dev recouvrait le bas de l'écran (« Personnaliser »).
+export default sentryRoot(dsn, RootLayout);

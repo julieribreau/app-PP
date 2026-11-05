@@ -39,13 +39,28 @@ export function ConsentBanner(props: ConsentBannerProps): React.JSX.Element | nu
       </Text>
       <Text style={styles.body}>{copy.banner.body}</Text>
       <View style={styles.actions}>
-        <Pressable accessibilityRole="button" onPress={rejectAll} style={styles.button}>
+        <Pressable
+          testID="consent-reject"
+          accessibilityRole="button"
+          onPress={rejectAll}
+          style={styles.button}
+        >
           <Text style={styles.buttonLabel}>{copy.banner.reject}</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={acceptAll} style={styles.button}>
+        <Pressable
+          testID="consent-accept"
+          accessibilityRole="button"
+          onPress={acceptAll}
+          style={styles.button}
+        >
           <Text style={styles.buttonLabel}>{copy.banner.accept}</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={onCustomize} style={styles.link}>
+        <Pressable
+          testID="consent-customize"
+          accessibilityRole="button"
+          onPress={onCustomize}
+          style={styles.link}
+        >
           <Text style={styles.linkLabel}>{copy.banner.customize}</Text>
         </Pressable>
       </View>

@@ -64,6 +64,24 @@ export default tseslint.config(
     languageOptions: { globals: { __ENV: "readonly", __ITER: "readonly", __VU: "readonly" } },
   },
   {
+    // Scripts Maestro (runScript) : moteur JS de Maestro, ses objets `http`, `json`, `output`
+    // et les variables passées par `env` (en majuscules).
+    files: ["apps/mobile/e2e/maestro/**/*.js"],
+    languageOptions: {
+      globals: {
+        http: "readonly",
+        json: "readonly",
+        output: "writable",
+        maestro: "readonly",
+        EMAIL: "readonly",
+        PASSWORD: "readonly",
+        PREFIX: "readonly",
+        SUBJECT: "readonly",
+        COOKIE: "readonly",
+      },
+    },
+  },
+  {
     // Scripts en ligne de commande (seed, outils) : la console est leur sortie.
     files: ["apps/backend/src/seed/**", "scripts/**", "tools/**"],
     rules: { "no-console": "off" },

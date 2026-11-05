@@ -1,0 +1,65 @@
+# Langue FR ⇄ EN et thème clair / sombre / système, sur l'appareil puis sur le profil.
+appId: io.bullify.nutrion-app
+name: Langue et thème
+---
+# Déconnecté : la langue suit l'appareil (anglais) et se change dans l'app.
+- runFlow: subflows/launch-accepted.yaml
+- tapOn:
+    id: tab-account
+- assertVisible: "Your account"
+- runFlow:
+    file: subflows/set-prefs.yaml
+    env:
+      LOCALE: fr
+      THEME: dark
+- assertVisible: "Votre compte"
+- assertVisible:
+    id: account-theme
+    label: "Thème, Sombre"
+- tapOn:
+    id: tab-shop
+- assertVisible: "Boutique"
+- assertVisible: "12 produits"
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "12 produits"
+    timeout: 20000
+- runFlow:
+    file: subflows/set-prefs.yaml
+    env:
+      LOCALE: en
+      THEME: light
+- assertVisible: "Your account"
+- assertVisible:
+    id: account-theme
+    label: "Theme, Light"
+# Connectée : ses préférences s'appliquent, et un changement est gardé sur son profil.
+- runFlow:
+    file: subflows/sign-in.yaml
+    env:
+      EMAIL: camille.martin@exemple.fr
+      PASSWORD: Nutrion-Demo-2026
+- assertVisible: "Se déconnecter"
+- runFlow:
+    file: subflows/set-prefs.yaml
+    env:
+      LOCALE: en
+      THEME: dark
+- assertVisible: "Sign out"
+# Nouvel appareil (app effacée) : la connexion rapporte anglais et sombre depuis le profil.
+- runFlow:
+    file: subflows/sign-in-camille.yaml
+- assertVisible: "Sign out"
+- assertVisible:
+    id: account-theme
+    label: "Theme, Dark"
+- runFlow:
+    file: subflows/set-prefs.yaml
+    env:
+      LOCALE: fr
+      THEME: system
+- assertVisible: "Se déconnecter"
+- assertVisible:
+    id: account-theme
+    label: "Thème, Système"

@@ -1,0 +1,86 @@
+# Inscription : message de vérification, connexion refusée avant confirmation, lien lu dans
+# Mailpit et ouvert (page du site), puis connexion.
+appId: io.bullify.nutrion-app
+name: Inscription
+---
+- runFlow: subflows/launch-accepted.yaml
+- evalScript: ${output.email = 'qa-e2e+signup-' + Date.now() + '@exemple.test'}
+- evalScript: ${output.password = 'Qa-Signup-' + Date.now()}
+- tapOn:
+    id: tab-account
+- tapOn:
+    id: account-sign-up
+# Formulaire vide : chaque champ obligatoire le dit, les CGU aussi.
+- tapOn:
+    id: sign-up-submit
+- assertVisible: "Accept the terms to continue."
+- assertVisible: "This field is required."
+- tapOn:
+    id: sign-up-first-name
+- inputText: "Alex"
+- tapOn:
+    id: sign-up-last-name
+- inputText: "Durand"
+- tapOn:
+    id: sign-up-email
+- inputText: ${output.email}
+- tapOn:
+    id: sign-up-password
+- inputText: "court1"
+- hideKeyboard
+- tapOn:
+    id: sign-up-terms
+- tapOn:
+    id: sign-up-submit
+- assertVisible: "At least 12 characters, including a digit."
+- tapOn:
+    id: sign-up-password
+- eraseText: 20
+- inputText: ${output.password}
+- hideKeyboard
+- tapOn:
+    id: sign-up-submit
+- extendedWaitUntil:
+    visible: "Check your inbox"
+    timeout: 15000
+- assertVisible: "A confirmation email was sent to ${output.email}."
+# Pas encore confirmé : connexion refusée.
+- tapOn:
+    id: sign-up-back-to-sign-in
+- tapOn:
+    id: sign-in-email
+- eraseText: 60
+- inputText: ${output.email}
+- tapOn:
+    id: sign-in-password
+- inputText: ${output.password}
+- tapOn:
+    id: sign-in-submit
+- extendedWaitUntil:
+    visible: "Please confirm your email address before signing in."
+    timeout: 15000
+# L'e-mail est en anglais, la langue de l'app (bug corrigé : il partait en français).
+- runScript:
+    file: scripts/mail-link.js
+    env:
+      EMAIL: ${output.email}
+- assertTrue: ${output.subject == "Confirm your email address"}
+- openLink: ${output.link}
+- extendedWaitUntil:
+    visible: "Email confirmed. You can now sign in."
+    timeout: 30000
+- launchApp
+- tapOn:
+    id: sign-in-submit
+- runFlow:
+    when:
+      visible: "Turn on Face ID\\?"
+    commands:
+      - tapOn: "Not now"
+- tapOn:
+    id: tab-account
+- extendedWaitUntil:
+    visible:
+      id: account-sign-out
+    timeout: 20000
+- assertVisible: "Alex Durand"

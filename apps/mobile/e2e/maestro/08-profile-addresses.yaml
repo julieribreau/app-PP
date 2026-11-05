@@ -1,0 +1,160 @@
+# Compte de Camille : profil modifié et conservé, photo de profil, adresses (ajout, défaut,
+# suppression). Remet tout comme le seed à la fin.
+appId: io.bullify.nutrion-app
+name: Profil, photo et adresses
+---
+- runFlow: subflows/sign-in-camille.yaml
+# Profil : prénom et téléphone modifiés, conservés après relancement.
+- tapOn:
+    id: account-profile
+- tapOn:
+    id: profile-first-name
+- eraseText: 30
+- inputText: "Camille-QA"
+- tapOn:
+    id: profile-phone
+- eraseText: 30
+- inputText: "0700000000"
+- hideKeyboard
+- tapOn:
+    id: profile-save
+- extendedWaitUntil:
+    visible: "Profil enregistré."
+    timeout: 15000
+- stopApp
+- launchApp
+- tapOn:
+    id: tab-account
+- extendedWaitUntil:
+    visible: "Camille-QA Martin"
+    timeout: 20000
+- tapOn:
+    id: account-profile
+- assertVisible:
+    id: profile-first-name
+    text: "Camille-QA"
+- assertVisible:
+    id: profile-phone
+    text: "0700000000"
+# Photo de profil : une image de la photothèque (ajoutée par le script avec simctl addmedia).
+- tapOn:
+    id: profile-change-photo
+- runFlow:
+    when:
+      visible: "Allow Full Access|Autoriser l’accès complet"
+    commands:
+      - tapOn: "Allow Full Access|Autoriser l’accès complet"
+- extendedWaitUntil:
+    visible: "Photos|Collections|Recents|Récents"
+    timeout: 20000
+- tapOn:
+    point: "16%,30%"
+- runFlow:
+    when:
+      visible: "Choose|Choisir"
+    commands:
+      - tapOn: "Choose|Choisir"
+- extendedWaitUntil:
+    visible:
+      id: profile-remove-photo
+    timeout: 30000
+- tapOn:
+    id: profile-remove-photo
+- extendedWaitUntil:
+    notVisible:
+      id: profile-remove-photo
+    timeout: 15000
+# Remise du profil du seed.
+- tapOn:
+    id: profile-first-name
+- eraseText: 30
+- inputText: "Camille"
+- tapOn:
+    id: profile-phone
+- eraseText: 30
+- inputText: "06 12 34 56 78"
+- hideKeyboard
+- tapOn:
+    id: profile-save
+- extendedWaitUntil:
+    visible: "Profil enregistré."
+    timeout: 15000
+- back
+# Adresses : Maison (par défaut) et Bureau du seed, puis une nouvelle.
+- tapOn:
+    id: account-addresses
+- assertVisible: "Maison"
+- assertVisible: "Bureau"
+- assertVisible:
+    id: address-0
+    containsChild: "Maison"
+- tapOn:
+    id: address-add
+# Champs obligatoires contrôlés.
+- tapOn:
+    id: address-save
+- assertVisible: "Ce champ est obligatoire."
+- tapOn:
+    id: address-label
+- inputText: "Atelier QA"
+- tapOn:
+    id: address-recipient
+- inputText: "Camille Martin"
+- tapOn:
+    id: address-line1
+- inputText: "5 rue de l'Essai"
+- tapOn:
+    id: address-postal-code
+- inputText: "75011"
+- tapOn:
+    id: address-city
+- inputText: "Paris"
+- hideKeyboard
+- tapOn:
+    id: address-save
+- extendedWaitUntil:
+    visible: "Atelier QA"
+    timeout: 15000
+- tapOn:
+    text: "Définir par défaut"
+    childOf:
+      containsChild: "Atelier QA"
+- extendedWaitUntil:
+    visible:
+      id: address-0
+      containsChild: "Atelier QA"
+    timeout: 15000
+- stopApp
+- launchApp
+- tapOn:
+    id: tab-account
+- tapOn:
+    id: account-addresses
+- extendedWaitUntil:
+    visible:
+      id: address-0
+      containsChild: "Atelier QA"
+    timeout: 15000
+# Maison redevient l'adresse par défaut, Atelier QA est supprimée.
+- tapOn:
+    text: "Définir par défaut"
+    childOf:
+      containsChild: "Maison"
+- extendedWaitUntil:
+    visible:
+      id: address-0
+      containsChild: "Maison"
+    timeout: 15000
+- tapOn:
+    text: "Supprimer"
+    childOf:
+      containsChild: "Atelier QA"
+- assertVisible: "Supprimer cette adresse ?"
+- tapOn:
+    text: "Supprimer"
+    index: 0
+    below: "Supprimer cette adresse ?"
+- extendedWaitUntil:
+    notVisible: "Atelier QA"
+    timeout: 15000
+- assertVisible: "Bureau"

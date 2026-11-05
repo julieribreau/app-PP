@@ -53,6 +53,7 @@ function BackButton({ floating = false }: { floating?: boolean }) {
   const insets = useSafeAreaInsets();
   return (
     <Pressable
+      testID="product-back"
       accessibilityRole="button"
       accessibilityLabel={t.mobile.product.back}
       onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
@@ -137,7 +138,9 @@ function TitleBlock({
         accessible
         accessibilityLabel={`${price(totalCents)} ${t.common.ttc}`}
       >
-        <AppText variant="priceLarge">{price(totalCents)}</AppText>
+        <AppText testID="product-price" variant="priceLarge">
+          {price(totalCents)}
+        </AppText>
         <AppText variant="help">{t.common.ttc}</AppText>
         {purchasable ? null : <Badge label={t.common.outOfStock} />}
       </View>

@@ -1,0 +1,20 @@
+# Langue LOCALE (fr | en) et thème THEME (light | dark | system) par l'écran Préférences.
+appId: io.bullify.nutrion-app
+---
+- tapOn:
+    id: tab-account
+- scrollUntilVisible:
+    element:
+      id: account-theme
+    direction: DOWN
+- tapOn:
+    id: account-theme
+- tapOn:
+    id: locale-${LOCALE}
+- tapOn:
+    id: theme-${THEME}
+- back
+- scrollUntilVisible:
+    element:
+      id: account-theme
+    direction: UP

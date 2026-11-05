@@ -59,6 +59,7 @@ export function DataScreen() {
       </AppText>
       {notice ? <Note>{notice}</Note> : null}
       <Button
+        testID="data-export"
         label={t.account.export}
         variant="outline"
         icon="download"
@@ -69,6 +70,7 @@ export function DataScreen() {
         <AppText variant="h2">{t.account.deleteConfirmTitle}</AppText>
         <AppText variant="small">{t.account.deleteConfirmBody}</AppText>
         <TextField
+          testID="data-delete-confirm"
           label={t.account.deleteConfirmInput}
           value={confirm}
           onChangeText={setConfirm}
@@ -77,6 +79,7 @@ export function DataScreen() {
           error={error}
         />
         <Button
+          testID="data-delete"
           label={t.account.deleteAccount}
           variant="destructive"
           disabled={confirm.trim().toUpperCase() !== word}

@@ -1,0 +1,34 @@
+# Bandeau cookies : refuser, puis (app neuve) accepter ; le choix tient au relancement.
+appId: io.bullify.nutrion-app
+name: Consentement cookies
+---
+- runFlow: subflows/launch-fresh.yaml
+- assertVisible: "Cookies and audience measurement"
+- tapOn:
+    id: consent-reject
+- assertNotVisible:
+    id: consent-accept
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Shop"
+    timeout: 20000
+- assertNotVisible:
+    id: consent-accept
+- runFlow: subflows/launch-fresh.yaml
+- tapOn:
+    id: consent-accept
+- assertNotVisible:
+    id: consent-accept
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Shop"
+    timeout: 20000
+- assertNotVisible:
+    id: consent-accept
+# Personnaliser ouvre l'écran Confidentialité, où le choix se modifie.
+- runFlow: subflows/launch-fresh.yaml
+- tapOn:
+    id: consent-customize
+- assertVisible: "Privacy|Confidentialité"

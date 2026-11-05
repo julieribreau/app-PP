@@ -44,6 +44,7 @@ export interface ListRowProps {
   destructive?: boolean;
   chevron?: boolean;
   accessibilityHint?: string;
+  testID?: string;
 }
 
 export function ListRow({
@@ -53,10 +54,12 @@ export function ListRow({
   destructive = false,
   chevron = true,
   accessibilityHint,
+  testID,
 }: ListRowProps) {
   const { color } = useTheme();
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={!onPress}
       accessibilityRole={onPress ? "button" : "text"}
@@ -84,11 +87,13 @@ export function SwitchRow({
   value,
   onValueChange,
   disabled,
+  testID,
 }: {
   label: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
   disabled?: boolean;
+  testID?: string;
 }) {
   const { color } = useTheme();
   return (
@@ -102,6 +107,7 @@ export function SwitchRow({
         {label}
       </AppText>
       <Switch
+        testID={testID}
         accessibilityLabel={label}
         accessibilityRole="switch"
         accessibilityState={{ checked: value, disabled }}

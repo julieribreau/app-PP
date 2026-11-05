@@ -32,6 +32,7 @@ export function ForgotPasswordScreen() {
     <AuthLayout title={t.auth.resetTitle} lead={t.auth.resetLead}>
       {sent ? <Note>{t.auth.resetSent}</Note> : null}
       <TextField
+        testID="forgot-email"
         label={t.auth.email}
         value={email}
         onChangeText={setEmail}
@@ -42,12 +43,18 @@ export function ForgotPasswordScreen() {
       />
       {sent ? (
         <Button
+          testID="forgot-back"
           label={t.mobile.auth.backToSignIn}
           variant="outline"
           onPress={() => router.back()}
         />
       ) : (
-        <Button label={t.auth.resetSend} onPress={() => void submit()} loading={busy} />
+        <Button
+          testID="forgot-submit"
+          label={t.auth.resetSend}
+          onPress={() => void submit()}
+          loading={busy}
+        />
       )}
     </AuthLayout>
   );

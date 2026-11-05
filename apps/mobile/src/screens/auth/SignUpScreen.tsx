@@ -52,6 +52,7 @@ export function SignUpScreen() {
         lead={f(t.auth.verifyEmailSent, { email: sentTo })}
       >
         <Button
+          testID="sign-up-back-to-sign-in"
           label={t.mobile.auth.backToSignIn}
           variant="outline"
           onPress={() => router.replace(SIGN_IN_ROUTE)}
@@ -78,7 +79,12 @@ export function SignUpScreen() {
           {errors.form}
         </AppText>
       ) : null}
-      <Button label={t.auth.signUp} onPress={() => void submit()} loading={busy} />
+      <Button
+        testID="sign-up-submit"
+        label={t.auth.signUp}
+        onPress={() => void submit()}
+        loading={busy}
+      />
       <TextLink strong label={t.auth.signInTab} onPress={() => router.replace(SIGN_IN_ROUTE)} />
     </AuthLayout>
   );
@@ -102,6 +108,7 @@ function SignUpFields({
       <View style={styles.row}>
         <View style={styles.flex}>
           <TextField
+            testID="sign-up-first-name"
             label={t.auth.firstName}
             value={form.firstName}
             onChangeText={set("firstName")}
@@ -112,6 +119,7 @@ function SignUpFields({
         </View>
         <View style={styles.flex}>
           <TextField
+            testID="sign-up-last-name"
             label={t.auth.lastName}
             value={form.lastName}
             onChangeText={set("lastName")}
@@ -122,6 +130,7 @@ function SignUpFields({
         </View>
       </View>
       <TextField
+        testID="sign-up-email"
         label={t.auth.email}
         help={t.auth.emailHelp}
         value={form.email}
@@ -133,6 +142,7 @@ function SignUpFields({
         error={errors.email}
       />
       <TextField
+        testID="sign-up-password"
         label={t.auth.password}
         help={t.auth.passwordHelp}
         value={form.password}
@@ -159,6 +169,7 @@ function TermsCheckbox({
   const { color } = useTheme();
   return (
     <Pressable
+      testID="sign-up-terms"
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
       accessibilityLabel={t.auth.acceptTerms}

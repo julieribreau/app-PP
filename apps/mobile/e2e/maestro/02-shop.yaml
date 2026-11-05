@@ -1,0 +1,38 @@
+# Boutique : liste, filtre par catégorie, recherche (catalogue du seed, app en anglais).
+appId: io.bullify.nutrion-app
+name: Boutique
+---
+- runFlow: subflows/launch-accepted.yaml
+- assertVisible: "12 products"
+- assertVisible:
+    id: product-avoine-cacao
+- tapOn: "Protein bars"
+- assertVisible: "3 products"
+- assertVisible:
+    id: product-cacahuete-sel
+- assertNotVisible:
+    id: product-avoine-cacao
+- tapOn: "All"
+- assertVisible: "12 products"
+- tapOn:
+    id: shop-search-toggle
+- tapOn:
+    id: shop-search-input
+- inputText: "granola"
+- extendedWaitUntil:
+    visible: "3 products"
+    timeout: 10000
+- assertVisible:
+    id: product-granola-fruits-rouges
+- assertNotVisible:
+    id: product-avoine-cacao
+- inputText: "zzzz"
+- extendedWaitUntil:
+    visible: "No products"
+    timeout: 10000
+# Fermer la recherche la vide.
+- tapOn:
+    id: shop-search-toggle
+- extendedWaitUntil:
+    visible: "12 products"
+    timeout: 10000

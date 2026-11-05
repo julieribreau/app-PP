@@ -24,6 +24,7 @@ export const authClient = createAuthClient({
       user: {
         firstName: { type: "string", required: false },
         lastName: { type: "string", required: false },
+        locale: { type: "string", required: false },
         role: { type: "string", required: false, input: false },
       },
     }),

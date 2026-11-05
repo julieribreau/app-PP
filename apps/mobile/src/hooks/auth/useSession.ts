@@ -7,6 +7,7 @@ import { queryKeys } from "@/lib/api/query";
 import { authClient } from "@/lib/auth/auth-client";
 import { authErrorKind, type AuthErrorKind } from "@/lib/auth/errors";
 import { requestPasswordReset } from "@/lib/auth/password-reset";
+import { signUpPayload, type SignUpInput } from "@/lib/auth/validation";
 import { usePrefsStore } from "@/stores/prefs.store";
 
 // Session Better Auth et parcours de connexion. Après une connexion réussie : panier invité
@@ -51,21 +52,14 @@ export function useAuthActions() {
     [afterSignIn, rememberAccount],
   );
 
-  const signUp = React.useCallback(
-    async (input: { firstName: string; lastName: string; email: string; password: string }) => {
-      const { error } = await authClient.signUp.email({
-        email: input.email.trim(),
-        password: input.password,
-        name: `${input.firstName.trim()} ${input.lastName.trim()}`.trim(),
-        firstName: input.firstName.trim(),
-        lastName: input.lastName.trim(),
-      });
-      return error
-        ? { ok: false as const, error: authErrorKind(error), message: error.message }
-        : { ok: true as const };
-    },
-    [],
-  );
+  const signUp = React.useCallback(async (input: SignUpInput) => {
+    const { error } = await authClient.signUp.email(
+      signUpPayload(input, usePrefsStore.getState().locale),
+    );
+    return error
+      ? { ok: false as const, error: authErrorKind(error), message: error.message }
+      : { ok: true as const };
+  }, []);
 
   const signOut = React.useCallback(
     async (opts: { forget?: boolean } = {}) => {

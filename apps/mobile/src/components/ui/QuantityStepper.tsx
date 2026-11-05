@@ -18,6 +18,8 @@ export interface QuantityStepperProps {
   itemName?: string;
   size?: "sm" | "md";
   disabled?: boolean;
+  /** Préfixe des identifiants de test des boutons (défaut « stepper »). */
+  testID?: string;
 }
 
 function useStepperLabels(itemName: string | undefined, removes: boolean) {
@@ -37,6 +39,7 @@ export function QuantityStepper({
   itemName,
   size = "md",
   disabled = false,
+  testID = "stepper",
 }: QuantityStepperProps) {
   const { color } = useTheme();
   const removes = value <= 1 && onRemove !== undefined;
@@ -55,7 +58,7 @@ export function QuantityStepper({
       style={[styles.group, { borderColor: color.input }]}
     >
       <StepButton
-        testID="stepper-decrease"
+        testID={`${testID}-decrease`}
         icon={removes ? "trash" : "minus"}
         label={labels.decrease}
         size={size}
@@ -71,7 +74,7 @@ export function QuantityStepper({
         {value}
       </AppText>
       <StepButton
-        testID="stepper-increase"
+        testID={`${testID}-increase`}
         icon="plus"
         label={labels.increase}
         size={size}

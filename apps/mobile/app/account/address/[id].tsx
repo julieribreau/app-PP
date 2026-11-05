@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 
 import { useI18n } from "@/lib/i18n/useI18n";
-import { AddressFormScreen } from "@/screens/account/AddressesScreen";
+import { AddressFormScreen } from "@/screens/account/AddressFormScreen";
 
 export default function AddressRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();

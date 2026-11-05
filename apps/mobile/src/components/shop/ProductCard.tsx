@@ -32,6 +32,7 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
     .join(", ");
   return (
     <Pressable
+      testID={`product-${product.slug}`}
       onPress={onPress}
       accessibilityRole="link"
       accessibilityLabel={label}

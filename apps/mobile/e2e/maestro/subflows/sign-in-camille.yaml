@@ -1,0 +1,9 @@
+# App neuve, cookies acceptés, Camille connectée (son profil met l'app en français).
+appId: io.bullify.nutrion-app
+---
+- runFlow: launch-accepted.yaml
+- runFlow:
+    file: sign-in.yaml
+    env:
+      EMAIL: camille.martin@exemple.fr
+      PASSWORD: Nutrion-Demo-2026

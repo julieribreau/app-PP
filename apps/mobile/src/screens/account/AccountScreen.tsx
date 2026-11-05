@@ -43,16 +43,22 @@ function PreferenceRows() {
       <SectionLabel>{t.account.preferences}</SectionLabel>
       <ListGroup>
         <ListRow
+          testID="account-locale"
           label={t.locale.label}
           value={t.locale[locale]}
           onPress={() => router.push(ACCOUNT_ROUTES.preferences)}
         />
         <ListRow
+          testID="account-theme"
           label={t.theme.label}
           value={t.theme[theme]}
           onPress={() => router.push(ACCOUNT_ROUTES.preferences)}
         />
-        <ListRow label={t.mobile.account.privacy} onPress={() => router.push(PRIVACY_ROUTE)} />
+        <ListRow
+          testID="account-privacy"
+          label={t.mobile.account.privacy}
+          onPress={() => router.push(PRIVACY_ROUTE)}
+        />
       </ListGroup>
     </>
   );
@@ -68,8 +74,13 @@ function SignedOutAccount() {
         <AppText variant="body" tone="muted">
           {t.mobile.account.signedOutBody}
         </AppText>
-        <Button label={t.auth.signIn} onPress={() => router.push(SIGN_IN_ROUTE)} />
         <Button
+          testID="account-sign-in"
+          label={t.auth.signIn}
+          onPress={() => router.push(SIGN_IN_ROUTE)}
+        />
+        <Button
+          testID="account-sign-up"
           label={t.auth.signUpTab}
           variant="outline"
           onPress={() => router.push(SIGN_UP_ROUTE)}
@@ -90,11 +101,13 @@ function SignedInAccount() {
       <SectionLabel>{t.mobile.account.informations}</SectionLabel>
       <ListGroup>
         <ListRow
+          testID="account-profile"
           label={t.account.profile}
           value={t.account.profileHint}
           onPress={() => router.push(ACCOUNT_ROUTES.profile)}
         />
         <ListRow
+          testID="account-addresses"
           label={t.account.addresses}
           value={addresses.data ? String(addresses.data.length) : undefined}
           onPress={() => router.push(ACCOUNT_ROUTES.addresses)}
@@ -103,14 +116,24 @@ function SignedInAccount() {
       <SecurityGroup />
       <PreferenceRows />
       <ListGroup>
-        <ListRow label={t.account.export} onPress={() => router.push(ACCOUNT_ROUTES.data)} />
         <ListRow
+          testID="account-data"
+          label={t.account.export}
+          onPress={() => router.push(ACCOUNT_ROUTES.data)}
+        />
+        <ListRow
+          testID="account-delete"
           label={t.account.deleteAccount}
           destructive
           onPress={() => router.push(ACCOUNT_ROUTES.data)}
         />
       </ListGroup>
-      <Button label={t.auth.signOut} variant="outline" onPress={() => void signOut()} />
+      <Button
+        testID="account-sign-out"
+        label={t.auth.signOut}
+        variant="outline"
+        onPress={() => void signOut()}
+      />
     </>
   );
 }
@@ -123,6 +146,7 @@ function ProfileCard() {
   const shown = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || profile.email;
   return (
     <Pressable
+      testID="account-profile-card"
       accessibilityRole="button"
       accessibilityLabel={`${t.account.profile}, ${shown}`}
       onPress={() => router.push(ACCOUNT_ROUTES.profile)}
@@ -166,16 +190,22 @@ function SecurityGroup() {
       <ListGroup>
         {support?.available ? (
           <SwitchRow
+            testID="account-biometric"
             label={f(t.account.biometric, { method: label(support.kind) })}
             value={biometricEnabled}
             onValueChange={toggle}
           />
         ) : null}
         <ListRow
+          testID="account-password"
           label={t.mobile.account.password}
           onPress={() => router.push(ACCOUNT_ROUTES.security)}
         />
-        <ListRow label={t.account.devices} onPress={() => router.push(ACCOUNT_ROUTES.security)} />
+        <ListRow
+          testID="account-devices"
+          label={t.account.devices}
+          onPress={() => router.push(ACCOUNT_ROUTES.security)}
+        />
       </ListGroup>
     </>
   );

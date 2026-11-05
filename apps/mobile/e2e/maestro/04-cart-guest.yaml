@@ -1,0 +1,90 @@
+# Panier invité : +/−, suppression, totaux TTC et TVA, paiement désactivé, panier conservé
+# après fermeture de l'app.
+appId: io.bullify.nutrion-app
+name: Panier invité
+---
+- runFlow: subflows/launch-accepted.yaml
+- tapOn:
+    id: tab-cart
+- assertVisible: "Your cart is empty."
+- tapOn:
+    id: tab-shop
+# Granola fruits rouges (7,90 €, TVA 5,5 %) et Électrolytes citron (9,90 €).
+- scrollUntilVisible:
+    element:
+      id: product-granola-fruits-rouges
+    direction: DOWN
+- tapOn:
+    id: product-granola-fruits-rouges
+- tapOn:
+    id: add-to-cart
+- extendedWaitUntil:
+    visible: "View cart"
+    timeout: 10000
+- tapOn:
+    id: product-back
+- scrollUntilVisible:
+    element:
+      id: product-electrolytes
+    direction: DOWN
+- tapOn:
+    id: product-electrolytes
+- tapOn:
+    id: add-to-cart
+- extendedWaitUntil:
+    visible: "View cart"
+    timeout: 10000
+- tapOn:
+    id: add-to-cart
+- assertVisible: "2 items"
+- assertVisible:
+    id: checkout
+    enabled: false
+- assertVisible: "Payment coming soon"
+- copyTextFrom:
+    id: cart-total
+- assertTrue: ${maestro.copiedText == "€17.80"}
+# + sur la première ligne : 2 × 7,90 = 15,80 €, total 25,70 €.
+- tapOn:
+    id: cart-line-0-increase
+- extendedWaitUntil:
+    visible:
+      id: cart-line-0-total
+      text: "€15.80"
+    timeout: 10000
+- assertVisible:
+    id: cart-total
+    text: "€25.70"
+- assertVisible: "3 items"
+- tapOn:
+    id: cart-line-0-decrease
+- extendedWaitUntil:
+    visible:
+      id: cart-total
+      text: "€17.80"
+    timeout: 10000
+# TVA : 7,90 € à 5,5 % (0,41 €) + 9,90 € à 5,5 % (0,52 €) — lue par l'API, vérifiée non nulle.
+- copyTextFrom:
+    id: cart-vat
+- assertTrue: ${maestro.copiedText != "€0.00"}
+# Fermer et rouvrir l'app : le panier invité revient (jeton gardé sur l'appareil).
+- stopApp
+- launchApp
+- tapOn:
+    id: tab-cart
+- extendedWaitUntil:
+    visible:
+      id: cart-total
+      text: "€17.80"
+    timeout: 15000
+# À 1, le − devient une corbeille : suppression de la ligne.
+- tapOn:
+    id: cart-line-1-decrease
+- extendedWaitUntil:
+    visible: "1 item"
+    timeout: 10000
+- tapOn:
+    id: cart-line-0-decrease
+- extendedWaitUntil:
+    visible: "Your cart is empty."
+    timeout: 10000

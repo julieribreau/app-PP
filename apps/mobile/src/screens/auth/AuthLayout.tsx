@@ -84,13 +84,21 @@ export function TextLink({
   label,
   onPress,
   strong = false,
+  testID,
 }: {
   label: string;
   onPress: () => void;
   strong?: boolean;
+  testID?: string;
 }) {
   return (
-    <Pressable accessibilityRole="link" onPress={onPress} hitSlop={12} style={styles.linkHit}>
+    <Pressable
+      testID={testID}
+      accessibilityRole="link"
+      onPress={onPress}
+      hitSlop={12}
+      style={styles.linkHit}
+    >
       <AppText
         variant={strong ? "label" : "help"}
         tone={strong ? "default" : "muted"}

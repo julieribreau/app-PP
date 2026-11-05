@@ -52,8 +52,8 @@ describe("formatMessage", () => {
 describe("pluralCategory sans Intl.PluralRules (Hermes)", () => {
   it("applique la règle fr / en de repli", () => {
     const original = Intl.PluralRules;
-    // @ts-expect-error -- simule Hermes, qui n'a pas Intl.PluralRules
-    delete Intl.PluralRules;
+    // Simule Hermes, qui n'a pas Intl.PluralRules.
+    Reflect.deleteProperty(Intl, "PluralRules");
     try {
       expect([0, 1, 2].map((n) => pluralCategory(n, "fr"))).toEqual(["one", "one", "other"]);
       expect([0, 1, 2].map((n) => pluralCategory(n, "en"))).toEqual(["other", "one", "other"]);
@@ -61,7 +61,11 @@ describe("pluralCategory sans Intl.PluralRules (Hermes)", () => {
         formatMessage("{count, plural, one {# item} other {# items}}", { count: 1 }, "en"),
       ).toBe("1 item");
     } finally {
-      Intl.PluralRules = original;
+      Object.defineProperty(Intl, "PluralRules", {
+        value: original,
+        configurable: true,
+        writable: true,
+      });
     }
   });
 });

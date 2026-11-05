@@ -1,0 +1,69 @@
+# Fiche produit : saveur et format → prix, quantité plafonnée au stock, ajout ; variante et
+# produit en rupture non ajoutables.
+appId: io.bullify.nutrion-app
+name: Fiche produit
+---
+- runFlow: subflows/launch-accepted.yaml
+- tapOn:
+    id: product-avoine-cacao
+- assertVisible:
+    id: product-price
+    text: "€2.90"
+# Boîte de 12 en cacao : 29,90 €, 3 en stock.
+- tapOn: "Box of 12"
+- assertVisible:
+    id: product-price
+    text: "€29.90"
+- tapOn:
+    id: stepper-increase
+- tapOn:
+    id: stepper-increase
+- assertVisible:
+    id: product-price
+    text: "€89.70"
+- tapOn:
+    id: stepper-increase
+- assertVisible:
+    id: product-price
+    text: "€89.70"
+- assertVisible:
+    id: stepper-increase
+    enabled: false
+# Noisette en boîte de 12 : rupture, rien à ajouter.
+- tapOn: "Hazelnut"
+- assertVisible: "Out of stock"
+- assertVisible:
+    id: add-to-cart
+    enabled: false
+# Myrtille à l'unité : ajoutée, le bouton mène au panier.
+- tapOn: "Blueberry"
+- assertVisible:
+    id: product-price
+    text: "€2.90"
+- tapOn:
+    id: add-to-cart
+- extendedWaitUntil:
+    visible: "View cart"
+    timeout: 10000
+- tapOn:
+    id: add-to-cart
+- assertVisible: "Blueberry"
+- assertVisible:
+    id: cart-line-0-total
+    text: "€2.90"
+# Produit sans variante en rupture.
+- tapOn:
+    id: tab-shop
+- scrollUntilVisible:
+    element:
+      id: product-recuperation-cacao
+    direction: DOWN
+- tapOn:
+    id: product-recuperation-cacao
+- assertVisible: "Out of stock"
+- assertVisible:
+    id: add-to-cart
+    enabled: false
+- assertVisible:
+    id: stepper-increase
+    enabled: false

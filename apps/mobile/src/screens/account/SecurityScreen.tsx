@@ -56,6 +56,7 @@ function ChangePassword() {
     <View style={styles.block}>
       {done ? <Note>{t.mobile.account.passwordUpdated}</Note> : null}
       <TextField
+        testID="security-current-password"
         label={t.account.currentPassword}
         value={current}
         onChangeText={setCurrent}
@@ -63,6 +64,7 @@ function ChangePassword() {
         autoComplete="current-password"
       />
       <TextField
+        testID="security-new-password"
         label={t.auth.newPassword}
         help={t.auth.passwordHelp}
         value={next}
@@ -72,6 +74,7 @@ function ChangePassword() {
         error={error}
       />
       <Button
+        testID="security-change-password"
         label={t.account.changePassword}
         variant="outline"
         onPress={() => void submit()}
@@ -125,9 +128,12 @@ function Sessions() {
               <AppText variant="help">{date(new Date(row.updatedAt).toISOString())}</AppText>
             </View>
             {current ? (
-              <AppText variant="help">{t.account.thisSession}</AppText>
+              <AppText testID="session-current" variant="help">
+                {t.account.thisSession}
+              </AppText>
             ) : (
               <Button
+                testID="session-revoke"
                 label={t.account.revoke}
                 variant="ghost"
                 onPress={() => void revoke(row.token)}

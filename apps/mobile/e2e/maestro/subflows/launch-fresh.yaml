@@ -1,0 +1,12 @@
+# App neuve : données et trousseau effacés (session, panier invité, consentement).
+appId: io.bullify.nutrion-app
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+    permissions:
+      photos: allow
+- extendedWaitUntil:
+    visible:
+      id: consent-accept
+    timeout: 30000

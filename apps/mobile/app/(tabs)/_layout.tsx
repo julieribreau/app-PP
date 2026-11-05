@@ -30,6 +30,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t.mobile.tabs.shop,
+          tabBarButtonTestID: "tab-shop",
           tabBarIcon: ({ color: tint }) => <Icon name="home" color={String(tint)} size={24} />,
         }}
       />
@@ -37,6 +38,7 @@ export default function TabsLayout() {
         name="cart"
         options={{
           title: t.mobile.tabs.cart,
+          tabBarButtonTestID: "tab-cart",
           tabBarBadge: count > 0 ? count : undefined,
           tabBarAccessibilityLabel: count > 0 ? f(t.nav.cartCount, { count }) : t.mobile.tabs.cart,
           tabBarIcon: ({ color: tint }) => <Icon name="bag" color={String(tint)} size={24} />,
@@ -46,6 +48,7 @@ export default function TabsLayout() {
         name="account"
         options={{
           title: t.mobile.tabs.account,
+          tabBarButtonTestID: "tab-account",
           tabBarIcon: ({ color: tint }) => <Icon name="user" color={String(tint)} size={24} />,
         }}
       />

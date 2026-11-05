@@ -1,0 +1,8 @@
+# App neuve, cookies acceptés : point de départ des parcours qui ne testent pas le bandeau.
+appId: io.bullify.nutrion-app
+---
+- runFlow: launch-fresh.yaml
+- tapOn:
+    id: consent-accept
+- assertNotVisible:
+    id: consent-accept

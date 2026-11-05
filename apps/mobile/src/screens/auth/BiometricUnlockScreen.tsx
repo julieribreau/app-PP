@@ -72,6 +72,7 @@ export function BiometricUnlockScreen() {
           }}
         />
         <TextLink
+          testID="unlock-other-account"
           strong
           label={t.mobile.auth.otherAccount}
           onPress={() => void signOut({ forget: true }).then(unlock)}
