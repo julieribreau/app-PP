@@ -13,7 +13,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "**/.expo/**"],
+    // L'intégration contre le vrai backend a sa propre config (vitest.integration.config.mts).
+    exclude: ["**/node_modules/**", "**/.expo/**", "**/*.integration.test.ts"],
     coverage: {
       provider: "v8",
       // lcov pour Sonar (sonar-project.properties), chemins réécrits par tools/sonar.

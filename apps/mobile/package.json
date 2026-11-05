@@ -9,7 +9,8 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "jest --ci --passWithNoTests && vitest run"
+    "test": "jest --ci --passWithNoTests && vitest run",
+    "test:integration": "vitest run -c vitest.integration.config.mts"
   },
   "dependencies": {
     "@better-auth/expo": "catalog:",

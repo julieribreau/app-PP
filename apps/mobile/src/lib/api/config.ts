@@ -6,3 +6,6 @@ export const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:300
 );
 export const API_V1 = `${API_URL}/v1`;
 export const AUTH_BASE_PATH = "/v1/auth";
+
+/** Préfixe des cookies Better Auth, identique à `advanced.cookiePrefix` du backend. */
+export const AUTH_COOKIE_PREFIX = "nutrion";

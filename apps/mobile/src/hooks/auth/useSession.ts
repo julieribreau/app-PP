@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api/client";
 import { queryKeys } from "@/lib/api/query";
 import { authClient } from "@/lib/auth/auth-client";
 import { authErrorKind, type AuthErrorKind } from "@/lib/auth/errors";
+import { requestPasswordReset } from "@/lib/auth/password-reset";
 import { usePrefsStore } from "@/stores/prefs.store";
 
 // Session Better Auth et parcours de connexion. Après une connexion réussie : panier invité
@@ -65,13 +66,6 @@ export function useAuthActions() {
     },
     [],
   );
-
-  const requestPasswordReset = React.useCallback(async (email: string) => {
-    await authClient.requestPasswordReset({
-      email: email.trim(),
-      redirectTo: "nutrion://auth/reset-password",
-    });
-  }, []);
 
   const signOut = React.useCallback(
     async (opts: { forget?: boolean } = {}) => {

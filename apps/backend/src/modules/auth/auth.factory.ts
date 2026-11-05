@@ -122,7 +122,11 @@ function mailSenders(mail: MailPort, config: AuthConfig) {
     );
   return {
     resetPassword: ({ user, url }: { user: MailUser; url: string }) =>
-      send("resetPassword", user, url),
+      send(
+        "resetPassword",
+        user,
+        withDefaultCallback(url, config.WEB_URL, mailLocale(user.locale), "resetPassword"),
+      ),
     verification: ({ user, url, token }: { user: MailUser; url: string; token: string }) => {
       const kind = isEmailChangeToken(token) ? "changeEmail" : "verifyEmail";
       return send(

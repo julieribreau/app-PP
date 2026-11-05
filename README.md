@@ -34,6 +34,26 @@ avec une app d'authentification). E-mails de dev : http://localhost:8025 (Mailpi
 Design validé : [ADR-002](docs/architecture/ADR-002-design-system.md) · contrat d'API :
 [api-contract](docs/architecture/api-contract.md).
 
+## Tests réels (toute la stack, sans API simulée)
+
+Backend, base seedée, site en build autonome et Mailpit démarrés (cf « Premier lancement ») :
+
+```bash
+pnpm --filter @nutrion/web build && pnpm --filter @nutrion/web start:standalone   # :3000
+pnpm --filter @nutrion/web test:e2e:real         # client + back-office (Playwright, Chromium)
+pnpm --filter @nutrion/mobile test:integration   # code de l'app mobile contre l'API
+```
+
+- `apps/web/e2e-real/` : inscription et e-mail de vérification (lu dans Mailpit), panier invité
+  fusionné, espace personnel, mot de passe oublié ; back-office avec activation de la 2FA (code
+  TOTP calculé), usagers (filtres, tri, suspension, rôles), catégorie, produit FR/EN et
+  variantes jusqu'à la boutique, archivage, journal d'audit, défi TOTP à la reconnexion.
+- `apps/mobile/src/**/*.integration.test.ts` : client API, jeton du panier invité, client Better
+  Auth Expo et fusion, réels ; seuls les modules natifs sont des doubles en mémoire.
+- Les tests écrivent en base (comptes créés, produit archivé, 2FA de l'admin activée, secret
+  gardé dans `apps/web/e2e-real/.state/`) ; ils se rejouent tels quels, et `make seed` sur une
+  base vide remet les données de démonstration.
+
 ## Démarrer en local
 
 Via le **Makefile** (raccourcis homogènes — `make help` pour tout voir) :

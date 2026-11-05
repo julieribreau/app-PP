@@ -31,14 +31,15 @@ async function shot(name: string): Promise<void> {
   await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
 }
 
-/** Connexion admin, défi TOTP compris quand la 2FA est déjà active. */
-async function adminSignIn(): Promise<void> {
+/** Connexion admin, défi TOTP compris quand la 2FA est déjà active ; dit si elle l'était. */
+async function adminSignIn(): Promise<boolean> {
   await signIn(page, ADMIN, LABELS);
   const challenge = page.getByRole("heading", { name: fr.auth.twoFactorTitle });
   await expect(
     challenge.or(page.getByRole("heading", { level: 1, name: fr.account.title })),
   ).toBeVisible();
-  if (await challenge.isVisible()) {
+  const challenged = await challenge.isVisible();
+  if (challenged) {
     if (!secret)
       throw new Error(
         "2FA admin active sans secret connu : relancer `make seed` sur une base neuve",
@@ -47,6 +48,7 @@ async function adminSignIn(): Promise<void> {
     await page.getByRole("button", { name: fr.auth.twoFactorVerify }).click();
   }
   await expect(page).toHaveURL(/\/fr\/compte$/);
+  return challenged;
 }
 
 test.beforeAll(async ({ browser }) => {
@@ -73,9 +75,9 @@ test("un usager sans rôle admin est refusé au back-office", async ({ browser }
 
 test("activation de la 2FA imposée, puis accès au back-office", async () => {
   const done = trackConsoleErrors(page);
-  await adminSignIn();
-  // Passage précédent : on repart d'un admin sans 2FA pour rejouer l'activation.
-  if (secret) {
+  // Passage précédent (2FA active) : on repart d'un admin sans 2FA pour rejouer l'activation.
+  // Base re-seedée : l'admin n'a plus de 2FA, l'ancien secret est simplement oublié.
+  if (await adminSignIn()) {
     const off = await page.request.post("/api/v1/auth/two-factor/disable", {
       data: { password: ADMIN.password },
       headers: { origin: new URL(page.url()).origin },

@@ -25,4 +25,13 @@ describe("destination des liens d'e-mail", () => {
     const out = new URL(withDefaultCallback(link(), "http://localhost:3000", "fr", "changeEmail"));
     expect(out.searchParams.get("callbackURL")).toBe("http://localhost:3000/fr/compte");
   });
+
+  it("réinitialisation demandée par l'app (nutrion://) : la page du site", () => {
+    const url =
+      "http://localhost:3001/v1/auth/reset-password/tok?callbackURL=nutrion%3A%2F%2Fauth%2Freset-password";
+    const out = new URL(withDefaultCallback(url, "http://localhost:3000", "fr", "resetPassword"));
+    expect(out.searchParams.get("callbackURL")).toBe(
+      "http://localhost:3000/fr/reinitialiser-mot-de-passe",
+    );
+  });
 });
