@@ -35,7 +35,7 @@ export function CartPage() {
   return (
     <main className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 pt-10 pb-20 md:px-12">
       <div className="flex flex-col gap-2">
-        <span className="overline">{t("items", { count: cart.itemCount })}</span>
+        <span className="eyebrow">{t("items", { count: cart.itemCount })}</span>
         <h1 className="display m-0 text-5xl leading-[52px]">{t("title")}</h1>
       </div>
       {!user && !sessionPending ? <GuestNote /> : null}

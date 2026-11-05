@@ -57,5 +57,5 @@ export function DropdownMenuRadioItem({ className, children, ...props }: M.Dropd
 }
 
 export function DropdownMenuLabel({ className, ...props }: M.DropdownMenuLabelProps) {
-  return <M.Label className={cn("px-3 py-2 overline", className)} {...props} />;
+  return <M.Label className={cn("px-3 py-2 eyebrow", className)} {...props} />;
 }

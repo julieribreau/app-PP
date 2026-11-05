@@ -48,7 +48,7 @@ export function ProductPage({ slug }: { readonly slug: string }) {
         <ProductImage name={product.name} imageUrl={product.imageUrl} categorySlug={product.category?.slug} seed={product.slug} className="aspect-square rounded-[24px]" fill="78%" />
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            {product.category ? <span className="overline">{product.category.name}</span> : null}
+            {product.category ? <span className="eyebrow">{product.category.name}</span> : null}
             <h1 className="display m-0 text-[44px] leading-[48px]">{product.name}</h1>
             <p className="m-0 text-lg leading-7 text-muted-foreground">{product.summary}</p>
           </div>

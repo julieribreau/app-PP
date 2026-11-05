@@ -12,8 +12,8 @@ for (const [locale, messages] of [
     const reponse = await page.goto(`/${locale}`);
     expect(reponse?.status()).toBe(200);
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.home.title);
-    await expect(page.getByText(messages.home.welcome)).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.landing.title);
+    await expect(page.getByRole("link", { name: messages.landing.cta })).toBeVisible();
   });
 }
 

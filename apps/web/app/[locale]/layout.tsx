@@ -1,9 +1,3 @@
-import "@fontsource/dm-mono/400.css";
-import "@fontsource/dm-mono/500.css";
-import "@fontsource/dm-sans/400.css";
-import "@fontsource/dm-sans/500.css";
-import "@fontsource/dm-sans/600.css";
-import "@fontsource/fraunces/600.css";
 import { isLocale } from "@nutrion/i18n";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -11,6 +5,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 
+import "@/fonts";
 import { AppConsent } from "@/components/consent/AppConsent";
 import { PreprodBanner } from "@/components/env/PreprodBanner";
 import { THEME_COOKIE, parseTheme } from "@/lib/theme";

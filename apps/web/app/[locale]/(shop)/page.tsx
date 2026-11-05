@@ -22,7 +22,7 @@ export default function HomePage() {
     <main>
       <section className="mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] items-center gap-12 px-6 pt-[72px] pb-[88px] md:px-12">
         <div className="flex flex-col gap-6">
-          <span className="overline">{t("overline")}</span>
+          <span className="eyebrow">{t("overline")}</span>
           <h1 className="display m-0 text-5xl leading-[1.06] md:text-[64px]">{t("title")}</h1>
           <p className="m-0 max-w-[520px] text-lg leading-7 text-muted-foreground">{t("lead")}</p>
           <div className="flex flex-wrap gap-3">
@@ -35,7 +35,7 @@ export default function HomePage() {
       <section id="approche" className="border-y border-border bg-card">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-10 px-6 py-20 md:px-12">
           <div className="flex max-w-[640px] flex-col gap-3">
-            <span className="overline">{t("approachOverline")}</span>
+            <span className="eyebrow">{t("approachOverline")}</span>
             <h2 className="display m-0 text-[40px] leading-[44px]">{t("approachTitle")}</h2>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-6">
@@ -48,7 +48,7 @@ export default function HomePage() {
       <section className="mx-auto flex max-w-[1280px] flex-col gap-8 px-6 py-20 md:px-12">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-3">
-            <span className="overline">{t("featuredOverline")}</span>
+            <span className="eyebrow">{t("featuredOverline")}</span>
             <h2 className="display m-0 text-[40px] leading-[44px]">{t("featuredTitle")}</h2>
           </div>
           <Button asChild variant="outline"><Link href="/boutique">{t("seeAll")}</Link></Button>

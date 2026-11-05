@@ -2,7 +2,10 @@ import type { Decorator, Preview } from "@storybook/react-vite";
 import { defaultLocale, loadMessages, locales } from "@nutrion/i18n";
 import { NextIntlClientProvider } from "next-intl";
 
+import { Providers } from "@/providers/Providers";
+
 // Les feuilles de l'app web, dans le même ordre que son layout : la story montre son rendu.
+import "@/fonts";
 import "@nutrion/ui-tokens/tokens.css";
 import "@nutrion/cmp/web/consent.css";
 import "@nutrion/ui/ui.css";
@@ -25,7 +28,9 @@ const withThemeAndLocale: Decorator = (Story, context) => {
       messages={context.loaded["messages"] as Messages}
       timeZone="Europe/Paris"
     >
-      <Story />
+      <Providers theme={theme}>
+        <Story />
+      </Providers>
     </NextIntlClientProvider>
   );
 };

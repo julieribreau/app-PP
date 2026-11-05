@@ -11,7 +11,7 @@ import { AdminHeading } from "./AdminShell";
 function Stat({ label, value, href }: { readonly label: string; readonly value: number | undefined; readonly href: string }) {
   return (
     <Link href={href} className="flex flex-col gap-1 rounded-[18px] border border-border bg-card p-6 hover:border-primary">
-      <span className="overline">{label}</span>
+      <span className="eyebrow">{label}</span>
       <span className="font-numeric text-[32px] leading-10 font-medium">{value ?? "—"}</span>
     </Link>
   );

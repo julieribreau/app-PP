@@ -14,7 +14,7 @@ export function LegalPage({ doc }: { readonly doc: LegalDoc }) {
   return (
     <main className="mx-auto flex max-w-[760px] flex-col gap-8 px-6 pt-12 pb-20">
       <div className="flex flex-col gap-3">
-        <span className="overline">{t("updated")}</span>
+        <span className="eyebrow">{t("updated")}</span>
         <h1 className="display m-0 text-[44px] leading-[48px]">{t(`${doc}.title`)}</h1>
         <p className="m-0 rounded-[14px] bg-accent px-4 py-3 text-accent-foreground">{t("draftNote")}</p>
       </div>

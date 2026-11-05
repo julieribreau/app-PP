@@ -33,7 +33,7 @@ export function ProductCard({
         className="aspect-[4/3]"
       />
       <div className="flex flex-col gap-1.5 px-5 pt-4 pb-5">
-        {product.category ? <span className="overline">{product.category.name}</span> : null}
+        {product.category ? <span className="eyebrow">{product.category.name}</span> : null}
         <Heading className="display m-0 text-[22px] leading-7 group-hover:text-primary">{product.name}</Heading>
         <span className="text-sm leading-5 text-muted-foreground">{product.variantSummary}</span>
         <div className="mt-2 flex items-center justify-between gap-2">

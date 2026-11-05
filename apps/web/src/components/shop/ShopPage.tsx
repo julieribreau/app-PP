@@ -42,7 +42,7 @@ export function ShopPage() {
     <main className="mx-auto flex max-w-[1280px] flex-col gap-8 px-6 pt-10 pb-20 md:px-12">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-2">
-          <span className="overline" aria-live="polite">{products.data ? t("count", { count: total }) : " "}</span>
+          <span className="eyebrow" aria-live="polite">{products.data ? t("count", { count: total }) : " "}</span>
           <h1 className="display m-0 text-5xl leading-[52px]">{t("title")}</h1>
         </div>
         <ShopSearchSort q={state.q} sort={state.sort} onChange={onSearchSort} />
