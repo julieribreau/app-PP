@@ -40,17 +40,23 @@ name: Langue et thème
     env:
       EMAIL: camille.martin@exemple.fr
       PASSWORD: Nutrion-Demo-2026
-- assertVisible: "Compte"
+- assertVisible:
+    id: account-locale
+    label: "Langue, Français"
 - runFlow:
     file: subflows/set-prefs.yaml
     env:
       LOCALE: en
       THEME: dark
-- assertVisible: "Account"
+- assertVisible:
+    id: account-locale
+    label: "Language, English"
 # Nouvel appareil (app effacée) : la connexion rapporte anglais et sombre depuis le profil.
 - runFlow:
     file: subflows/sign-in-camille.yaml
-- assertVisible: "Account"
+- assertVisible:
+    id: account-locale
+    label: "Language, English"
 - assertVisible:
     id: account-theme
     label: "Theme, Dark"
@@ -59,7 +65,9 @@ name: Langue et thème
     env:
       LOCALE: fr
       THEME: system
-- assertVisible: "Compte"
+- assertVisible:
+    id: account-locale
+    label: "Langue, Français"
 - assertVisible:
     id: account-theme
     label: "Thème, Système"

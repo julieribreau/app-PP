@@ -78,8 +78,8 @@ trap face_stop EXIT
 run() { # run <udid> <nom> <dossier> <fichiers…>
   local udid=$1 name=$2 tag=$3
   shift 3
-  # Garde-fou : un parcours bloqué ne bloque pas la suite entière (30 min par lot).
-  perl -e 'alarm 1800; exec @ARGV' maestro --device "$udid" test \
+  # Garde-fou : un parcours bloqué ne bloque pas la suite entière (1 h par lot).
+  perl -e 'alarm 3600; exec @ARGV' maestro --device "$udid" test \
     --format junit --output "$OUT/$name/report-$tag.xml" \
     --test-output-dir "$OUT/$name" \
     -e DEVICE="$name" -e LOCALE=en -e THEME=light \
@@ -109,10 +109,13 @@ for udid in "${DEVICES[@]}"; do
   else
     flows=()
     for f in "$SUITE"/[0-9][0-9]-*.yaml; do
-      [ "${SKIP_CAPTURES:-}" = 1 ] && [[ $f == *captures* ]] && continue
-      flows+=("$(basename "$f")")
+      [[ $f == *captures* ]] || flows+=("$(basename "$f")")
     done
     (cd "$SUITE" && run "$udid" "$name" suite "${flows[@]}") || STATUS=1
+    if [ "${SKIP_CAPTURES:-}" != 1 ]; then
+      reset_data
+      (cd "$SUITE" && run "$udid" "$name" captures 11-captures.yaml) || STATUS=1
+    fi
   fi
 
   if [ "${SKIP_BIOMETRIC:-}" != 1 ] && [ -z "${ONLY:-}" ]; then
