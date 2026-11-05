@@ -36,6 +36,19 @@ step "Dépendances"
 pnpm install
 
 step "Infra docker, migrations, seed"
+# Ports de Postgres et Redis : si un autre service de ce Mac (hors Docker) écoute déjà sur
+# 5432 ou 6379, on prend le suivant de libre, dans .env (lu par compose et par l'API).
+free_port() {
+  local p=$1
+  while lsof -nP -iTCP:"$p" -sTCP:LISTEN 2>/dev/null | awk 'NR>1 {print $1}' | grep -qvi 'docke'; do p=$((p + 1)); done
+  echo "$p"
+}
+DB_PORT=$(free_port 5432)
+REDIS_PORT=$(free_port 6379)
+perl -ni -e 'print unless /^(DB_PORT|REDIS_PORT)=/' .env
+printf 'DB_PORT=%s\nREDIS_PORT=%s\n' "$DB_PORT" "$REDIS_PORT" >> .env
+perl -pi -e "s#^(DATABASE_URL=postgres://[^@]+\@localhost:)\d+#\${1}$DB_PORT#; s#^(REDIS_URL=redis://localhost:)\d+#\${1}$REDIS_PORT#" .env
+echo "Postgres sur :$DB_PORT · Redis sur :$REDIS_PORT"
 docker compose up -d
 for i in $(seq 1 30); do docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1 && break; sleep 2; done
 # Le conteneur ne crée la base qu'au premier démarrage de son volume : on la crée si elle manque.

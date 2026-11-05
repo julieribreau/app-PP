@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: "nutrion-app"
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       # Depuis la 18, l'image range ses donnees sous /var/lib/postgresql/18/docker et refuse
       # de demarrer sur un volume monte a l'ancien emplacement /var/lib/postgresql/data.
@@ -16,7 +16,7 @@ services:
   redis:
     image: redis:8
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
 
   # Stockage objet local (S3-compatible) — en prod : Scaleway Object Storage.
   # adobe/s3mock et non MinIO, qui ne publie plus d'images libres (minio/minio
