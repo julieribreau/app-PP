@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 
 import { mergeGuestCart } from "@/hooks/cart/useCart";
-import type { ApiError} from "@/lib/api/client";
+import type { ApiError } from "@/lib/api/client";
 import { api, cartTokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/api/config";
 import { authClient } from "@/lib/auth/auth-client";
