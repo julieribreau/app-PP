@@ -13,7 +13,7 @@ import { BiometricUnlockScreen } from "@/screens/auth/BiometricUnlockScreen";
 import { initialLockStatus, useLockStore } from "@/stores/lock.store";
 import { usePrefsStore } from "@/stores/prefs.store";
 import { appFonts } from "@/theme/fonts";
-import { useApplyThemePreference, useTheme } from "@/theme/useTheme";
+import { statusBarStyleFor, useApplyThemePreference, useTheme } from "@/theme/useTheme";
 
 // Démarrage : l'écran de lancement reste affiché tant que les polices, les préférences et la
 // décision de verrouillage ne sont pas prêtes (pas de saut de police ni de flash du mauvais thème).
@@ -56,7 +56,7 @@ function Boot({ children }: { children: React.ReactNode }) {
   if (!ready) return null;
   return (
     <View style={[styles.flex, { backgroundColor: theme.color.background }]}>
-      <StatusBar style={theme.name === "dark" ? "light" : "dark"} />
+      <StatusBar style={statusBarStyleFor(theme.name)} />
       {children}
       {status === "locked" ? (
         <View style={StyleSheet.absoluteFill}>

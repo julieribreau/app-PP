@@ -12,7 +12,7 @@ import { AppProviders } from "@/components/layout/AppProviders";
 import { buildPostHogSettings } from "@/lib/analytics/posthog";
 import { sentryRoot } from "@/lib/analytics/sentry-root";
 import { useI18n } from "@/lib/i18n/useI18n";
-import { useTheme } from "@/theme/useTheme";
+import { statusBarStyleFor, useTheme } from "@/theme/useTheme";
 
 // app/ = NAVIGATION pure (expo-router). La logique vit dans src/ (screens/hooks/lib/stores).
 // Sentry initialisé ici dès l'init (socle observabilité). PostHog : seulement après
@@ -45,10 +45,13 @@ const posthogSettings = buildPostHogSettings();
 
 function Navigation() {
   const { t } = useI18n();
-  const { color } = useTheme();
+  const { color, name } = useTheme();
   return (
     <Stack
       screenOptions={{
+        // Sur iOS, la pile (react-native-screens) décide de la barre d'état : sans ce réglage,
+        // l'heure restait noire sur le fond sombre quand le thème sombre est choisi dans l'app.
+        statusBarStyle: statusBarStyleFor(name),
         headerStyle: { backgroundColor: color.background },
         headerTintColor: color.foreground,
         headerTitleStyle: { fontFamily: "DMSans_600SemiBold" },

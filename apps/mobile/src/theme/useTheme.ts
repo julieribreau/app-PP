@@ -31,6 +31,11 @@ export function useTheme(): Theme {
   );
 }
 
+/** Texte de la barre d'état lisible sur le fond du thème (clair sur sombre, sombre sur clair). */
+export function statusBarStyleFor(name: ThemeName): "light" | "dark" {
+  return name === "dark" ? "light" : "dark";
+}
+
 export function applyThemePreference(preference: ThemePreference): void {
   Appearance.setColorScheme(preference === "system" ? "unspecified" : preference);
 }
