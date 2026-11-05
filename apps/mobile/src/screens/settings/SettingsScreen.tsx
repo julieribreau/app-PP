@@ -16,10 +16,10 @@ export function SettingsScreen(): React.JSX.Element {
         accessibilityRole="button"
         accessibilityHint={t.settings.privacyHint}
         onPress={() => router.push(PRIVACY_ROUTE)}
-        style={[styles.row, { borderColor: palette.muted }]}
+        style={[styles.row, { borderColor: palette.input }]}
       >
         <Text style={[styles.label, { color: palette.fg }]}>{t.settings.privacy}</Text>
-        <Text style={{ color: palette.muted }}>{t.settings.privacyHint}</Text>
+        <Text style={{ color: palette.mutedForeground }}>{t.settings.privacyHint}</Text>
       </Pressable>
     </ScrollView>
   );

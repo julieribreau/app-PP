@@ -1,37 +1,139 @@
-/* Design tokens partagés — source unique de la charte NutrionApp.
+/* Design tokens partagés : source unique de la charte NutrionApp, piste B « Terracotta
+   gourmand » validée le 05/11/2026 (ADR-002). Noms shadcn/ui (+ success, warning, info) et
+   trois couleurs de marque (sage, straw, peach, cacao) réservées aux illustrations.
    Jamais de couleur en dur dans les composants : toujours via ces variables.
    Mêmes valeurs que index.ts (lu par React Native) : modifier les deux ensemble.
    Thème : celui du système par défaut ; le sélecteur pose data-theme="light" ou "dark"
-   sur <html> pour le forcer. Un tenant surcharge ces variables dans les deux thèmes. */
+   sur <html> pour le forcer. Contrastes vérifiés RGAA AA dans les deux thèmes.
+   --color-* : alias historiques du starter (bandeau de consentement, Storybook). */
 :root {
-  --color-bg: #ffffff;
-  --color-fg: #0a0a0a;
-  --color-primary: #2563eb;
-  --color-on-primary: #ffffff;
-  --color-muted: #6b7280;
-  --radius: 8px;
+  --background: #fbf5ec;
+  --foreground: #2a1d16;
+  --card: #fffbf5;
+  --card-foreground: #2a1d16;
+  --popover: #fffbf5;
+  --popover-foreground: #2a1d16;
+  --primary: #9c4f33;
+  --primary-foreground: #fffbf5;
+  --secondary: #f3dfc9;
+  --secondary-foreground: #2a1d16;
+  --muted: #f1e6d6;
+  --muted-foreground: #6a5547;
+  --accent: #e6d7a4;
+  --accent-foreground: #2a1d16;
+  --destructive: #a12b2b;
+  --destructive-foreground: #fffbf5;
+  --success: #3b6b3a;
+  --success-foreground: #fffbf5;
+  --warning: #8a5300;
+  --warning-foreground: #fffbf5;
+  --info: #2f5b78;
+  --info-foreground: #fffbf5;
+  --border: #ead9c5;
+  --input: #9a8574;
+  --ring: #9c4f33;
+  --sage: #bdc9b1;
+  --straw: #e6d7a4;
+  --peach: #e4a67f;
+  --cacao: #6b3d2a;
+  --color-bg: #fbf5ec;
+  --color-fg: #2a1d16;
+  --color-primary: #9c4f33;
+  --color-on-primary: #fffbf5;
+  --color-muted: #6a5547;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --radius: 14px;
   --space-1: 4px;
   --space-2: 8px;
+  --space-3: 12px;
   --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #0a0a0a;
-  --color-fg: #fafafa;
-  --color-primary: #60a5fa;
-  --color-on-primary: #0a0a0a;
-  --color-muted: #9ca3af;
+  --background: #1c1410;
+  --foreground: #f6ebe0;
+  --card: #261b16;
+  --card-foreground: #f6ebe0;
+  --popover: #261b16;
+  --popover-foreground: #f6ebe0;
+  --primary: #e9a07c;
+  --primary-foreground: #1c1410;
+  --secondary: #3a2a21;
+  --secondary-foreground: #f6ebe0;
+  --muted: #2e221c;
+  --muted-foreground: #bba796;
+  --accent: #e6d7a4;
+  --accent-foreground: #1c1410;
+  --destructive: #f08a80;
+  --destructive-foreground: #1c1410;
+  --success: #9bc99a;
+  --success-foreground: #1c1410;
+  --warning: #ecc46a;
+  --warning-foreground: #1c1410;
+  --info: #93bfdd;
+  --info-foreground: #1c1410;
+  --border: #3d2d24;
+  --input: #86705f;
+  --ring: #e9a07c;
+  --sage: #5d7360;
+  --straw: #6e6238;
+  --peach: #9c4f33;
+  --cacao: #d9a17f;
+  --color-bg: #1c1410;
+  --color-fg: #f6ebe0;
+  --color-primary: #e9a07c;
+  --color-on-primary: #1c1410;
+  --color-muted: #bba796;
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-bg: #0a0a0a;
-    --color-fg: #fafafa;
-    --color-primary: #60a5fa;
-    --color-on-primary: #0a0a0a;
-    --color-muted: #9ca3af;
+    --background: #1c1410;
+    --foreground: #f6ebe0;
+    --card: #261b16;
+    --card-foreground: #f6ebe0;
+    --popover: #261b16;
+    --popover-foreground: #f6ebe0;
+    --primary: #e9a07c;
+    --primary-foreground: #1c1410;
+    --secondary: #3a2a21;
+    --secondary-foreground: #f6ebe0;
+    --muted: #2e221c;
+    --muted-foreground: #bba796;
+    --accent: #e6d7a4;
+    --accent-foreground: #1c1410;
+    --destructive: #f08a80;
+    --destructive-foreground: #1c1410;
+    --success: #9bc99a;
+    --success-foreground: #1c1410;
+    --warning: #ecc46a;
+    --warning-foreground: #1c1410;
+    --info: #93bfdd;
+    --info-foreground: #1c1410;
+    --border: #3d2d24;
+    --input: #86705f;
+    --ring: #e9a07c;
+    --sage: #5d7360;
+    --straw: #6e6238;
+    --peach: #9c4f33;
+    --cacao: #d9a17f;
+    --color-bg: #1c1410;
+    --color-fg: #f6ebe0;
+    --color-primary: #e9a07c;
+    --color-on-primary: #1c1410;
+    --color-muted: #bba796;
     color-scheme: dark;
   }
 }

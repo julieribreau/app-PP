@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: tokens.space[4],
-    borderRadius: tokens.radius,
+    borderRadius: tokens.radius.full,
     borderWidth: 2,
   },
   label: { fontSize: 16, fontWeight: "600" },

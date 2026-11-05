@@ -63,7 +63,7 @@ function makeStyles(palette: ConsentColors) {
       gap: 8,
       padding: 16,
       borderTopWidth: 1,
-      borderColor: palette.muted,
+      borderColor: palette.input,
       backgroundColor: palette.bg,
     },
     title: { color: palette.fg, fontSize: 18, fontWeight: "700" },

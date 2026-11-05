@@ -55,7 +55,7 @@ export function ConsentManager({ copy, locale, colors }: ConsentManagerProps): R
                 onValueChange={(value) =>
                   setDraft((current) => ({ ...current, [purpose.id]: value }))
                 }
-                trackColor={{ false: palette.muted, true: palette.primary }}
+                trackColor={{ false: palette.mutedForeground, true: palette.primary }}
               />
             )}
           </View>
@@ -90,7 +90,7 @@ function makeStyles(palette: ConsentColors) {
   return StyleSheet.create({
     container: { gap: 12 },
     text: { color: palette.fg, fontSize: 16, lineHeight: 22 },
-    muted: { color: palette.muted, fontSize: 14, lineHeight: 20 },
+    muted: { color: palette.mutedForeground, fontSize: 14, lineHeight: 20 },
     label: { color: palette.fg, fontSize: 16, fontWeight: "600" },
     row: {
       flexDirection: "row",
@@ -98,7 +98,7 @@ function makeStyles(palette: ConsentColors) {
       gap: 16,
       paddingVertical: 12,
       borderTopWidth: 1,
-      borderColor: palette.muted,
+      borderColor: palette.input,
     },
     rowText: { flex: 1, gap: 4 },
     button: { ...button, backgroundColor: palette.primary },
