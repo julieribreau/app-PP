@@ -33,6 +33,7 @@ export function ForgotPasswordScreen() {
       {sent ? <Note>{t.auth.resetSent}</Note> : null}
       <TextField
         testID="forgot-email"
+        clearButtonMode="while-editing"
         label={t.auth.email}
         value={email}
         onChangeText={setEmail}

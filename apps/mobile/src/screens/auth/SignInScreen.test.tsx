@@ -22,6 +22,8 @@ describe("formulaire de connexion", () => {
     // Le clavier garde la main (pas de fermeture) et « Suivant » ne soumet pas le formulaire.
     expect(email.props.returnKeyType).toBe("next");
     expect(email.props.submitBehavior).toBe("submit");
+    // E-mail prérempli (dernier compte) : effaçable d'un geste.
+    expect(email.props.clearButtonMode).toBe("while-editing");
     await fireEvent(email, "submitEditing");
     expect(screen.queryByText("Ce champ est obligatoire.")).toBeNull();
     expect(screen.getByTestId("sign-in-password").props.returnKeyType).toBe("go");

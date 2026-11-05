@@ -8,10 +8,18 @@ import { TextField, type TextFieldHandle } from "@/components/ui/TextField";
 import { useBiometricOffer } from "@/hooks/auth/useBiometricOffer";
 import { useAuthActions, type AuthErrorKind } from "@/hooks/auth/useSession";
 import { isEmail } from "@/lib/auth/validation";
+import type { Messages } from "@/lib/i18n/messages";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { FORGOT_PASSWORD_ROUTE, SIGN_UP_ROUTE } from "@/lib/routes";
 import { usePrefsStore } from "@/stores/prefs.store";
 import { AuthLayout, TextLink } from "@/screens/auth/AuthLayout";
+
+function authErrorMessage(t: Messages, kind: AuthErrorKind): string {
+  if (kind === "invalidCredentials") return t.auth.invalidCredentials;
+  if (kind === "locked") return t.auth.locked;
+  if (kind === "emailNotVerified") return t.auth.emailNotVerified;
+  return t.common.error;
+}
 
 /** Formulaire e-mail + mot de passe, réutilisé par l'écran de déverrouillage. */
 export function SignInForm({
@@ -33,15 +41,6 @@ export function SignInForm({
   const [busy, setBusy] = React.useState(false);
   const passwordRef = React.useRef<TextFieldHandle>(null);
 
-  const messageFor = (kind: AuthErrorKind) =>
-    kind === "invalidCredentials"
-      ? t.auth.invalidCredentials
-      : kind === "locked"
-        ? t.auth.locked
-        : kind === "emailNotVerified"
-          ? t.auth.emailNotVerified
-          : t.common.error;
-
   const submit = async () => {
     if (!isEmail(email)) return setError(t.mobile.auth.invalidEmail);
     if (!password) return setError(t.mobile.auth.requiredField);
@@ -49,7 +48,7 @@ export function SignInForm({
     setError(null);
     try {
       const result = await signIn(email, password);
-      if (!result.ok) return setError(messageFor(result.error ?? "generic"));
+      if (!result.ok) return setError(authErrorMessage(t, result.error ?? "generic"));
       await offerBiometric(email.trim());
       onSignedIn();
     } catch {
@@ -70,6 +69,8 @@ export function SignInForm({
         autoCapitalize="none"
         autoComplete="email"
         textContentType="username"
+        // Prérempli avec le dernier compte : une croix l'efface pour en saisir un autre.
+        clearButtonMode="while-editing"
         // Le clavier couvre le champ suivant dans la feuille : « Suivant » y passe.
         returnKeyType="next"
         submitBehavior="submit"
