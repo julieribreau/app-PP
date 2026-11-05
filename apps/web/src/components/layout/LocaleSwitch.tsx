@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/hooks/usePreferences";
 
-/** Bascule FR ⇄ EN sur la même page ; l'étiquette annonce la langue courante et la cible. */
+/**
+ * Bascule FR ⇄ EN sur la même page ; l'étiquette annonce la langue courante et la cible.
+ * Elle commence par le code affiché (« FR ») : la commande vocale « clique FR » la trouve
+ * (WCAG 2.5.3, libellé visible contenu dans le nom).
+ */
 export function LocaleSwitch() {
   const t = useTranslations("locale");
   const { locale, changeLocale } = usePreferences();
@@ -16,11 +20,11 @@ export function LocaleSwitch() {
       variant="ghost"
       size="icon"
       className="font-numeric w-auto px-3 text-[13px]"
-      aria-label={`${t("label")} : ${t(locale as "fr" | "en")}. ${t("switchTo", { language: t(next) })}`}
+      aria-label={`${locale.toUpperCase()} – ${t("label")} : ${t(locale as "fr" | "en")}. ${t("switchTo", { language: t(next) })}`}
       lang={next}
       onClick={() => changeLocale(next)}
     >
-      <span aria-hidden="true">{locale.toUpperCase()}</span>
+      {locale.toUpperCase()}
     </Button>
   );
 }

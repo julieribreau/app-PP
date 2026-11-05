@@ -160,7 +160,7 @@ function TermsCheckbox({
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      aria-checked={checked}
       accessibilityLabel={t.auth.acceptTerms}
       onPress={onToggle}
       style={styles.terms}

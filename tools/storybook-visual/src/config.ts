@@ -7,6 +7,8 @@ export interface VisualOptions {
   /** Dossier de l'app Storybook : `storybook-static/` y est lu, `visual/references/` écrit. */
   readonly appDir: string;
   readonly viewport: { readonly width: number; readonly height: number };
+  /** Règles axe écartées pour cette app, chacune justifiée là où elle est passée. */
+  readonly axeDisabledRules?: readonly string[];
 }
 
 /**
@@ -17,13 +19,14 @@ export interface VisualOptions {
  * se produisent et se comparent dans la MÊME image, celle du job `visual` de ci.yml
  * (`make visual` la lance en local). Hors Linux, la suite refuse de tourner.
  */
-export function visualConfig({ appDir, viewport }: VisualOptions) {
+export function visualConfig({ appDir, viewport, axeDisabledRules = [] }: VisualOptions) {
   if (process.platform !== "linux") {
     throw new Error(
       "Régression visuelle : lancer `make visual` (image Playwright de la CI), pas le navigateur du poste.",
     );
   }
   process.env["STORYBOOK_STATIC_DIR"] = join(appDir, "storybook-static");
+  process.env["STORYBOOK_AXE_DISABLED_RULES"] = axeDisabledRules.join(",");
   const ci = Boolean(process.env["CI"]);
   return defineConfig({
     testDir: fileURLToPath(new URL(".", import.meta.url)),

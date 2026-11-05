@@ -66,7 +66,7 @@ function RadioRow({
     <Pressable
       accessibilityRole="radio"
       accessibilityLabel={label}
-      accessibilityState={{ checked: selected }}
+      aria-checked={selected}
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: color.muted }]}
     >

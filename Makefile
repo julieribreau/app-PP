@@ -73,11 +73,11 @@ e2e: ## Tests end-to-end (Playwright)
 storybook: ## Lance les deux Storybook : web (:6006) et mobile (:6007)
 	pnpm storybook
 
-# Régression visuelle : dans l'image Playwright du job `visual` de ci.yml (même empreinte),
+# Régression visuelle : dans l'image Playwright (même version que @playwright/test du catalog),
 # en amd64 comme le runner. Le rendu des polices change d'un système à l'autre : une
 # référence produite sur le poste ne vaudrait rien en CI. Le premier passage écrit les
 # références absentes (à relire, puis commiter) ; visual-update remplace celles qui changent.
-VISUAL_IMAGE = mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+VISUAL_IMAGE = mcr.microsoft.com/playwright:v1.64.1-noble@sha256:2f05f8a734509a7b3f26a912639488ee08f58a7b292d14d62271bcff9038768f
 VISUAL_RUN = docker run --rm --platform linux/amd64 --ipc=host -v "$(CURDIR)":"$(CURDIR)" $(VISUAL_IMAGE) sh -c
 
 visual: ## Régression visuelle des stories (captures comparées aux références)

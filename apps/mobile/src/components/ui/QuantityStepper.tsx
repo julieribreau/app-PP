@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/ui/AppText";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -44,8 +44,12 @@ export function QuantityStepper({
   const decrease = () => (removes ? onRemove?.() : onChange(value - 1));
   return (
     <View
-      accessibilityRole="adjustable"
-      accessibilityLabel={labels.group}
+      // iOS et Android : élément réglable (balayage haut/bas), ses deux boutons restant
+      // atteignables. Le web n'a pas d'équivalent qui contienne des boutons (un slider ne
+      // peut pas en imbriquer) : simple groupe nommé, la valeur dite par son libellé.
+      {...(Platform.OS === "web"
+        ? { role: "group" as const, accessibilityLabel: `${labels.group} : ${value}` }
+        : { accessibilityRole: "adjustable" as const, accessibilityLabel: labels.group })}
       accessibilityValue={{ min: 1, max, now: value, text: String(value) }}
       accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
       onAccessibilityAction={(e) => {
@@ -97,7 +101,7 @@ function StepButton(props: {
       testID={props.testID}
       accessibilityRole="button"
       accessibilityLabel={props.label}
-      accessibilityState={{ disabled: props.disabled }}
+      aria-disabled={props.disabled}
       disabled={props.disabled}
       hitSlop={props.size === "sm" ? 2 : 0}
       onPress={props.onPress}
