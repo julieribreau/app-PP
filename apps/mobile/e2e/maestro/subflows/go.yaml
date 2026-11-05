@@ -1,0 +1,9 @@
+# Ouvre le lien URL (nutrion://…) ; iOS demande confirmation pour un schéma d'app.
+appId: io.bullify.nutrion-app
+---
+- openLink: ${URL}
+- runFlow:
+    when:
+      visible: "Open in “NutrionApp”\\?|Ouvrir dans « NutrionApp » \\?"
+    commands:
+      - tapOn: "Open|Ouvrir"

@@ -11,10 +11,19 @@ appId: io.bullify.nutrion-app
     env:
       EMAIL: ${EMAIL}
       PASSWORD: ${PASSWORD}
-- extendedWaitUntil:
-    notVisible:
-      id: sign-in-submit
-    timeout: 20000
+# L'offre Face ID (si un visage est enrôlé) arrive avant la fermeture de la feuille.
+- repeat:
+    while:
+      visible:
+        id: sign-in-submit
+    times: 10
+    commands:
+      - runFlow: after-sign-in.yaml
+      - extendedWaitUntil:
+          notVisible:
+            id: sign-in-submit
+          timeout: 2000
+          optional: true
 - runFlow: after-sign-in.yaml
 - extendedWaitUntil:
     visible:

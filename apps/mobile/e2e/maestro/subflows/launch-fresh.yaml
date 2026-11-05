@@ -6,6 +6,12 @@ appId: io.bullify.nutrion-app
     clearState: true
     permissions:
       photos: allow
+# Une confirmation « Ouvrir dans NutrionApp ? » restée d'un lien précédent masque l'app.
+- runFlow:
+    when:
+      visible: "Open in “NutrionApp”\\?|Ouvrir dans « NutrionApp » \\?"
+    commands:
+      - tapOn: "Cancel|Annuler"
 - extendedWaitUntil:
     visible:
       id: consent-accept
