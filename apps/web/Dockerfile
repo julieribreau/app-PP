@@ -22,7 +22,8 @@ FROM deps AS build
 ARG NEXT_PUBLIC_API_BASE_URL
 # Backend vers lequel Next réécrit /api/* (next.config.mjs, rewrites) : figé au build aussi.
 ARG BACKEND_URL=http://backend:3001
-ARG NEXT_PUBLIC_SITE_URL
+# URL publique du site : origine du client Better Auth au rendu serveur (jamais vide).
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ARG NEXT_PUBLIC_APP_ENV
 ARG NEXT_PUBLIC_SENTRY_DSN
 ARG NEXT_PUBLIC_POSTHOG_KEY

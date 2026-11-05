@@ -1,9 +1,8 @@
 # Backend NutrionApp — image multi-stage (tout dockerisé, cf socle).
-# Même image pour trois commandes :
-#   node dist/main.js                API (CMD par défaut)
+# Même image pour deux commandes :
+#   (défaut)                         migrations (dist/migrate.js) puis API (dist/main.js)
 #   node dist/modules/cron/main.js   process cron (planifications, workers BullMQ)
-#   node dist/migrate.js             migrations, lancées par migrer() de bullify-deploy
-#                                    avant `compose up` (jamais au démarrage de l'API)
+# Migrations au démarrage : un seul réplica d'API, le migrateur Drizzle prend un verrou.
 FROM node:24-alpine AS base
 RUN corepack enable
 WORKDIR /repo
@@ -29,6 +28,14 @@ ENV TURBO_TELEMETRY_DISABLED=1
 RUN pnpm turbo run build --filter=@nutrion/backend
 # Dépendances de production seules, packages du workspace compris.
 RUN pnpm --filter @nutrion/backend deploy --prod --legacy /prod
+# Better Auth et son plugin Expo déclarent next, expo et react-native en peer deps : pnpm les
+# installe d'office (1 Go) alors que l'API n'en charge aucun (entrées better-auth/next-js et
+# @better-auth/expo/client, jamais importées ici). On les retire de l'image d'exécution.
+RUN cd /prod/node_modules/.pnpm && rm -rf next@* @next+* react-native@* @react-native+* \
+  expo@* expo-* @expo+* hermes-* metro* react-devtools-core@* playwright* @playwright+* \
+  @img+sharp* sharp@* @babel+* babel-* typescript@* @types+* react-native-* react-dom@* \
+  esbuild@* @esbuild+* drizzle-kit@* lightningcss* @noxcturnal+* fb-dotslash@* \
+  && find /prod/node_modules -type l ! -exec test -e {} \; -delete
 
 FROM node:24-alpine AS runtime
 WORKDIR /app
@@ -46,4 +53,4 @@ EXPOSE 3001
 # Celui de l'API ; le service cron le remplace par le sien (docker-compose.preprod.yml).
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD wget -q -O /dev/null http://127.0.0.1:3001/v1/health || exit 1
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "node dist/migrate.js && exec node dist/main.js"]

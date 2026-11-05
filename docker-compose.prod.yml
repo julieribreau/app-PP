@@ -1,61 +1,54 @@
-# Préprod : posé sur la VM par bullify-deploy (cf .github/workflows/cd.yml), qui
-# remplit les variables d'image avec le tag déployé. Base PostgreSQL et stockage
-# objet : services managés Scaleway, joints par le .env (jamais un volume local).
-# ponytail: un seul réplica par service ; Helm le jour où il en faut plusieurs.
-# Journaux Docker tournants : sans plafond, un service bavard remplit le disque de la VM.
+# Production minimale : images publiées par .github/workflows/docker.yml sur GHCR.
+# Sur l'hôte : ce fichier + un .env (cf .env.example, section « Déploiement »), puis
+#   docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d
+# Le backend joue ses migrations à chaque démarrage. Stockage objet (S3) et e-mails (Brevo) :
+# services externes, renseignés dans le .env.
 x-logging: &logging
   driver: json-file
   options: { max-size: "10m", max-file: "5" }
 
-# NODE_ENV vaut `production` dans les images ; APP_ENV porte ce qui diffère de la prod
-# (environnement Sentry, bandeau, garde-fous du seed et des tests), posé ici pour chaque
-# service plutôt que laissé au .env.
-x-app-env: &app-env
-  APP_ENV: preprod
-
 services:
   backend:
-    image: ${BACKEND_IMAGE}
-    env_file: .env
-    environment: *app-env
-    restart: unless-stopped
-    logging: *logging
-    depends_on: [redis]
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3001/v1/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-
-  # Même image, autre process : les crons ne tournent jamais dans l'API (cf socle).
-  # Migrations : `node dist/migrate.js` dans cette même image, lancé par migrer() de
-  # bullify-deploy avant `compose up` (compose run --rm --no-deps backend node dist/migrate.js).
-  cron:
-    image: ${BACKEND_IMAGE}
-    command: ["node", "dist/modules/cron/main.js"]
+    image: ghcr.io/${GHCR_OWNER:?GHCR_OWNER manquant}/nutrion-backend:${IMAGE_TAG:-latest}
     env_file: .env
     environment:
-      <<: *app-env
-      CRON_HEALTH_PORT: "3100"
+      NODE_ENV: production
+      DATABASE_URL: postgres://nutrion:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant}@db:5432/nutrion
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_started }
     restart: unless-stopped
     logging: *logging
-    depends_on: [redis]
-    # Remplace celui de l'image, qui sonde le port de l'API. Port interne, non publié.
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3100/v1/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
 
+  # Le web réécrit /api/* vers http://backend:3001 (BACKEND_URL figé au build de l'image).
   web:
-    image: ${WEB_IMAGE}
-    env_file: .env
-    environment: *app-env
+    image: ghcr.io/${GHCR_OWNER}/nutrion-web:${IMAGE_TAG:-latest}
+    ports: ["${WEB_PORT:-3000}:3000"]
+    depends_on: [backend]
     restart: unless-stopped
     logging: *logging
-    depends_on: [backend]
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: nutrion
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: nutrion
+    volumes: [db:/var/lib/postgresql]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "nutrion"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+    logging: *logging
 
   redis:
     image: redis:8
+    volumes: [redis:/data]
     restart: unless-stopped
     logging: *logging
+
+volumes:
+  db:
+  redis:

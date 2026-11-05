@@ -111,8 +111,20 @@ apps/
   load-tests/        scénarios k6 (smoke, lecture publique)
 packages/            ui, ui-tokens, i18n, types, config, db, db-schema…
 tools/               storybook-visual (régression visuelle), sonar, gatus
-.github/workflows/   CI (template Bullify)
+.github/workflows/   docker.yml : contrôle, images GHCR, déploiement (cf CI/CD)
 ```
+
+## CI/CD
+
+Un seul workflow, [`.github/workflows/docker.yml`](.github/workflows/docker.yml), sur `main`, les tags `v*` et à la demande :
+
+1. **check** : `pnpm install` puis `pnpm turbo run lint typecheck test`.
+2. **images** : construit `apps/backend` et `apps/web` et les pousse sur `ghcr.io/<owner>/nutrion-backend|web`, avec les tags `sha-<7>`, `latest` (sur main) et `vX.Y.Z` (sur tag).
+3. **deploy** : ne tourne que si la variable de dépôt `DEPLOY_HOST` (`user@hôte`) existe. Il se connecte en SSH avec le secret `SSH_DEPLOY_KEY` et lance `docker compose -f docker-compose.prod.yml pull && up -d` dans `DEPLOY_DIR` (`/opt/nutrion` par défaut).
+4. **Sur l'hôte** : placer `docker-compose.prod.yml` et un `.env` (section « Déploiement » de `.env.example`), puis `docker login ghcr.io`. Variables facultatives : `SITE_URL` (URL publique du web, figée au build) et `POSTHOG_KEY`.
+5. **En local** :
+   - `docker build -f apps/backend/Dockerfile -t nutrion-backend .` (au démarrage, le conteneur joue ses migrations puis lance l'API) ;
+   - `docker build -f apps/web/Dockerfile --build-arg NEXT_PUBLIC_SITE_URL=http://localhost:3000 -t nutrion-web .`.
 
 ## Conventions & socle
 

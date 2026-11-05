@@ -7,7 +7,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["NEXT_PUBLIC_*", "RELEASE", "SENTRY_ORG", "SENTRY_PROJECT"],
+      "env": ["NEXT_PUBLIC_*", "BACKEND_URL", "RELEASE", "SENTRY_ORG", "SENTRY_PROJECT"],
       // Turbo ne passe à une tâche que les variables déclarées (mode strict) : le jeton
       // d'envoi des sourcemaps passe, sans entrer dans la clé de cache.
       "passThroughEnv": ["SENTRY_AUTH_TOKEN"]
