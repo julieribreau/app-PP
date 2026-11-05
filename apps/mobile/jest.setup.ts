@@ -1,7 +1,8 @@
 // Doublures des modules natifs absents sous jest-expo (aucun appareil derrière).
-/* global jest */
+import { jest } from "@jest/globals";
+
 jest.mock("@react-native-async-storage/async-storage", () =>
-  require("@react-native-async-storage/async-storage/jest"),
+  jest.requireActual("@react-native-async-storage/async-storage/jest"),
 );
 
 jest.mock("expo-localization", () => ({
@@ -9,13 +10,13 @@ jest.mock("expo-localization", () => ({
 }));
 
 jest.mock("expo-secure-store", () => {
-  const data = new Map();
+  const data = new Map<string, string>();
   return {
-    getItem: (key) => data.get(key) ?? null,
-    setItem: (key, value) => void data.set(key, value),
-    getItemAsync: async (key) => data.get(key) ?? null,
-    setItemAsync: async (key, value) => void data.set(key, value),
-    deleteItemAsync: async (key) => void data.delete(key),
+    getItem: (key: string) => data.get(key) ?? null,
+    setItem: (key: string, value: string) => void data.set(key, value),
+    getItemAsync: async (key: string) => data.get(key) ?? null,
+    setItemAsync: async (key: string, value: string) => void data.set(key, value),
+    deleteItemAsync: async (key: string) => void data.delete(key),
   };
 });
 
@@ -27,4 +28,9 @@ jest.mock("expo-local-authentication", () => ({
   authenticateAsync: jest.fn(async () => ({ success: true })),
 }));
 
-jest.mock("react-native-safe-area-context", () => require("react-native-safe-area-context/jest/mock").default);
+jest.mock(
+  "react-native-safe-area-context",
+  () =>
+    (jest.requireActual("react-native-safe-area-context/jest/mock") as { default: unknown })
+      .default,
+);

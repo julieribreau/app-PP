@@ -3,7 +3,14 @@ import { AccessibilityInfo } from "react-native";
 
 import { useAddToCart } from "@/hooks/cart/useCart";
 import { ApiError } from "@/lib/api/client";
-import { clampQuantity, findVariant, initialSelection, maxQuantity, selectValue, type Selection } from "@/lib/catalog/variant";
+import {
+  clampQuantity,
+  findVariant,
+  initialSelection,
+  maxQuantity,
+  selectValue,
+  type Selection,
+} from "@/lib/catalog/variant";
 import { useI18n } from "@/lib/i18n/useI18n";
 import type { ProductDetail } from "@/types/api";
 
@@ -46,10 +53,16 @@ export function useProductPurchase(product: ProductDetail) {
       {
         onSuccess: () => {
           setAdded(true);
-          AccessibilityInfo.announceForAccessibility(f(t.product.added, { label: `${qty} × ${variant.label || product.name}` }));
+          AccessibilityInfo.announceForAccessibility(
+            f(t.product.added, { label: `${qty} × ${variant.label || product.name}` }),
+          );
         },
         onError: (e) =>
-          setError(e instanceof ApiError && e.code === "VARIANT_OUT_OF_STOCK" ? t.mobile.product.unavailableCombination : t.common.error),
+          setError(
+            e instanceof ApiError && e.code === "VARIANT_OUT_OF_STOCK"
+              ? t.mobile.product.unavailableCombination
+              : t.common.error,
+          ),
       },
     );
   };

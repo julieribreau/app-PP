@@ -17,7 +17,8 @@ export function usePrefsSync(): void {
     if (!profile || syncedFor.current === profile.id) return;
     syncedFor.current = profile.id;
     const prefs = usePrefsStore.getState();
-    if (isLocale(profile.locale) && profile.locale !== prefs.locale) prefs.setLocale(profile.locale);
+    if (isLocale(profile.locale) && profile.locale !== prefs.locale)
+      prefs.setLocale(profile.locale);
     if (profile.theme !== prefs.theme) prefs.setTheme(profile.theme);
     prefs.rememberAccount({ firstName: profile.firstName, email: profile.email });
   }, [me.data]);

@@ -10,7 +10,12 @@ describe("biometricKind", () => {
   });
 
   it("dit l'empreinte sur Android dès qu'un lecteur existe", () => {
-    expect(biometricKind([AuthenticationType.FINGERPRINT, AuthenticationType.FACIAL_RECOGNITION], "android")).toBe("fingerprint");
+    expect(
+      biometricKind(
+        [AuthenticationType.FINGERPRINT, AuthenticationType.FACIAL_RECOGNITION],
+        "android",
+      ),
+    ).toBe("fingerprint");
     expect(biometricKind([AuthenticationType.FACIAL_RECOGNITION], "android")).toBe("faceId");
   });
 });

@@ -14,7 +14,16 @@ import { usePrefsStore } from "@/stores/prefs.store";
 import { AuthLayout, TextLink } from "@/screens/auth/AuthLayout";
 
 /** Formulaire e-mail + mot de passe, réutilisé par l'écran de déverrouillage. */
-export function SignInForm({ onSignedIn, initialEmail = "" }: { onSignedIn: () => void; initialEmail?: string }) {
+export function SignInForm({
+  onSignedIn,
+  initialEmail = "",
+  secondary = false,
+}: {
+  onSignedIn: () => void;
+  initialEmail?: string;
+  /** Bouton en contour quand un autre geste est le principal (déverrouillage biométrique). */
+  secondary?: boolean;
+}) {
   const { t } = useI18n();
   const { signIn } = useAuthActions();
   const offerBiometric = useBiometricOffer();
@@ -71,7 +80,13 @@ export function SignInForm({ onSignedIn, initialEmail = "" }: { onSignedIn: () =
         returnKeyType="go"
         error={error}
       />
-      <Button testID="sign-in-submit" label={t.auth.signIn} onPress={() => void submit()} loading={busy} />
+      <Button
+        testID="sign-in-submit"
+        label={t.auth.signIn}
+        variant={secondary ? "outline" : "primary"}
+        onPress={() => void submit()}
+        loading={busy}
+      />
       <AppText variant="help">{t.auth.mergeNote}</AppText>
     </View>
   );
@@ -82,7 +97,10 @@ export function SignInScreen() {
   const lastEmail = usePrefsStore((s) => s.lastEmail);
   return (
     <AuthLayout title={t.auth.welcomeBack} lead={t.auth.signInLead}>
-      <SignInForm initialEmail={lastEmail ?? ""} onSignedIn={() => (router.canGoBack() ? router.back() : router.replace("/"))} />
+      <SignInForm
+        initialEmail={lastEmail ?? ""}
+        onSignedIn={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+      />
       <View style={styles.links}>
         <TextLink label={t.auth.forgot} onPress={() => router.push(FORGOT_PASSWORD_ROUTE)} />
         <TextLink strong label={t.auth.signUpTab} onPress={() => router.replace(SIGN_UP_ROUTE)} />

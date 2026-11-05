@@ -41,9 +41,15 @@ export const usePrefsStore = create<PrefsState>()(
       setTheme: (theme) => set({ theme }),
       setBiometric: (biometricEnabled) => set({ biometricEnabled }),
       markBiometricAsked: (email) => set({ biometricAskedFor: email }),
-      rememberAccount: ({ firstName, email }) => set({ lastFirstName: firstName, lastEmail: email }),
+      rememberAccount: ({ firstName, email }) =>
+        set({ lastFirstName: firstName, lastEmail: email }),
       forgetAccount: () =>
-        set({ biometricEnabled: false, biometricAskedFor: null, lastFirstName: null, lastEmail: null }),
+        set({
+          biometricEnabled: false,
+          biometricAskedFor: null,
+          lastFirstName: null,
+          lastEmail: null,
+        }),
     }),
     {
       name: "nutrion:prefs",

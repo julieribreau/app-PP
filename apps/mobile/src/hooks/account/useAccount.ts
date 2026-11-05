@@ -63,13 +63,16 @@ function useAddressWrite<V>(write: (vars: V) => Promise<unknown>) {
   });
 }
 
-export const useCreateAddress = () => useAddressWrite((input: AddressInput) => api.post<Address>("/account/addresses", input));
+export const useCreateAddress = () =>
+  useAddressWrite((input: AddressInput) => api.post<Address>("/account/addresses", input));
 export const useUpdateAddress = () =>
   useAddressWrite(({ id, input }: { id: string; input: Partial<AddressInput> }) =>
     api.patch<Address>(`/account/addresses/${id}`, input),
   );
-export const useDeleteAddress = () => useAddressWrite((id: string) => api.delete<void>(`/account/addresses/${id}`));
-export const useDefaultAddress = () => useAddressWrite((id: string) => api.post<Address>(`/account/addresses/${id}/default`));
+export const useDeleteAddress = () =>
+  useAddressWrite((id: string) => api.delete<void>(`/account/addresses/${id}`));
+export const useDefaultAddress = () =>
+  useAddressWrite((id: string) => api.post<Address>(`/account/addresses/${id}/default`));
 
 /** Télécharge l'export ZIP dans le cache de l'app, puis ouvre la feuille de partage. */
 export async function exportMyData(): Promise<void> {

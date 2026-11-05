@@ -39,7 +39,13 @@ export function Icon({ name, color, size = 22, strokeWidth = 1.75 }: IconProps) 
     fill: "none",
   };
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       {SHAPES[name](common)}
     </Svg>
   );
@@ -82,7 +88,10 @@ const SHAPES: Record<IconName, (p: Common) => React.ReactNode> = {
   trash: (p) => <Path {...p} d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />,
   scanFace: (p) => (
     <>
-      <Path {...p} d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" />
+      <Path
+        {...p}
+        d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"
+      />
       <Path {...p} d="M8 14s1.5 2 4 2 4-2 4-2" />
       <Path {...p} d="M9 9h.01M15 9h.01" />
     </>
@@ -105,7 +114,10 @@ const SHAPES: Record<IconName, (p: Common) => React.ReactNode> = {
   download: (p) => <Path {...p} d="M12 3v12M7 10l5 5 5-5M5 21h14" />,
   camera: (p) => (
     <>
-      <Path {...p} d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3Z" />
+      <Path
+        {...p}
+        d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3Z"
+      />
       <Circle {...p} cx={12} cy={13} r={3} />
     </>
   ),

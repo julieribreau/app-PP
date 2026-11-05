@@ -6,7 +6,10 @@ import type { ProductDetail, ProductVariant } from "@/types/api";
 export type Selection = Record<string, string>;
 
 /** La variante dont la combinaison correspond exactement à la sélection. */
-export function findVariant(product: Pick<ProductDetail, "options" | "variants">, selection: Selection) {
+export function findVariant(
+  product: Pick<ProductDetail, "options" | "variants">,
+  selection: Selection,
+) {
   return product.variants.find((variant) =>
     product.options.every((option) => variant.optionValues[option.id] === selection[option.id]),
   );

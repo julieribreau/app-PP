@@ -22,7 +22,12 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
   const shownPrice = product.priceVaries
     ? f(t.common.priceFrom, { price: price(product.priceFromCents) })
     : price(product.priceFromCents);
-  const label = [product.category?.name, product.name, shownPrice, product.available ? null : t.common.outOfStock]
+  const label = [
+    product.category?.name,
+    product.name,
+    shownPrice,
+    product.available ? null : t.common.outOfStock,
+  ]
     .filter(Boolean)
     .join(", ");
   return (
@@ -43,7 +48,11 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
         accessibilityLabel={product.name}
         style={styles.image}
       />
-      <View style={styles.body} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View
+        style={styles.body}
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
+      >
         {product.category ? (
           <AppText variant="overline" numberOfLines={1}>
             {product.category.name}
@@ -65,5 +74,12 @@ const styles = StyleSheet.create({
   card: { flex: 1, borderWidth: 1, borderRadius: 20, overflow: "hidden" },
   image: { aspectRatio: 1 },
   body: { paddingHorizontal: 12, paddingTop: 10, paddingBottom: 12, gap: 4 },
-  foot: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 6, marginTop: 4, flexWrap: "wrap" },
+  foot: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+    marginTop: 4,
+    flexWrap: "wrap",
+  },
 });

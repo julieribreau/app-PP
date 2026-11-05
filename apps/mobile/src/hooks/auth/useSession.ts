@@ -59,13 +59,18 @@ export function useAuthActions() {
         firstName: input.firstName.trim(),
         lastName: input.lastName.trim(),
       });
-      return error ? { ok: false as const, error: authErrorKind(error), message: error.message } : { ok: true as const };
+      return error
+        ? { ok: false as const, error: authErrorKind(error), message: error.message }
+        : { ok: true as const };
     },
     [],
   );
 
   const requestPasswordReset = React.useCallback(async (email: string) => {
-    await authClient.requestPasswordReset({ email: email.trim(), redirectTo: "nutrion://auth/reset-password" });
+    await authClient.requestPasswordReset({
+      email: email.trim(),
+      redirectTo: "nutrion://auth/reset-password",
+    });
   }, []);
 
   const signOut = React.useCallback(

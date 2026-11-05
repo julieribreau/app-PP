@@ -18,8 +18,18 @@ import type { Me } from "@/types/api";
 
 export function ProfileScreen() {
   const me = useMe();
-  if (me.isLoading) return <Screen edges={[]}><Loading /></Screen>;
-  if (!me.data) return <Screen edges={[]}><ErrorState onRetry={() => void me.refetch()} /></Screen>;
+  if (me.isLoading)
+    return (
+      <Screen edges={[]}>
+        <Loading />
+      </Screen>
+    );
+  if (!me.data)
+    return (
+      <Screen edges={[]}>
+        <ErrorState onRetry={() => void me.refetch()} />
+      </Screen>
+    );
   return <ProfileForm me={me.data} />;
 }
 
@@ -29,7 +39,8 @@ function AvatarSection({ me, onError }: { me: Me; onError: () => void }) {
   const removeAvatar = useRemoveAvatar();
   const pickPhoto = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) return Alert.alert(t.account.changePhoto, t.mobile.account.photoPermission);
+    if (!permission.granted)
+      return Alert.alert(t.account.changePhoto, t.mobile.account.photoPermission);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
@@ -39,18 +50,40 @@ function AvatarSection({ me, onError }: { me: Me; onError: () => void }) {
     const asset = result.canceled ? null : result.assets[0];
     if (!asset) return;
     upload.mutate(
-      { uri: asset.uri, name: asset.fileName ?? "avatar.jpg", type: asset.mimeType ?? "image/jpeg" },
+      {
+        uri: asset.uri,
+        name: asset.fileName ?? "avatar.jpg",
+        type: asset.mimeType ?? "image/jpeg",
+      },
       { onError },
     );
   };
   return (
     <View style={styles.avatarRow}>
-      <Avatar size={72} imageUrl={me.imageUrl} initials={initials(me.firstName, me.lastName, me.email)} />
+      <Avatar
+        size={72}
+        imageUrl={me.imageUrl}
+        initials={initials(me.firstName, me.lastName, me.email)}
+      />
       <View style={styles.flex}>
-        <AppText variant="help">{f(t.account.memberSince, { date: date(me.createdAt, "month") })}</AppText>
+        <AppText variant="help">
+          {f(t.account.memberSince, { date: date(me.createdAt, "month") })}
+        </AppText>
         <View style={styles.photoButtons}>
-          <Button label={t.account.changePhoto} variant="outline" icon="camera" loading={upload.isPending} onPress={() => void pickPhoto()} />
-          {me.imageUrl ? <Button label={t.account.removePhoto} variant="ghost" onPress={() => removeAvatar.mutate()} /> : null}
+          <Button
+            label={t.account.changePhoto}
+            variant="outline"
+            icon="camera"
+            loading={upload.isPending}
+            onPress={() => void pickPhoto()}
+          />
+          {me.imageUrl ? (
+            <Button
+              label={t.account.removePhoto}
+              variant="ghost"
+              onPress={() => removeAvatar.mutate()}
+            />
+          ) : null}
         </View>
       </View>
     </View>
@@ -68,7 +101,8 @@ function ProfileForm({ me }: { me: Me }) {
   });
   const [notice, setNotice] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const set = (key: keyof typeof form) => (value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const set = (key: keyof typeof form) => (value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
   const save = async () => {
     setError(null);
@@ -81,7 +115,10 @@ function ProfileForm({ me }: { me: Me }) {
         phone: form.phone.trim() || null,
       });
       if (form.email.trim().toLowerCase() !== me.email.toLowerCase()) {
-        const { error: emailError } = await authClient.changeEmail({ newEmail: form.email.trim(), callbackURL: "nutrion://account" });
+        const { error: emailError } = await authClient.changeEmail({
+          newEmail: form.email.trim(),
+          callbackURL: "nutrion://account",
+        });
         if (emailError) throw emailError;
         setNotice(t.mobile.account.emailChangeSent);
       } else {
@@ -96,8 +133,18 @@ function ProfileForm({ me }: { me: Me }) {
     <Screen edges={["bottom"]}>
       <AvatarSection me={me} onError={() => setError(t.common.error)} />
       {notice ? <Note>{notice}</Note> : null}
-      <TextField label={t.auth.firstName} value={form.firstName} onChangeText={set("firstName")} autoComplete="given-name" />
-      <TextField label={t.auth.lastName} value={form.lastName} onChangeText={set("lastName")} autoComplete="family-name" />
+      <TextField
+        label={t.auth.firstName}
+        value={form.firstName}
+        onChangeText={set("firstName")}
+        autoComplete="given-name"
+      />
+      <TextField
+        label={t.auth.lastName}
+        value={form.lastName}
+        onChangeText={set("lastName")}
+        autoComplete="family-name"
+      />
       <TextField
         label={t.auth.email}
         help={t.account.emailChangeHelp}
@@ -107,7 +154,14 @@ function ProfileForm({ me }: { me: Me }) {
         autoCapitalize="none"
         autoComplete="email"
       />
-      <TextField label={t.account.phone} value={form.phone} onChangeText={set("phone")} keyboardType="phone-pad" autoComplete="tel" error={error} />
+      <TextField
+        label={t.account.phone}
+        value={form.phone}
+        onChangeText={set("phone")}
+        keyboardType="phone-pad"
+        autoComplete="tel"
+        error={error}
+      />
       <Button label={t.common.save} onPress={() => void save()} loading={update.isPending} />
     </Screen>
   );

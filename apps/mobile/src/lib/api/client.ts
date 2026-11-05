@@ -23,7 +23,10 @@ export const api = createApiClient({
 });
 
 /** Envoi multipart (photo de profil) : hors JSON, même en-têtes que le reste. */
-export async function uploadFile<T>(path: string, file: { uri: string; name: string; type: string }) {
+export async function uploadFile<T>(
+  path: string,
+  file: { uri: string; name: string; type: string },
+) {
   const body = new FormData();
   // React Native lit { uri, name, type } comme un fichier du disque.
   body.append("file", file as unknown as Blob);

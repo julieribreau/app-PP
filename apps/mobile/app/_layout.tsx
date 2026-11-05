@@ -60,7 +60,10 @@ function Navigation() {
       <Stack.Screen name="product/[slug]" options={{ headerShown: false }} />
       <Stack.Screen name="auth/sign-in" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="auth/sign-up" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="auth/forgot-password" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen
+        name="auth/forgot-password"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
       <Stack.Screen name="account/profile" options={{ title: t.account.profile }} />
       <Stack.Screen name="account/addresses" options={{ title: t.account.addressesTitle }} />
       <Stack.Screen name="account/address/[id]" options={{ title: t.mobile.account.editAddress }} />

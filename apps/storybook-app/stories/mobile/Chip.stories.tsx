@@ -19,7 +19,14 @@ function Chips() {
   return (
     <View style={styles.row} accessibilityRole="radiogroup">
       {items.map((item) => (
-        <Chip key={item.id} role="radio" size="sm" label={item.label} selected={picked === item.id} onPress={() => setPicked(item.id)} />
+        <Chip
+          key={item.id}
+          role="radio"
+          size="sm"
+          label={item.label}
+          selected={picked === item.id}
+          onPress={() => setPicked(item.id)}
+        />
       ))}
       <Chip label="Myrtille" disabled />
     </View>

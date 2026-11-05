@@ -2,9 +2,21 @@ import { describe, expect, it } from "vitest";
 
 import type { ProductDetail } from "@/types/api";
 
-import { clampQuantity, findVariant, initialSelection, maxQuantity, selectValue, valueExists } from "./variant";
+import {
+  clampQuantity,
+  findVariant,
+  initialSelection,
+  maxQuantity,
+  selectValue,
+  valueExists,
+} from "./variant";
 
-const v = (id: string, flavor: string, format: string, stock: number | null, available = stock !== 0) => ({
+const v = (
+  id: string,
+  [flavor, format]: [string, string],
+  stock: number | null,
+  available = stock !== 0,
+) => ({
   id,
   optionValues: { saveur: flavor, format },
   label: `${flavor} · ${format}`,
@@ -15,16 +27,31 @@ const v = (id: string, flavor: string, format: string, stock: number | null, ava
 
 const product: Pick<ProductDetail, "options" | "variants"> = {
   options: [
-    { id: "saveur", name: "Saveur", values: [{ id: "cacao", label: "Cacao" }, { id: "noisette", label: "Noisette" }, { id: "myrtille", label: "Myrtille" }] },
-    { id: "format", name: "Format", values: [{ id: "unit", label: "À l'unité" }, { id: "box", label: "Boîte de 12" }] },
+    {
+      id: "saveur",
+      name: "Saveur",
+      values: [
+        { id: "cacao", label: "Cacao" },
+        { id: "noisette", label: "Noisette" },
+        { id: "myrtille", label: "Myrtille" },
+      ],
+    },
+    {
+      id: "format",
+      name: "Format",
+      values: [
+        { id: "unit", label: "À l'unité" },
+        { id: "box", label: "Boîte de 12" },
+      ],
+    },
   ],
   variants: [
-    v("1", "cacao", "unit", 0),
-    v("2", "cacao", "box", 3),
-    v("3", "noisette", "unit", 18),
-    v("4", "noisette", "box", null),
+    v("1", ["cacao", "unit"], 0),
+    v("2", ["cacao", "box"], 3),
+    v("3", ["noisette", "unit"], 18),
+    v("4", ["noisette", "box"], null),
     // Myrtille n'existe qu'à l'unité (la boîte a été désactivée au back-office).
-    v("5", "myrtille", "unit", 25),
+    v("5", ["myrtille", "unit"], 25),
   ],
 };
 
@@ -35,7 +62,7 @@ describe("findVariant", () => {
   });
 
   it("vend la variante unique d'un produit sans option", () => {
-    const single = { options: [], variants: [{ ...v("9", "", "", null), optionValues: {} }] };
+    const single = { options: [], variants: [{ ...v("9", ["", ""], null), optionValues: {} }] };
     expect(findVariant(single, {})?.id).toBe("9");
   });
 });
@@ -48,11 +75,17 @@ describe("initialSelection", () => {
 
 describe("selectValue", () => {
   it("change une option quand la combinaison existe", () => {
-    expect(selectValue(product, { saveur: "cacao", format: "box" }, "saveur", "noisette")).toEqual({ saveur: "noisette", format: "box" });
+    expect(selectValue(product, { saveur: "cacao", format: "box" }, "saveur", "noisette")).toEqual({
+      saveur: "noisette",
+      format: "box",
+    });
   });
 
   it("complète avec une variante existante sinon", () => {
-    expect(selectValue(product, { saveur: "cacao", format: "box" }, "saveur", "myrtille")).toEqual({ saveur: "myrtille", format: "unit" });
+    expect(selectValue(product, { saveur: "cacao", format: "box" }, "saveur", "myrtille")).toEqual({
+      saveur: "myrtille",
+      format: "unit",
+    });
   });
 });
 

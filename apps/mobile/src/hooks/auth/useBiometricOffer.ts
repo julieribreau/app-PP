@@ -9,7 +9,8 @@ import { usePrefsStore } from "@/stores/prefs.store";
 export function useBiometricLabel() {
   const { t } = useI18n();
   return React.useCallback(
-    (kind: BiometricKind) => (kind === "faceId" ? t.auth.faceId : kind === "touchId" ? t.auth.touchId : t.auth.fingerprint),
+    (kind: BiometricKind) =>
+      kind === "faceId" ? t.auth.faceId : kind === "touchId" ? t.auth.touchId : t.auth.fingerprint,
     [t],
   );
 }
@@ -30,18 +31,22 @@ export function useBiometricOffer() {
       prefs.markBiometricAsked(email);
       const method = label(support.kind);
       await new Promise<void>((resolve) => {
-        Alert.alert(f(t.mobile.auth.biometricOfferTitle, { method }), t.mobile.auth.biometricOfferBody, [
-          { text: t.mobile.auth.later, style: "cancel", onPress: () => resolve() },
-          {
-            text: t.mobile.auth.biometricOfferAccept,
-            onPress: () => {
-              void authenticate(t.mobile.auth.biometricPrompt, t.common.cancel).then((ok) => {
-                if (ok) usePrefsStore.getState().setBiometric(true);
-                resolve();
-              });
+        Alert.alert(
+          f(t.mobile.auth.biometricOfferTitle, { method }),
+          t.mobile.auth.biometricOfferBody,
+          [
+            { text: t.mobile.auth.later, style: "cancel", onPress: () => resolve() },
+            {
+              text: t.mobile.auth.biometricOfferAccept,
+              onPress: () => {
+                void authenticate(t.mobile.auth.biometricPrompt, t.common.cancel).then((ok) => {
+                  if (ok) usePrefsStore.getState().setBiometric(true);
+                  resolve();
+                });
+              },
             },
-          },
-        ]);
+          ],
+        );
       });
     },
     [f, label, t],

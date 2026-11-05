@@ -63,7 +63,23 @@ const config: StorybookConfig = {
     resolve: {
       ...vite.resolve,
       // `@/` vise apps/mobile/src, comme dans l'app.
-      alias: [...aliasList(vite.resolve?.alias), { find: /^@\//, replacement: `${mobileSrc}/` }],
+      alias: [
+        ...aliasList(vite.resolve?.alias),
+        // Écrans de l'app : session et capteur biométrique simulés (aucun appel réseau).
+        {
+          find: /^@\/hooks\/auth\/useSession$/,
+          replacement: fileURLToPath(new URL("./mocks/useSession.ts", import.meta.url)),
+        },
+        {
+          find: /^@react-native\/assets-registry\/registry$/,
+          replacement: fileURLToPath(new URL("./mocks/assets-registry.ts", import.meta.url)),
+        },
+        {
+          find: /^expo-local-authentication$/,
+          replacement: fileURLToPath(new URL("./mocks/local-authentication.ts", import.meta.url)),
+        },
+        { find: /^@\//, replacement: `${mobileSrc}/` },
+      ],
     },
   }),
 };

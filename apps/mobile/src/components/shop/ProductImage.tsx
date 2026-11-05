@@ -35,8 +35,19 @@ export function ProductImage({
 
   if (imageUrl && !failed) {
     return (
-      <View style={container} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-        <Image source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} contentFit="cover" onError={() => setFailed(true)} transition={150} />
+      <View
+        style={container}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={accessibilityLabel}
+      >
+        <Image
+          source={{ uri: imageUrl }}
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          onError={() => setFailed(true)}
+          transition={150}
+        />
       </View>
     );
   }
@@ -45,8 +56,18 @@ export function ProductImage({
   const fill = (c: BrandColor) => color[c];
   const kind = placeholderKind(categorySlug);
   return (
-    <View style={container} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-      <Svg width={`${scale * 100}%`} height="70%" viewBox="0 0 160 90" preserveAspectRatio="xMidYMid meet">
+    <View
+      style={container}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={accessibilityLabel}
+    >
+      <Svg
+        width={`${scale * 100}%`}
+        height="70%"
+        viewBox="0 0 160 90"
+        preserveAspectRatio="xMidYMid meet"
+      >
         {kind === "bar" ? (
           <>
             <Rect x={14} y={28} width={132} height={38} rx={12} fill={fill(main)} />

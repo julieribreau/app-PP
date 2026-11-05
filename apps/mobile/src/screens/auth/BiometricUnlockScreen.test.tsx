@@ -5,11 +5,14 @@ import { Platform } from "react-native";
 
 import { useLockStore } from "@/stores/lock.store";
 import { usePrefsStore } from "@/stores/prefs.store";
+import type * as mockApi from "@/test/api-mock";
 import { renderWithProviders } from "@/test/render";
 
 import { BiometricUnlockScreen } from "./BiometricUnlockScreen";
 
-jest.mock("expo-router", () => ({ router: require("@/test/api-mock").routerMock }));
+jest.mock("expo-router", () => ({
+  router: jest.requireActual<typeof mockApi>("@/test/api-mock").routerMock,
+}));
 jest.mock("@/hooks/auth/useSession", () => ({
   useSession: () => ({ data: null, isPending: false }),
   useAuthActions: () => ({
@@ -20,12 +23,18 @@ jest.mock("@/hooks/auth/useSession", () => ({
   }),
 }));
 
-const authenticate = LocalAuthentication.authenticateAsync as unknown as jest.Mock<() => Promise<{ success: boolean }>>;
+const authenticate = LocalAuthentication.authenticateAsync as unknown as jest.Mock<
+  () => Promise<{ success: boolean }>
+>;
 
 describe("déverrouillage biométrique", () => {
   beforeEach(() => {
     Platform.OS = "ios";
-    usePrefsStore.setState({ lastFirstName: "Camille", lastEmail: "camille.martin@exemple.fr", locale: "fr" });
+    usePrefsStore.setState({
+      lastFirstName: "Camille",
+      lastEmail: "camille.martin@exemple.fr",
+      locale: "fr",
+    });
     useLockStore.getState().lock();
     authenticate.mockReset();
   });

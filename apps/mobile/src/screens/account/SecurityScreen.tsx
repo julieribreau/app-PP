@@ -55,7 +55,13 @@ function ChangePassword() {
   return (
     <View style={styles.block}>
       {done ? <Note>{t.mobile.account.passwordUpdated}</Note> : null}
-      <TextField label={t.account.currentPassword} value={current} onChangeText={setCurrent} secureTextEntry autoComplete="current-password" />
+      <TextField
+        label={t.account.currentPassword}
+        value={current}
+        onChangeText={setCurrent}
+        secureTextEntry
+        autoComplete="current-password"
+      />
       <TextField
         label={t.auth.newPassword}
         help={t.auth.passwordHelp}
@@ -65,7 +71,13 @@ function ChangePassword() {
         autoComplete="new-password"
         error={error}
       />
-      <Button label={t.account.changePassword} variant="outline" onPress={() => void submit()} loading={busy} disabled={!current || !next} />
+      <Button
+        label={t.account.changePassword}
+        variant="outline"
+        onPress={() => void submit()}
+        loading={busy}
+        disabled={!current || !next}
+      />
     </View>
   );
 }
@@ -107,13 +119,19 @@ function Sessions() {
         return (
           <View key={row.id} style={styles.sessionRow}>
             <View style={styles.flex}>
-              <AppText variant="body">{deviceName(row.userAgent, t.mobile.account.unknownDevice)}</AppText>
+              <AppText variant="body">
+                {deviceName(row.userAgent, t.mobile.account.unknownDevice)}
+              </AppText>
               <AppText variant="help">{date(new Date(row.updatedAt).toISOString())}</AppText>
             </View>
             {current ? (
               <AppText variant="help">{t.account.thisSession}</AppText>
             ) : (
-              <Button label={t.account.revoke} variant="ghost" onPress={() => void revoke(row.token)} />
+              <Button
+                label={t.account.revoke}
+                variant="ghost"
+                onPress={() => void revoke(row.token)}
+              />
             )}
           </View>
         );
@@ -125,5 +143,12 @@ function Sessions() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   block: { gap: 14 },
-  sessionRow: { minHeight: 56, paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 12 },
+  sessionRow: {
+    minHeight: 56,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
 });

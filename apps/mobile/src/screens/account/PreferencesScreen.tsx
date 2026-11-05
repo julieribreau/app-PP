@@ -26,7 +26,12 @@ export function PreferencesScreen() {
       <View accessibilityRole="radiogroup" accessibilityLabel={t.locale.label}>
         <ListGroup>
           {locales.map((value) => (
-            <RadioRow key={value} label={t.locale[value]} selected={locale === value} onPress={() => changeLocale(value)} />
+            <RadioRow
+              key={value}
+              label={t.locale[value]}
+              selected={locale === value}
+              onPress={() => changeLocale(value)}
+            />
           ))}
         </ListGroup>
       </View>
@@ -34,7 +39,12 @@ export function PreferencesScreen() {
       <View accessibilityRole="radiogroup" accessibilityLabel={t.theme.label}>
         <ListGroup>
           {THEMES.map((value) => (
-            <RadioRow key={value} label={t.theme[value]} selected={theme === value} onPress={() => changeTheme(value)} />
+            <RadioRow
+              key={value}
+              label={t.theme[value]}
+              selected={theme === value}
+              onPress={() => changeTheme(value)}
+            />
           ))}
         </ListGroup>
       </View>
@@ -42,7 +52,15 @@ export function PreferencesScreen() {
   );
 }
 
-function RadioRow({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function RadioRow({
+  label,
+  selected,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
   const { color } = useTheme();
   return (
     <Pressable
@@ -62,5 +80,11 @@ function RadioRow({ label, selected, onPress }: { label: string; selected: boole
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  row: { minHeight: 52, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 12 },
+  row: {
+    minHeight: 52,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
 });

@@ -28,7 +28,11 @@ export function CartScreen() {
   }
   const data = cart.data ?? EMPTY_CART;
   return (
-    <Screen onRefresh={() => void cart.refetch()} refreshing={cart.isRefetching} footer={data.items.length > 0 ? <CheckoutBar /> : null}>
+    <Screen
+      onRefresh={() => void cart.refetch()}
+      refreshing={cart.isRefetching}
+      footer={data.items.length > 0 ? <CheckoutBar /> : null}
+    >
       <CartHeader count={data.itemCount} />
       <GuestNote />
       <CartNotes cart={data} />
@@ -57,7 +61,13 @@ function GuestNote() {
     <Note>
       <AppText variant="small" tone="onSecondary">
         {t.mobile.cart.guestNote}{" "}
-        <AppText variant="small" tone="onSecondary" accessibilityRole="link" onPress={() => router.push(SIGN_IN_ROUTE)} style={styles.link}>
+        <AppText
+          variant="small"
+          tone="onSecondary"
+          accessibilityRole="link"
+          onPress={() => router.push(SIGN_IN_ROUTE)}
+          style={styles.link}
+        >
           {t.mobile.cart.guestCta}
         </AppText>{" "}
         {t.mobile.cart.guestNoteEnd}
@@ -81,7 +91,13 @@ function EmptyCart() {
   return (
     <EmptyState
       message={t.cart.empty}
-      action={<Button label={t.cart.emptyCta} variant="outline" onPress={() => router.navigate(SHOP_ROUTE)} />}
+      action={
+        <Button
+          label={t.cart.emptyCta}
+          variant="outline"
+          onPress={() => router.navigate(SHOP_ROUTE)}
+        />
+      }
     />
   );
 }
@@ -113,7 +129,11 @@ function CartContent({ cart }: { cart: Cart }) {
             {price(cart.vatCents)}
           </AppText>
         </View>
-        <View style={styles.totalRow} accessible accessibilityLabel={`${t.cart.total} ${price(cart.totalCents)}`}>
+        <View
+          style={styles.totalRow}
+          accessible
+          accessibilityLabel={`${t.cart.total} ${price(cart.totalCents)}`}
+        >
           <AppText variant="bodyStrong">{t.cart.total}</AppText>
           <AppText variant="priceLarge">{price(cart.totalCents)}</AppText>
         </View>
@@ -128,7 +148,12 @@ function CheckoutBar() {
   const { t } = useI18n();
   return (
     <View style={[styles.footer, { borderColor: color.border, backgroundColor: color.background }]}>
-      <Button testID="checkout" label={t.cart.checkout} disabled accessibilityHint={t.cart.checkoutNote} />
+      <Button
+        testID="checkout"
+        label={t.cart.checkout}
+        disabled
+        accessibilityHint={t.cart.checkoutNote}
+      />
     </View>
   );
 }
@@ -150,8 +175,19 @@ function CartLine({
   const { price } = useI18n();
   return (
     <View style={[styles.line, !last && { borderBottomWidth: 1, borderBottomColor: color.border }]}>
-      <Pressable accessibilityRole="link" accessibilityLabel={item.productName} onPress={() => router.push(productRoute(item.productSlug))}>
-        <ProductImage imageUrl={item.imageUrl} slug={item.productSlug} accessibilityLabel={item.productName} style={styles.thumb} radius={12} scale={0.85} />
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={item.productName}
+        onPress={() => router.push(productRoute(item.productSlug))}
+      >
+        <ProductImage
+          imageUrl={item.imageUrl}
+          slug={item.productSlug}
+          accessibilityLabel={item.productName}
+          style={styles.thumb}
+          radius={12}
+          scale={0.85}
+        />
       </Pressable>
       <View style={styles.lineBody}>
         <AppText variant="title" numberOfLines={2}>
@@ -176,13 +212,24 @@ function CartLine({
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: 4 },
+  header: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+  },
   link: { textDecorationLine: "underline", fontFamily: "DMSans_600SemiBold" },
   list: { borderWidth: 1, borderRadius: 20, paddingHorizontal: 14 },
   line: { flexDirection: "row", gap: 12, alignItems: "center", paddingVertical: 14 },
   thumb: { width: 64, height: 64 },
   lineBody: { flex: 1, gap: 2 },
-  lineFoot: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 6, gap: 8 },
+  lineFoot: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 6,
+    gap: 8,
+  },
   totals: { gap: 6, paddingHorizontal: 4 },
   totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
   footer: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 12, borderTopWidth: 1 },

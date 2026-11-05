@@ -37,7 +37,10 @@ export function ProductScreen({ slug }: { slug: string }) {
       ) : (
         <>
           <BackButton />
-          <ErrorState message={notFound ? t.product.notFound : undefined} onRetry={notFound ? undefined : () => void product.refetch()} />
+          <ErrorState
+            message={notFound ? t.product.notFound : undefined}
+            onRetry={notFound ? undefined : () => void product.refetch()}
+          />
         </>
       )}
     </SafeAreaView>
@@ -70,7 +73,9 @@ export function ProductView({ product }: { product: ProductDetail }) {
   const insets = useSafeAreaInsets();
   const purchase = useProductPurchase(product);
   const description = htmlToText(product.descriptionHtml);
-  const imageLabel = product.imageUrl ? f(t.product.imageAlt, { name: product.name }) : t.product.imagePlaceholder;
+  const imageLabel = product.imageUrl
+    ? f(t.product.imageAlt, { name: product.name })
+    : t.product.imagePlaceholder;
   return (
     <View style={[styles.flex, { backgroundColor: color.background }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -83,7 +88,11 @@ export function ProductView({ product }: { product: ProductDetail }) {
           style={{ height: 320 + insets.top, paddingTop: insets.top }}
         />
         <View style={styles.content}>
-          <TitleBlock product={product} totalCents={purchase.totalCents} purchasable={purchase.purchasable} />
+          <TitleBlock
+            product={product}
+            totalCents={purchase.totalCents}
+            purchasable={purchase.purchasable}
+          />
           <OptionPickers product={product} selection={purchase.selection} onPick={purchase.pick} />
           {product.summary ? <AppText variant="help">{product.summary}</AppText> : null}
           {description ? (
@@ -107,7 +116,15 @@ export function ProductView({ product }: { product: ProductDetail }) {
   );
 }
 
-function TitleBlock({ product, totalCents, purchasable }: { product: ProductDetail; totalCents: number; purchasable: boolean }) {
+function TitleBlock({
+  product,
+  totalCents,
+  purchasable,
+}: {
+  product: ProductDetail;
+  totalCents: number;
+  purchasable: boolean;
+}) {
   const { t, price } = useI18n();
   return (
     <View style={styles.titleBlock}>
@@ -115,7 +132,11 @@ function TitleBlock({ product, totalCents, purchasable }: { product: ProductDeta
       <AppText variant="h1" accessibilityRole="header">
         {product.name}
       </AppText>
-      <View style={styles.priceRow} accessible accessibilityLabel={`${price(totalCents)} ${t.common.ttc}`}>
+      <View
+        style={styles.priceRow}
+        accessible
+        accessibilityLabel={`${price(totalCents)} ${t.common.ttc}`}
+      >
         <AppText variant="priceLarge">{price(totalCents)}</AppText>
         <AppText variant="help">{t.common.ttc}</AppText>
         {purchasable ? null : <Badge label={t.common.outOfStock} />}
@@ -141,8 +162,16 @@ function OptionPickers({
         const values = option.values.filter((value) => valueExists(product, option.id, value.id));
         return (
           <View key={option.id} style={styles.option}>
-            <AppText variant="label">{chosen ? f(t.product.option, { name: option.name, value: chosen.label }) : option.name}</AppText>
-            <View style={styles.chips} accessibilityRole="radiogroup" accessibilityLabel={option.name}>
+            <AppText variant="label">
+              {chosen
+                ? f(t.product.option, { name: option.name, value: chosen.label })
+                : option.name}
+            </AppText>
+            <View
+              style={styles.chips}
+              accessibilityRole="radiogroup"
+              accessibilityLabel={option.name}
+            >
               {values.map((value) => (
                 <Chip
                   key={value.id}
@@ -160,13 +189,37 @@ function OptionPickers({
   );
 }
 
-function PurchaseBar({ purchase, bottomInset }: { purchase: ReturnType<typeof useProductPurchase>; bottomInset: number }) {
+function PurchaseBar({
+  purchase,
+  bottomInset,
+}: {
+  purchase: ReturnType<typeof useProductPurchase>;
+  bottomInset: number;
+}) {
   const { color } = useTheme();
   const { t } = useI18n();
-  const label = !purchase.purchasable ? t.common.unavailable : purchase.added ? t.product.viewCart : t.product.addToCart;
+  const label = !purchase.purchasable
+    ? t.common.unavailable
+    : purchase.added
+      ? t.product.viewCart
+      : t.product.addToCart;
   return (
-    <View style={[styles.bottomBar, { backgroundColor: color.card, borderColor: color.border, paddingBottom: Math.max(bottomInset, 16) }]}>
-      <QuantityStepper value={purchase.qty} max={Math.max(1, purchase.max)} disabled={!purchase.purchasable} onChange={purchase.changeQuantity} />
+    <View
+      style={[
+        styles.bottomBar,
+        {
+          backgroundColor: color.card,
+          borderColor: color.border,
+          paddingBottom: Math.max(bottomInset, 16),
+        },
+      ]}
+    >
+      <QuantityStepper
+        value={purchase.qty}
+        max={Math.max(1, purchase.max)}
+        disabled={!purchase.purchasable}
+        onChange={purchase.changeQuantity}
+      />
       <Button
         testID="add-to-cart"
         style={styles.flex}
@@ -182,12 +235,26 @@ function PurchaseBar({ purchase, bottomInset }: { purchase: ReturnType<typeof us
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   scroll: { paddingBottom: 24 },
-  back: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  back: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   content: { paddingHorizontal: 20, paddingTop: 20, gap: 18 },
   titleBlock: { gap: 4 },
   priceRow: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4, flexWrap: "wrap" },
   option: { gap: 8 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   description: { gap: 6, borderTopWidth: 1, paddingTop: 14 },
-  bottomBar: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1 },
+  bottomBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+  },
 });

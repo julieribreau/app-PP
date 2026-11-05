@@ -12,7 +12,12 @@ export interface AppFetchDeps {
   fetch?: typeof fetch;
 }
 
-export function createAppFetch({ getLocale, getCookie, cartTokens, fetch: doFetch = fetch }: AppFetchDeps) {
+export function createAppFetch({
+  getLocale,
+  getCookie,
+  cartTokens,
+  fetch: doFetch = fetch,
+}: AppFetchDeps) {
   return async function appFetch(input: string, init: RequestInit = {}): Promise<Response> {
     const headers = new Headers(init.headers);
     headers.set("Accept-Language", getLocale());

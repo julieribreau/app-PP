@@ -43,7 +43,11 @@ export function TextField({ label, help, error, ...props }: TextFieldProps) {
         ]}
       />
       {message ? (
-        <AppText variant="help" tone={error ? "destructive" : "muted"} accessibilityLiveRegion={error ? "polite" : "none"}>
+        <AppText
+          variant="help"
+          tone={error ? "destructive" : "muted"}
+          accessibilityLiveRegion={error ? "polite" : "none"}
+        >
           {message}
         </AppText>
       ) : null}

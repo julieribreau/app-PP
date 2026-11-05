@@ -6,18 +6,32 @@ import { AppText } from "@/components/ui/AppText";
 import { useTheme } from "@/theme/useTheme";
 
 /** Photo de profil ou initiales sur fond pêche. Décoratif : le nom est écrit à côté. */
-export function Avatar({ imageUrl, initials, size = 52 }: { imageUrl: string | null; initials: string; size?: number }) {
+export function Avatar({
+  imageUrl,
+  initials,
+  size = 52,
+}: {
+  imageUrl: string | null;
+  initials: string;
+  size?: number;
+}) {
   const { color } = useTheme();
   return (
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[styles.box, { width: size, height: size, borderRadius: size / 2, backgroundColor: color.peach }]}
+      style={[
+        styles.box,
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: color.peach },
+      ]}
     >
       {imageUrl ? (
         <Image source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
       ) : (
-        <AppText variant="bodyStrong" style={{ fontSize: size * 0.35, lineHeight: size * 0.45, color: color.foreground }}>
+        <AppText
+          variant="bodyStrong"
+          style={{ fontSize: size * 0.35, lineHeight: size * 0.45, color: color.foreground }}
+        >
           {initials}
         </AppText>
       )}

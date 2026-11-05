@@ -1,15 +1,23 @@
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, screen, waitFor } from "@testing-library/react-native";
 
 import { apiMock } from "@/test/api-mock";
+import type * as mockApi from "@/test/api-mock";
 import { renderWithProviders } from "@/test/render";
 import { EMPTY_CART, type Cart } from "@/types/api";
 
 import { CartScreen } from "./CartScreen";
 
-jest.mock("@/lib/api/client", () => require("@/test/api-mock").apiModule);
-jest.mock("expo-router", () => ({ router: require("@/test/api-mock").routerMock }));
-jest.mock("@/hooks/auth/useSession", () => ({ useSession: () => ({ data: null, isPending: false }) }));
+jest.mock(
+  "@/lib/api/client",
+  () => jest.requireActual<typeof mockApi>("@/test/api-mock").apiModule,
+);
+jest.mock("expo-router", () => ({
+  router: jest.requireActual<typeof mockApi>("@/test/api-mock").routerMock,
+}));
+jest.mock("@/hooks/auth/useSession", () => ({
+  useSession: () => ({ data: null, isPending: false }),
+}));
 
 const cart: Cart = {
   ...EMPTY_CART,
@@ -33,8 +41,6 @@ const cart: Cart = {
   vatCents: 15,
   totalCents: 290,
 };
-
-const text = (value: string) => screen.getAllByText((content) => content.replace(/[  ]/g, " ") === value);
 
 describe("panier", () => {
   beforeEach(() => {
@@ -62,7 +68,10 @@ describe("panier", () => {
   });
 
   it("signale un panier mis à jour", async () => {
-    apiMock.get.mockResolvedValue({ ...cart, adjustments: [{ variantId: "v1", kind: "quantity_capped" }] });
+    apiMock.get.mockResolvedValue({
+      ...cart,
+      adjustments: [{ variantId: "v1", kind: "quantity_capped" }],
+    });
     await renderWithProviders(<CartScreen />);
     expect(await screen.findByText(/Votre panier a été mis à jour/)).toBeTruthy();
   });

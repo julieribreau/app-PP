@@ -23,7 +23,14 @@ function chipTone(color: ColorTokens, selected: boolean, disabled: boolean) {
   return { bg: "transparent", border: color.input, fg: color.foreground };
 }
 
-export function Chip({ label, selected = false, disabled = false, onPress, size = "md", role = "button" }: ChipProps) {
+export function Chip({
+  label,
+  selected = false,
+  disabled = false,
+  onPress,
+  size = "md",
+  role = "button",
+}: ChipProps) {
   const { color } = useTheme();
   const tone = chipTone(color, selected, disabled);
   const state = role === "radio" ? { checked: selected, disabled } : { selected, disabled };

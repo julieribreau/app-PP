@@ -30,5 +30,11 @@ export function Badge({ label, tone = "muted" }: { label: string; tone?: BadgeTo
 }
 
 const styles = StyleSheet.create({
-  badge: { alignSelf: "flex-start", borderRadius: 8, paddingHorizontal: 8, minHeight: 22, justifyContent: "center" },
+  badge: {
+    alignSelf: "flex-start",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    minHeight: 22,
+    justifyContent: "center",
+  },
 });

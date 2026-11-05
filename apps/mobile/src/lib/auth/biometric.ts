@@ -18,7 +18,9 @@ export function biometricKind(
 ): BiometricKind {
   const face = types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION);
   if (os === "ios") return face ? "faceId" : "touchId";
-  return face && !types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT) ? "faceId" : "fingerprint";
+  return face && !types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)
+    ? "faceId"
+    : "fingerprint";
 }
 
 export async function biometricSupport(): Promise<BiometricSupport> {

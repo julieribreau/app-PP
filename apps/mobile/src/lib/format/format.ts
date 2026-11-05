@@ -21,8 +21,12 @@ export function formatRate(bps: number, locale: string): string {
 /** ISO → « oct. 2026 » ; `long` → « 4 novembre 2026 ». */
 export function formatDate(iso: string, locale: string, style: "month" | "long" = "long"): string {
   const options: Intl.DateTimeFormatOptions =
-    style === "month" ? { month: "short", year: "numeric" } : { day: "numeric", month: "long", year: "numeric" };
-  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", options).format(new Date(iso));
+    style === "month"
+      ? { month: "short", year: "numeric" }
+      : { day: "numeric", month: "long", year: "numeric" };
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", options).format(
+    new Date(iso),
+  );
 }
 
 export type MessageValues = Record<string, string | number>;
@@ -94,7 +98,11 @@ function parseBranches(text: string): Record<string, string> {
 }
 
 /** Initiales d'un nom pour l'avatar : « Camille Martin » → « CM ». */
-export function initials(firstName?: string | null, lastName?: string | null, email?: string): string {
+export function initials(
+  firstName?: string | null,
+  lastName?: string | null,
+  email?: string,
+): string {
   const letters = [firstName, lastName]
     .map((part) => part?.trim().charAt(0) ?? "")
     .join("")

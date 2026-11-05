@@ -7,14 +7,37 @@ import { ProductImage } from "@/components/shop/ProductImage";
 function Images() {
   return (
     <View style={styles.row}>
-      <ProductImage imageUrl={null} slug="avoine-cacao" categorySlug="barres-cereales" accessibilityLabel="Avoine & cacao" style={styles.tile} radius={20} />
-      <ProductImage imageUrl={null} slug="noisette-sarrasin" categorySlug="granolas" accessibilityLabel="Granola noisette" style={styles.tile} radius={20} />
-      <ProductImage imageUrl={null} slug="recuperation-cacao" categorySlug="boissons" accessibilityLabel="Récupération cacao" style={styles.tile} radius={20} />
+      <ProductImage
+        imageUrl={null}
+        slug="avoine-cacao"
+        categorySlug="barres-cereales"
+        accessibilityLabel="Avoine & cacao"
+        style={styles.tile}
+        radius={20}
+      />
+      <ProductImage
+        imageUrl={null}
+        slug="noisette-sarrasin"
+        categorySlug="granolas"
+        accessibilityLabel="Granola noisette"
+        style={styles.tile}
+        radius={20}
+      />
+      <ProductImage
+        imageUrl={null}
+        slug="recuperation-cacao"
+        categorySlug="boissons"
+        accessibilityLabel="Récupération cacao"
+        style={styles.tile}
+        radius={20}
+      />
     </View>
   );
 }
 
-const meta = { title: "Mobile/Molecules/ProductImage", component: Images } satisfies Meta<typeof Images>;
+const meta = { title: "Mobile/Molecules/ProductImage", component: Images } satisfies Meta<
+  typeof Images
+>;
 export default meta;
 export const Formes: StoryObj<typeof meta> = {};
 

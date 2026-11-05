@@ -41,7 +41,11 @@ export function ForgotPasswordScreen() {
         error={error}
       />
       {sent ? (
-        <Button label={t.mobile.auth.backToSignIn} variant="outline" onPress={() => router.back()} />
+        <Button
+          label={t.mobile.auth.backToSignIn}
+          variant="outline"
+          onPress={() => router.back()}
+        />
       ) : (
         <Button label={t.auth.resetSend} onPress={() => void submit()} loading={busy} />
       )}

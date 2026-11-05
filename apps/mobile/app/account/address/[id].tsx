@@ -9,7 +9,9 @@ export default function AddressRoute() {
   const isNew = id === "new";
   return (
     <>
-      <Stack.Screen options={{ title: isNew ? t.mobile.account.newAddress : t.mobile.account.editAddress }} />
+      <Stack.Screen
+        options={{ title: isNew ? t.mobile.account.newAddress : t.mobile.account.editAddress }}
+      />
       <AddressFormScreen id={String(id ?? "new")} />
     </>
   );

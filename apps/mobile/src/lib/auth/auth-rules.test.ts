@@ -18,7 +18,9 @@ describe("règles des formulaires d'accès", () => {
 
 describe("erreurs de connexion", () => {
   it("traduit les codes Better Auth et les statuts", () => {
-    expect(authErrorKind({ code: "INVALID_EMAIL_OR_PASSWORD", status: 401 })).toBe("invalidCredentials");
+    expect(authErrorKind({ code: "INVALID_EMAIL_OR_PASSWORD", status: 401 })).toBe(
+      "invalidCredentials",
+    );
     expect(authErrorKind({ code: "EMAIL_NOT_VERIFIED", status: 403 })).toBe("emailNotVerified");
     expect(authErrorKind({ status: 429 })).toBe("locked");
     expect(authErrorKind({ code: "ACCOUNT_LOCKED" })).toBe("locked");

@@ -11,13 +11,22 @@ function Steppers() {
   return (
     <View style={styles.stack}>
       <QuantityStepper value={a} max={3} onChange={setA} />
-      <QuantityStepper size="sm" value={b} max={42} onChange={setB} onRemove={() => setB(1)} itemName="Avoine & cacao" />
+      <QuantityStepper
+        size="sm"
+        value={b}
+        max={42}
+        onChange={setB}
+        onRemove={() => setB(1)}
+        itemName="Avoine & cacao"
+      />
       <QuantityStepper value={1} max={1} onChange={() => undefined} disabled />
     </View>
   );
 }
 
-const meta = { title: "Mobile/Molecules/QuantityStepper", component: Steppers } satisfies Meta<typeof Steppers>;
+const meta = { title: "Mobile/Molecules/QuantityStepper", component: Steppers } satisfies Meta<
+  typeof Steppers
+>;
 export default meta;
 export const Etats: StoryObj<typeof meta> = {};
 

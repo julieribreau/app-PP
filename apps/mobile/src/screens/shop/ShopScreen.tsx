@@ -1,6 +1,14 @@
 import { router } from "expo-router";
 import * as React from "react";
-import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { EmptyState, ErrorState, Loading } from "@/components/layout/Screen";
@@ -63,7 +71,9 @@ export function ShopScreen() {
               onCategory={setCategory}
             />
           }
-          ListEmptyComponent={products.isLoading ? <Loading /> : <EmptyState message={t.shop.empty} />}
+          ListEmptyComponent={
+            products.isLoading ? <Loading /> : <EmptyState message={t.shop.empty} />
+          }
           columnWrapperStyle={styles.column}
           contentContainerStyle={styles.list}
           keyboardShouldPersistTaps="handled"
@@ -123,7 +133,9 @@ function ShopHeader(props: {
         <AppText variant="display" accessibilityRole="header">
           {t.shop.title}
         </AppText>
-        {props.total !== undefined ? <AppText variant="help">{f(t.shop.count, { count: props.total })}</AppText> : null}
+        {props.total !== undefined ? (
+          <AppText variant="help">{f(t.shop.count, { count: props.total })}</AppText>
+        ) : null}
       </View>
       {props.searchOpen ? (
         <View style={[styles.search, { borderColor: color.input, backgroundColor: color.card }]}>
@@ -147,9 +159,22 @@ function ShopHeader(props: {
         accessibilityRole="radiogroup"
         accessibilityLabel={t.shop.categories}
       >
-        <Chip size="sm" role="radio" label={t.shop.all} selected={props.category === null} onPress={() => props.onCategory(null)} />
+        <Chip
+          size="sm"
+          role="radio"
+          label={t.shop.all}
+          selected={props.category === null}
+          onPress={() => props.onCategory(null)}
+        />
         {props.categories.map((c) => (
-          <Chip key={c.id} size="sm" role="radio" label={c.name} selected={props.category === c.slug} onPress={() => props.onCategory(c.slug)} />
+          <Chip
+            key={c.id}
+            size="sm"
+            role="radio"
+            label={c.name}
+            selected={props.category === c.slug}
+            onPress={() => props.onCategory(c.slug)}
+          />
         ))}
       </ScrollView>
     </View>
@@ -158,11 +183,37 @@ function ShopHeader(props: {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  brandBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingLeft: 20, paddingRight: 8, paddingTop: 8 },
-  iconButton: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  brandBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingLeft: 20,
+    paddingRight: 8,
+    paddingTop: 8,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   headerBlock: { gap: 16, paddingTop: 8, paddingBottom: 16 },
-  titleRow: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: 4 },
-  search: { flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderRadius: 14, paddingHorizontal: 12, minHeight: 48 },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+  },
+  search: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    minHeight: 48,
+  },
   searchInput: { flex: 1, fontFamily: "DMSans_400Regular", fontSize: 16, minHeight: 44 },
   chips: { gap: 8, paddingRight: 16 },
   list: { paddingHorizontal: 16, paddingBottom: 24 },

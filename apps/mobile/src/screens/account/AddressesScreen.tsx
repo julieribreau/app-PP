@@ -35,7 +35,11 @@ export function AddressesScreen() {
     ]);
 
   return (
-    <Screen edges={["bottom"]} onRefresh={() => void addresses.refetch()} refreshing={addresses.isRefetching}>
+    <Screen
+      edges={["bottom"]}
+      onRefresh={() => void addresses.refetch()}
+      refreshing={addresses.isRefetching}
+    >
       {addresses.isLoading ? (
         <Loading />
       ) : addresses.isError ? (
@@ -46,33 +50,71 @@ export function AddressesScreen() {
         [...(addresses.data ?? [])]
           .sort((a, b) => Number(b.isDefault) - Number(a.isDefault))
           .map((address) => (
-            <View key={address.id} style={[styles.card, { backgroundColor: color.card, borderColor: color.border }]}>
+            <View
+              key={address.id}
+              style={[styles.card, { backgroundColor: color.card, borderColor: color.border }]}
+            >
               <View style={styles.cardHead}>
                 <AppText variant="bodyStrong">{address.label || address.recipientName}</AppText>
-                {address.isDefault ? <Badge label={t.account.address.default} tone="success" /> : null}
+                {address.isDefault ? (
+                  <Badge label={t.account.address.default} tone="success" />
+                ) : null}
               </View>
               <AppText variant="help">
-                {[address.recipientName, address.line1, address.line2, `${address.postalCode} ${address.city}`].filter(Boolean).join("\n")}
+                {[
+                  address.recipientName,
+                  address.line1,
+                  address.line2,
+                  `${address.postalCode} ${address.city}`,
+                ]
+                  .filter(Boolean)
+                  .join("\n")}
               </AppText>
               <View style={styles.actions}>
-                <ActionLink label={t.common.edit} onPress={() => router.push(addressRoute(address.id))} />
+                <ActionLink
+                  label={t.common.edit}
+                  onPress={() => router.push(addressRoute(address.id))}
+                />
                 {address.isDefault ? null : (
-                  <ActionLink label={t.account.address.makeDefault} onPress={() => makeDefault.mutate(address.id)} />
+                  <ActionLink
+                    label={t.account.address.makeDefault}
+                    onPress={() => makeDefault.mutate(address.id)}
+                  />
                 )}
-                <ActionLink label={t.common.delete} destructive onPress={() => confirmDelete(address)} />
+                <ActionLink
+                  label={t.common.delete}
+                  destructive
+                  onPress={() => confirmDelete(address)}
+                />
               </View>
             </View>
           ))
       )}
-      <Button label={t.account.addAddress} variant="outline" onPress={() => router.push(addressRoute("new"))} />
+      <Button
+        label={t.account.addAddress}
+        variant="outline"
+        onPress={() => router.push(addressRoute("new"))}
+      />
     </Screen>
   );
 }
 
-function ActionLink({ label, onPress, destructive }: { label: string; onPress: () => void; destructive?: boolean }) {
+function ActionLink({
+  label,
+  onPress,
+  destructive,
+}: {
+  label: string;
+  onPress: () => void;
+  destructive?: boolean;
+}) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} hitSlop={8} style={styles.actionHit}>
-      <AppText variant="label" tone={destructive ? "destructive" : "default"} style={styles.underline}>
+      <AppText
+        variant="label"
+        tone={destructive ? "destructive" : "default"}
+        style={styles.underline}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -86,7 +128,12 @@ export function AddressFormScreen({ id }: { id: string }) {
   const update = useUpdateAddress();
   const existing = addresses.data?.find((a) => a.id === id);
   const isNew = id === "new";
-  if (!isNew && addresses.isLoading) return <Screen edges={[]}><Loading /></Screen>;
+  if (!isNew && addresses.isLoading)
+    return (
+      <Screen edges={[]}>
+        <Loading />
+      </Screen>
+    );
   return (
     <AddressForm
       key={existing?.id ?? "new"}
@@ -102,12 +149,25 @@ export function AddressFormScreen({ id }: { id: string }) {
   );
 }
 
-type AddressFormValues = Record<"label" | "recipientName" | "line1" | "line2" | "postalCode" | "city" | "phone", string>;
+type AddressFormValues = Record<
+  "label" | "recipientName" | "line1" | "line2" | "postalCode" | "city" | "phone",
+  string
+>;
 
-const FORM_KEYS = ["label", "recipientName", "line1", "line2", "postalCode", "city", "phone"] as const;
+const FORM_KEYS = [
+  "label",
+  "recipientName",
+  "line1",
+  "line2",
+  "postalCode",
+  "city",
+  "phone",
+] as const;
 
 export function toForm(initial?: Address): AddressFormValues {
-  return Object.fromEntries(FORM_KEYS.map((key) => [key, initial?.[key] ?? ""])) as AddressFormValues;
+  return Object.fromEntries(
+    FORM_KEYS.map((key) => [key, initial?.[key] ?? ""]),
+  ) as AddressFormValues;
 }
 
 export function toInput(form: AddressFormValues, countryCode = "FR"): AddressInput {
@@ -124,6 +184,75 @@ export function toInput(form: AddressFormValues, countryCode = "FR"): AddressInp
   };
 }
 
+type AddressErrors = Partial<Record<keyof AddressFormValues | "form", string>>;
+
+function AddressFields({
+  form,
+  set,
+  errors,
+}: {
+  form: AddressFormValues;
+  set: (key: keyof AddressFormValues) => (value: string) => void;
+  errors: AddressErrors;
+}) {
+  const { t } = useI18n();
+  return (
+    <>
+      <TextField label={t.account.address.label} value={form.label} onChangeText={set("label")} />
+      <TextField
+        label={t.account.address.recipient}
+        value={form.recipientName}
+        onChangeText={set("recipientName")}
+        autoComplete="name"
+        error={errors.recipientName}
+      />
+      <TextField
+        label={t.account.address.line1}
+        value={form.line1}
+        onChangeText={set("line1")}
+        autoComplete="address-line1"
+        textContentType="streetAddressLine1"
+        error={errors.line1}
+      />
+      <TextField
+        label={t.account.address.line2}
+        value={form.line2}
+        onChangeText={set("line2")}
+        autoComplete="address-line2"
+        textContentType="streetAddressLine2"
+      />
+      <View style={styles.row}>
+        <View style={styles.postal}>
+          <TextField
+            label={t.account.address.postalCode}
+            value={form.postalCode}
+            onChangeText={set("postalCode")}
+            keyboardType="number-pad"
+            autoComplete="postal-code"
+            error={errors.postalCode}
+          />
+        </View>
+        <View style={styles.flex}>
+          <TextField
+            label={t.account.address.city}
+            value={form.city}
+            onChangeText={set("city")}
+            textContentType="addressCity"
+            error={errors.city}
+          />
+        </View>
+      </View>
+      <TextField
+        label={t.account.address.phone}
+        value={form.phone}
+        onChangeText={set("phone")}
+        keyboardType="phone-pad"
+        autoComplete="tel"
+      />
+    </>
+  );
+}
+
 function AddressForm({
   initial,
   onSubmit,
@@ -137,8 +266,9 @@ function AddressForm({
 }) {
   const { t } = useI18n();
   const [form, setForm] = React.useState(() => toForm(initial));
-  const [errors, setErrors] = React.useState<Partial<Record<keyof typeof form | "form", string>>>({});
-  const set = (key: keyof typeof form) => (value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const [errors, setErrors] = React.useState<AddressErrors>({});
+  const set = (key: keyof typeof form) => (value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async () => {
     const required: Array<keyof typeof form> = ["recipientName", "line1", "postalCode", "city"];
@@ -155,20 +285,12 @@ function AddressForm({
 
   return (
     <Screen edges={["bottom"]}>
-      <TextField label={t.account.address.label} value={form.label} onChangeText={set("label")} />
-      <TextField label={t.account.address.recipient} value={form.recipientName} onChangeText={set("recipientName")} autoComplete="name" error={errors.recipientName} />
-      <TextField label={t.account.address.line1} value={form.line1} onChangeText={set("line1")} autoComplete="address-line1" textContentType="streetAddressLine1" error={errors.line1} />
-      <TextField label={t.account.address.line2} value={form.line2} onChangeText={set("line2")} autoComplete="address-line2" textContentType="streetAddressLine2" />
-      <View style={styles.row}>
-        <View style={styles.postal}>
-          <TextField label={t.account.address.postalCode} value={form.postalCode} onChangeText={set("postalCode")} keyboardType="number-pad" autoComplete="postal-code" error={errors.postalCode} />
-        </View>
-        <View style={styles.flex}>
-          <TextField label={t.account.address.city} value={form.city} onChangeText={set("city")} textContentType="addressCity" error={errors.city} />
-        </View>
-      </View>
-      <TextField label={t.account.address.phone} value={form.phone} onChangeText={set("phone")} keyboardType="phone-pad" autoComplete="tel" />
-      {errors.form ? <AppText variant="help" tone="destructive">{errors.form}</AppText> : null}
+      <AddressFields form={form} set={set} errors={errors} />
+      {errors.form ? (
+        <AppText variant="help" tone="destructive">
+          {errors.form}
+        </AppText>
+      ) : null}
       <Button label={submitLabel} onPress={() => void submit()} loading={busy} />
     </Screen>
   );

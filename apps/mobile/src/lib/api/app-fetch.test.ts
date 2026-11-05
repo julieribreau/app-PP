@@ -31,8 +31,15 @@ describe("fetch de l'app", () => {
 
   it("n'envoie ni cookie ni jeton absents, et relève le jeton de la réponse", async () => {
     const tokens = memoryTokens(null);
-    const spy = vi.fn(async () => new Response("{}", { status: 201, headers: { "X-Cart-Token": "new" } }));
-    const appFetch = createAppFetch({ getLocale: () => "fr", getCookie: async () => "", cartTokens: tokens, fetch: spy as unknown as typeof fetch });
+    const spy = vi.fn(
+      async () => new Response("{}", { status: 201, headers: { "X-Cart-Token": "new" } }),
+    );
+    const appFetch = createAppFetch({
+      getLocale: () => "fr",
+      getCookie: async () => "",
+      cartTokens: tokens,
+      fetch: spy as unknown as typeof fetch,
+    });
     await appFetch("http://api/v1/cart/items", { method: "POST" });
     const headers = new Headers((spy.mock.calls[0] as unknown as [string, RequestInit])[1].headers);
     expect(headers.has("Cookie")).toBe(false);

@@ -24,7 +24,11 @@ export function ListGroup({ children }: { children: React.ReactNode }) {
       {rows.map((row, index) => (
         <View
           key={index}
-          style={index < rows.length - 1 ? { borderBottomWidth: StyleSheet.hairlineWidth * 2, borderBottomColor: color.border } : null}
+          style={
+            index < rows.length - 1
+              ? { borderBottomWidth: StyleSheet.hairlineWidth * 2, borderBottomColor: color.border }
+              : null
+          }
         >
           {row}
         </View>
@@ -42,7 +46,14 @@ export interface ListRowProps {
   accessibilityHint?: string;
 }
 
-export function ListRow({ label, value, onPress, destructive = false, chevron = true, accessibilityHint }: ListRowProps) {
+export function ListRow({
+  label,
+  value,
+  onPress,
+  destructive = false,
+  chevron = true,
+  accessibilityHint,
+}: ListRowProps) {
   const { color } = useTheme();
   return (
     <Pressable
@@ -61,7 +72,9 @@ export function ListRow({ label, value, onPress, destructive = false, chevron = 
           {value}
         </AppText>
       ) : null}
-      {onPress && chevron && !destructive ? <Icon name="chevronRight" color={color.mutedForeground} size={18} /> : null}
+      {onPress && chevron && !destructive ? (
+        <Icon name="chevronRight" color={color.mutedForeground} size={18} />
+      ) : null}
     </Pressable>
   );
 }
@@ -80,7 +93,12 @@ export function SwitchRow({
   const { color } = useTheme();
   return (
     <View style={styles.row}>
-      <AppText variant="body" style={styles.flex} importantForAccessibility="no" accessibilityElementsHidden>
+      <AppText
+        variant="body"
+        style={styles.flex}
+        importantForAccessibility="no"
+        accessibilityElementsHidden
+      >
         {label}
       </AppText>
       <Switch
@@ -101,7 +119,14 @@ export function SwitchRow({
 const styles = StyleSheet.create({
   section: { paddingHorizontal: 4, marginTop: 8 },
   group: { borderWidth: 1, borderRadius: 20, overflow: "hidden" },
-  row: { minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, flexDirection: "row", alignItems: "center", gap: 12 },
+  row: {
+    minHeight: 52,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
   flex: { flex: 1 },
   value: { maxWidth: "50%" },
 });

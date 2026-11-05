@@ -15,7 +15,8 @@ export const queryClient = new QueryClient({
 
 export const queryKeys = {
   categories: (locale: string) => ["categories", locale] as const,
-  products: (locale: string, category: string | null, q: string) => ["products", locale, category, q] as const,
+  products: (locale: string, category: string | null, q: string) =>
+    ["products", locale, category, q] as const,
   product: (locale: string, slug: string) => ["product", locale, slug] as const,
   cart: ["cart"] as const,
   me: ["me"] as const,

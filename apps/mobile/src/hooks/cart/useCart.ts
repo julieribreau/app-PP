@@ -23,7 +23,9 @@ function useCartWrite<V>(write: (vars: V) => Promise<Cart>) {
 }
 
 export function useAddToCart() {
-  return useCartWrite((vars: { variantId: string; quantity: number }) => api.post<Cart>("/cart/items", vars));
+  return useCartWrite((vars: { variantId: string; quantity: number }) =>
+    api.post<Cart>("/cart/items", vars),
+  );
 }
 
 export function useUpdateCartItem() {

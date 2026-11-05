@@ -58,7 +58,13 @@ export function DataScreen() {
         {t.account.dataLead}
       </AppText>
       {notice ? <Note>{notice}</Note> : null}
-      <Button label={t.account.export} variant="outline" icon="download" loading={exporting} onPress={() => void runExport()} />
+      <Button
+        label={t.account.export}
+        variant="outline"
+        icon="download"
+        loading={exporting}
+        onPress={() => void runExport()}
+      />
       <View style={[styles.danger, { borderColor: color.destructive }]}>
         <AppText variant="h2">{t.account.deleteConfirmTitle}</AppText>
         <AppText variant="small">{t.account.deleteConfirmBody}</AppText>

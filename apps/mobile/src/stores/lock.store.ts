@@ -17,6 +17,9 @@ export const useLockStore = create<LockState>((set) => ({
 }));
 
 /** Décision au lancement, pure : testée sous Vitest. */
-export function initialLockStatus(input: { biometricEnabled: boolean; hasStoredSession: boolean }): LockStatus {
+export function initialLockStatus(input: {
+  biometricEnabled: boolean;
+  hasStoredSession: boolean;
+}): LockStatus {
   return input.biometricEnabled && input.hasStoredSession ? "locked" : "unlocked";
 }

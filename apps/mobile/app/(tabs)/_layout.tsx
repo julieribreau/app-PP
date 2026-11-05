@@ -18,12 +18,20 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: color.mutedForeground,
         tabBarStyle: { backgroundColor: color.card, borderTopColor: color.border },
         tabBarLabelStyle: { fontFamily: "DMSans_500Medium", fontSize: 11 },
-        tabBarBadgeStyle: { backgroundColor: color.primary, color: color.primaryForeground, fontFamily: "DMSans_600SemiBold", fontSize: 11 },
+        tabBarBadgeStyle: {
+          backgroundColor: color.primary,
+          color: color.primaryForeground,
+          fontFamily: "DMSans_600SemiBold",
+          fontSize: 11,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
-        options={{ title: t.mobile.tabs.shop, tabBarIcon: ({ color: tint }) => <Icon name="home" color={String(tint)} size={24} /> }}
+        options={{
+          title: t.mobile.tabs.shop,
+          tabBarIcon: ({ color: tint }) => <Icon name="home" color={String(tint)} size={24} />,
+        }}
       />
       <Tabs.Screen
         name="cart"
@@ -36,7 +44,10 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="account"
-        options={{ title: t.mobile.tabs.account, tabBarIcon: ({ color: tint }) => <Icon name="user" color={String(tint)} size={24} /> }}
+        options={{
+          title: t.mobile.tabs.account,
+          tabBarIcon: ({ color: tint }) => <Icon name="user" color={String(tint)} size={24} />,
+        }}
       />
     </Tabs>
   );

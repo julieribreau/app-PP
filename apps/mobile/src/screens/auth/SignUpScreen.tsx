@@ -21,10 +21,13 @@ export function SignUpScreen() {
   const { signUp } = useAuthActions();
   const [form, setForm] = React.useState({ firstName: "", lastName: "", email: "", password: "" });
   const [accepted, setAccepted] = React.useState(false);
-  const [errors, setErrors] = React.useState<Partial<Record<keyof typeof form | "terms" | "form", string>>>({});
+  const [errors, setErrors] = React.useState<
+    Partial<Record<keyof typeof form | "terms" | "form", string>>
+  >({});
   const [busy, setBusy] = React.useState(false);
   const [sentTo, setSentTo] = React.useState<string | null>(null);
-  const set = (key: keyof typeof form) => (value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const set = (key: keyof typeof form) => (value: string) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async () => {
     const next: typeof errors = {};
@@ -44,20 +47,78 @@ export function SignUpScreen() {
 
   if (sentTo) {
     return (
-      <AuthLayout title={t.mobile.auth.checkInboxTitle} lead={f(t.auth.verifyEmailSent, { email: sentTo })}>
-        <Button label={t.mobile.auth.backToSignIn} variant="outline" onPress={() => router.replace(SIGN_IN_ROUTE)} />
+      <AuthLayout
+        title={t.mobile.auth.checkInboxTitle}
+        lead={f(t.auth.verifyEmailSent, { email: sentTo })}
+      >
+        <Button
+          label={t.mobile.auth.backToSignIn}
+          variant="outline"
+          onPress={() => router.replace(SIGN_IN_ROUTE)}
+        />
       </AuthLayout>
     );
   }
 
   return (
     <AuthLayout title={t.auth.signUpTitle} lead={t.auth.signUpLead}>
+      <SignUpFields form={form} set={set} errors={errors} />
+      <TermsCheckbox
+        checked={accepted}
+        invalid={Boolean(errors.terms)}
+        onToggle={() => setAccepted((value) => !value)}
+      />
+      {errors.terms ? (
+        <AppText variant="help" tone="destructive">
+          {errors.terms}
+        </AppText>
+      ) : null}
+      {errors.form ? (
+        <AppText variant="help" tone="destructive" accessibilityLiveRegion="polite">
+          {errors.form}
+        </AppText>
+      ) : null}
+      <Button label={t.auth.signUp} onPress={() => void submit()} loading={busy} />
+      <TextLink strong label={t.auth.signInTab} onPress={() => router.replace(SIGN_IN_ROUTE)} />
+    </AuthLayout>
+  );
+}
+
+type SignUpForm = Record<"firstName" | "lastName" | "email" | "password", string>;
+type SignUpErrors = Partial<Record<keyof SignUpForm | "terms" | "form", string>>;
+
+function SignUpFields({
+  form,
+  set,
+  errors,
+}: {
+  form: SignUpForm;
+  set: (key: keyof SignUpForm) => (value: string) => void;
+  errors: SignUpErrors;
+}) {
+  const { t } = useI18n();
+  return (
+    <>
       <View style={styles.row}>
         <View style={styles.flex}>
-          <TextField label={t.auth.firstName} value={form.firstName} onChangeText={set("firstName")} autoComplete="given-name" textContentType="givenName" error={errors.firstName} />
+          <TextField
+            label={t.auth.firstName}
+            value={form.firstName}
+            onChangeText={set("firstName")}
+            autoComplete="given-name"
+            textContentType="givenName"
+            error={errors.firstName}
+          />
         </View>
         <View style={styles.flex}>
-          <TextField label={t.auth.lastName} value={form.lastName} onChangeText={set("lastName")} autoComplete="family-name" textContentType="familyName" error={errors.lastName} />
+          <TextField
+            label={t.auth.lastName}
+            value={form.lastName}
+            onChangeText={set("lastName")}
+            autoComplete="family-name"
+            textContentType="familyName"
+            error={errors.lastName}
+          />
         </View>
       </View>
       <TextField
@@ -81,16 +142,19 @@ export function SignUpScreen() {
         textContentType="newPassword"
         error={errors.password}
       />
-      <TermsCheckbox checked={accepted} invalid={Boolean(errors.terms)} onToggle={() => setAccepted((value) => !value)} />
-      {errors.terms ? <AppText variant="help" tone="destructive">{errors.terms}</AppText> : null}
-      {errors.form ? <AppText variant="help" tone="destructive" accessibilityLiveRegion="polite">{errors.form}</AppText> : null}
-      <Button label={t.auth.signUp} onPress={() => void submit()} loading={busy} />
-      <TextLink strong label={t.auth.signInTab} onPress={() => router.replace(SIGN_IN_ROUTE)} />
-    </AuthLayout>
+    </>
   );
 }
 
-function TermsCheckbox({ checked, invalid, onToggle }: { checked: boolean; invalid: boolean; onToggle: () => void }) {
+function TermsCheckbox({
+  checked,
+  invalid,
+  onToggle,
+}: {
+  checked: boolean;
+  invalid: boolean;
+  onToggle: () => void;
+}) {
   const { t } = useI18n();
   const { color } = useTheme();
   return (
@@ -101,8 +165,18 @@ function TermsCheckbox({ checked, invalid, onToggle }: { checked: boolean; inval
       onPress={onToggle}
       style={styles.terms}
     >
-      <View style={[styles.box, { borderColor: invalid ? color.destructive : color.input, backgroundColor: checked ? color.primary : color.card }]}>
-        {checked ? <Icon name="check" color={color.primaryForeground} size={16} strokeWidth={2.5} /> : null}
+      <View
+        style={[
+          styles.box,
+          {
+            borderColor: invalid ? color.destructive : color.input,
+            backgroundColor: checked ? color.primary : color.card,
+          },
+        ]}
+      >
+        {checked ? (
+          <Icon name="check" color={color.primaryForeground} size={16} strokeWidth={2.5} />
+        ) : null}
       </View>
       <AppText variant="small" style={styles.flex}>
         {t.auth.acceptTerms}
@@ -115,5 +189,13 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   row: { flexDirection: "row", gap: 12 },
   terms: { flexDirection: "row", gap: 12, alignItems: "flex-start", minHeight: 44 },
-  box: { width: 24, height: 24, borderRadius: 6, borderWidth: 1.5, alignItems: "center", justifyContent: "center", marginTop: 2 },
+  box: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
 });

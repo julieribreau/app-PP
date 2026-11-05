@@ -19,7 +19,7 @@ const dedupe = Object.fromEntries(
 module.exports = {
   ...preset,
   testMatch: ["<rootDir>/src/**/*.test.tsx"],
-  setupFiles: [...(preset.setupFiles ?? []), "<rootDir>/jest.setup.js"],
+  setupFiles: [...(preset.setupFiles ?? []), "<rootDir>/jest.setup.ts"],
   // Alias `@/` du tsconfig, que Babel ne lit pas.
   moduleNameMapper: { ...preset.moduleNameMapper, ...dedupe, "^@/(.*)$": "<rootDir>/src/$1" },
   // Les paquets du workspace se lisent par leur chemin réel, hors node_modules : transformés

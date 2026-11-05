@@ -41,7 +41,10 @@ export function Screen({
   const { color } = useTheme();
   return (
     <SafeAreaView edges={edges} style={[styles.flex, { backgroundColor: color.background }]}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
         {scroll ? (
           <ScrollView
             style={styles.flex}
@@ -49,7 +52,11 @@ export function Screen({
             keyboardShouldPersistTaps="handled"
             refreshControl={
               onRefresh ? (
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={color.primary} />
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  tintColor={color.primary}
+                />
               ) : undefined
             }
           >
@@ -65,14 +72,28 @@ export function Screen({
 }
 
 /** Note d'information sur fond `secondary` (panier invité, mise à jour du panier). */
-export function Note({ children, tone = "secondary" }: { children: React.ReactNode; tone?: "secondary" | "info" }) {
+export function Note({
+  children,
+  tone = "secondary",
+}: {
+  children: React.ReactNode;
+  tone?: "secondary" | "info";
+}) {
   const { color } = useTheme();
   const bg = tone === "info" ? color.info : color.secondary;
   const fg = tone === "info" ? color.infoForeground : color.secondaryForeground;
   return (
     <View accessibilityRole="text" style={[styles.note, { backgroundColor: bg }]}>
       <Icon name="info" color={fg} size={18} />
-      <View style={styles.flex}>{typeof children === "string" ? <AppText variant="small" style={{ color: fg }}>{children}</AppText> : children}</View>
+      <View style={styles.flex}>
+        {typeof children === "string" ? (
+          <AppText variant="small" style={{ color: fg }}>
+            {children}
+          </AppText>
+        ) : (
+          children
+        )}
+      </View>
     </View>
   );
 }
@@ -81,7 +102,12 @@ export function Loading() {
   const { color } = useTheme();
   const { t } = useI18n();
   return (
-    <View style={styles.center} accessible accessibilityLabel={t.common.loading} accessibilityRole="progressbar">
+    <View
+      style={styles.center}
+      accessible
+      accessibilityLabel={t.common.loading}
+      accessibilityRole="progressbar"
+    >
       <ActivityIndicator color={color.primary} size="large" />
     </View>
   );
@@ -113,7 +139,20 @@ export function EmptyState({ message, action }: { message: string; action?: Reac
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32, gap: 16 },
-  note: { flexDirection: "row", gap: 10, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center", gap: 16, padding: 32, minHeight: 240 },
+  note: {
+    flexDirection: "row",
+    gap: 10,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+    padding: 32,
+    minHeight: 240,
+  },
   centerText: { textAlign: "center" },
 });

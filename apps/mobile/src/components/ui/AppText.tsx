@@ -23,7 +23,8 @@ export type TextVariant =
   | "priceLarge"
   | "caption";
 
-export type TextTone = "default" | "muted" | "primary" | "onPrimary" | "destructive" | "onSecondary";
+export type TextTone =
+  "default" | "muted" | "primary" | "onPrimary" | "destructive" | "onSecondary";
 
 export interface AppTextProps extends TextProps {
   variant?: TextVariant;
@@ -52,7 +53,12 @@ export function AppText({ variant = "body", tone, style, ...props }: AppTextProp
 }
 
 const VARIANTS: Record<TextVariant, TextStyle> = StyleSheet.create({
-  display: { fontFamily: "Fraunces_600SemiBold", fontSize: 34, lineHeight: 38, letterSpacing: -0.5 },
+  display: {
+    fontFamily: "Fraunces_600SemiBold",
+    fontSize: 34,
+    lineHeight: 38,
+    letterSpacing: -0.5,
+  },
   h1: { fontFamily: "Fraunces_600SemiBold", fontSize: 30, lineHeight: 34, letterSpacing: -0.45 },
   h2: { fontFamily: "Fraunces_600SemiBold", fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
   title: { fontFamily: "Fraunces_600SemiBold", fontSize: 17, lineHeight: 22, letterSpacing: -0.2 },

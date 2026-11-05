@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { formatMessage, formatPrice, formatRate, htmlToText, initials } from "./format";
 
-const nbsp = (s: string) => s.replace(/[  ]/g, " ");
+const nbsp = (s: string) => s.replace(/[\u00a0\u202f]/g, " ");
 
 describe("formatPrice", () => {
   it("affiche les centimes TTC en euros, selon la langue", () => {
@@ -36,7 +36,9 @@ describe("formatMessage", () => {
   it("applique les règles de pluriel de la langue", () => {
     const t = "{count, plural, one {# item} other {# items}}";
     expect(formatMessage(t, { count: 0 }, "en")).toBe("0 items");
-    expect(formatMessage("{count, plural, one {# produit} other {# produits}}", { count: 0 }, "fr")).toBe("0 produit");
+    expect(
+      formatMessage("{count, plural, one {# produit} other {# produits}}", { count: 0 }, "fr"),
+    ).toBe("0 produit");
   });
 });
 

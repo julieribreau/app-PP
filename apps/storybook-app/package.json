@@ -13,13 +13,19 @@
     "visual:update": "playwright test --update-snapshots=changed"
   },
   "dependencies": {
+    "@expo-google-fonts/dm-mono": "^0.4.2",
+    "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/fraunces": "^0.4.1",
     "@nutrion/cmp": "workspace:*",
     "@nutrion/i18n": "workspace:*",
     "@nutrion/ui": "workspace:*",
     "@nutrion/ui-tokens": "workspace:*",
+    "@tanstack/react-query": "^5.106.1",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "0.88.1",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-svg": "15.16.0",
     "react-native-web": "catalog:"
   },
   "devDependencies": {

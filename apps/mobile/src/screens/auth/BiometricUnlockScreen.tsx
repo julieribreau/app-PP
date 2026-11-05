@@ -60,7 +60,7 @@ export function BiometricUnlockScreen() {
           <OrDivider />
         </>
       ) : null}
-      <SignInForm initialEmail={lastEmail ?? ""} onSignedIn={unlock} />
+      <SignInForm initialEmail={lastEmail ?? ""} onSignedIn={unlock} secondary={kind !== null} />
       <View style={styles.links}>
         <TextLink
           label={t.auth.forgot}
@@ -71,7 +71,11 @@ export function BiometricUnlockScreen() {
             });
           }}
         />
-        <TextLink strong label={t.mobile.auth.otherAccount} onPress={() => void signOut({ forget: true }).then(unlock)} />
+        <TextLink
+          strong
+          label={t.mobile.auth.otherAccount}
+          onPress={() => void signOut({ forget: true }).then(unlock)}
+        />
       </View>
     </AuthLayout>
   );

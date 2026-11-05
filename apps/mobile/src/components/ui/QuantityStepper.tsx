@@ -29,7 +29,15 @@ function useStepperLabels(itemName: string | undefined, removes: boolean) {
   };
 }
 
-export function QuantityStepper({ value, max, onChange, onRemove, itemName, size = "md", disabled = false }: QuantityStepperProps) {
+export function QuantityStepper({
+  value,
+  max,
+  onChange,
+  onRemove,
+  itemName,
+  size = "md",
+  disabled = false,
+}: QuantityStepperProps) {
   const { color } = useTheme();
   const removes = value <= 1 && onRemove !== undefined;
   const labels = useStepperLabels(itemName, removes);
@@ -54,7 +62,12 @@ export function QuantityStepper({ value, max, onChange, onRemove, itemName, size
         disabled={disabled || (value <= 1 && !removes)}
         onPress={decrease}
       />
-      <AppText variant="price" style={styles.value} accessibilityElementsHidden importantForAccessibility="no">
+      <AppText
+        variant="price"
+        style={styles.value}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
+      >
         {value}
       </AppText>
       <StepButton
@@ -90,7 +103,12 @@ function StepButton(props: {
       onPress={props.onPress}
       style={[styles.button, { width: box, height: box }]}
     >
-      <Icon name={props.icon} size={props.size === "sm" ? 16 : 18} strokeWidth={2} color={props.disabled ? color.border : color.foreground} />
+      <Icon
+        name={props.icon}
+        size={props.size === "sm" ? 16 : 18}
+        strokeWidth={2}
+        color={props.disabled ? color.border : color.foreground}
+      />
     </Pressable>
   );
 }

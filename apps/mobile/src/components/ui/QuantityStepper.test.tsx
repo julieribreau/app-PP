@@ -19,7 +19,15 @@ describe("QuantityStepper", () => {
 
   it("dans le panier, le « − » à 1 retire l'article", async () => {
     const onRemove = jest.fn();
-    await render(<QuantityStepper value={1} max={5} onChange={jest.fn()} onRemove={onRemove} itemName="Avoine & cacao" />);
+    await render(
+      <QuantityStepper
+        value={1}
+        max={5}
+        onChange={jest.fn()}
+        onRemove={onRemove}
+        itemName="Avoine & cacao"
+      />,
+    );
     await fireEvent.press(screen.getByLabelText("Retirer Avoine & cacao du panier"));
     expect(onRemove).toHaveBeenCalled();
     expect(screen.getByLabelText("Quantité de Avoine & cacao")).toBeTruthy();

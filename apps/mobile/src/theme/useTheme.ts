@@ -20,7 +20,13 @@ export interface Theme {
 export function useTheme(): Theme {
   const name: ThemeName = useColorScheme() === "dark" ? "dark" : "light";
   return React.useMemo(
-    () => ({ name, color: tokens.color[name], radius: tokens.radius, space: tokens.space, font: tokens.font }),
+    () => ({
+      name,
+      color: tokens.color[name],
+      radius: tokens.radius,
+      space: tokens.space,
+      font: tokens.font,
+    }),
     [name],
   );
 }
