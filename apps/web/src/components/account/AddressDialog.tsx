@@ -61,12 +61,21 @@ export function AddressDialog({
         >
           {FIELDS.map((f) => (
             <Field key={f.name} id={`addr-${f.name}`} label={t(`address.${f.key}`)}>
-              <Input name={f.name} autoComplete={f.auto} required={f.required} defaultValue={(address?.[f.name] as string | null) ?? ""} />
+              <Input
+                name={f.name}
+                autoComplete={f.auto}
+                required={f.required}
+                defaultValue={(address?.[f.name] as string | null) ?? ""}
+              />
             </Field>
           ))}
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>{tc("cancel")}</Button>
-            <Button type="submit" disabled={pending}>{tc("save")}</Button>
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              {tc("cancel")}
+            </Button>
+            <Button type="submit" disabled={pending}>
+              {tc("save")}
+            </Button>
           </div>
         </form>
       </DialogContent>

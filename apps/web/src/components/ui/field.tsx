@@ -29,12 +29,12 @@ export function Field({ id, label, help, error, className, children }: FieldProp
       </label>
       {control}
       {help ? (
-        <span id={helpId} className="text-sm leading-5 text-muted-foreground">
+        <span id={helpId} className="text-muted-foreground text-sm leading-5">
           {help}
         </span>
       ) : null}
       {error ? (
-        <span id={errorId} className="text-sm leading-5 text-destructive">
+        <span id={errorId} className="text-destructive text-sm leading-5">
           {error}
         </span>
       ) : null}

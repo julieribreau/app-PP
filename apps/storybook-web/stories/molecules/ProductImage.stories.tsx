@@ -7,7 +7,11 @@ const meta = {
   title: "Molecules/ProductImage",
   component: ProductImage,
   tags: ["autodocs"],
-  args: { name: "Avoine & cacao", imageUrl: null, className: "aspect-[4/3] w-[320px] rounded-[24px]" },
+  args: {
+    name: "Avoine & cacao",
+    imageUrl: null,
+    className: "aspect-[4/3] w-[320px] rounded-[24px]",
+  },
 } satisfies Meta<typeof ProductImage>;
 export default meta;
 

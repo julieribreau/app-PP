@@ -23,7 +23,7 @@ export function ProductCard({
   return (
     <Link
       href={`/boutique/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[24px] border border-border bg-card text-card-foreground hover:text-card-foreground"
+      className="group border-border bg-card text-card-foreground hover:text-card-foreground flex flex-col overflow-hidden rounded-[24px] border"
     >
       <ProductImage
         name={product.name}
@@ -34,8 +34,10 @@ export function ProductCard({
       />
       <div className="flex flex-col gap-1.5 px-5 pt-4 pb-5">
         {product.category ? <span className="eyebrow">{product.category.name}</span> : null}
-        <Heading className="display m-0 text-[22px] leading-7 group-hover:text-primary">{product.name}</Heading>
-        <span className="text-sm leading-5 text-muted-foreground">{product.variantSummary}</span>
+        <Heading className="display group-hover:text-primary m-0 text-[22px] leading-7">
+          {product.name}
+        </Heading>
+        <span className="text-muted-foreground text-sm leading-5">{product.variantSummary}</span>
         <div className="mt-2 flex items-center justify-between gap-2">
           <PriceTag cents={product.priceFromCents} from={product.priceVaries} />
           {product.available ? null : <Badge tone="muted">{t("outOfStock")}</Badge>}

@@ -26,7 +26,15 @@ function paletteFor(seed: string): readonly [string, string] {
   return PALETTES[h % PALETTES.length] ?? PALETTES[0];
 }
 
-function Shape({ kind, c1, c2 }: { readonly kind: Kind; readonly c1: string; readonly c2: string }) {
+function Shape({
+  kind,
+  c1,
+  c2,
+}: {
+  readonly kind: Kind;
+  readonly c1: string;
+  readonly c2: string;
+}) {
   if (kind === "bag")
     return (
       <>
@@ -48,7 +56,13 @@ function Shape({ kind, c1, c2 }: { readonly kind: Kind; readonly c1: string; rea
       <rect x="14" y="28" width="132" height="38" rx="12" style={{ fill: c1 }} />
       <rect x="14" y="28" width="132" height="13" rx="6.5" style={{ fill: c2 }} />
       {[40, 72, 104, 128].map((cx, i) => (
-        <circle key={cx} cx={cx} cy={i % 2 ? 57 : 52} r={i % 2 ? 3 : 4} style={{ fill: "var(--straw)" }} />
+        <circle
+          key={cx}
+          cx={cx}
+          cy={i % 2 ? 57 : 52}
+          r={i % 2 ? 3 : 4}
+          style={{ fill: "var(--straw)" }}
+        />
       ))}
     </>
   );
@@ -64,11 +78,18 @@ export interface ProductImageProps {
   readonly fill?: string;
 }
 
-export function ProductImage({ name, imageUrl, categorySlug, seed, className, fill = "66%" }: ProductImageProps) {
+export function ProductImage({
+  name,
+  imageUrl,
+  categorySlug,
+  seed,
+  className,
+  fill = "66%",
+}: ProductImageProps) {
   const t = useTranslations("product");
   const [c1, c2] = paletteFor(seed ?? name);
   return (
-    <div className={cn("flex items-center justify-center overflow-hidden bg-muted", className)}>
+    <div className={cn("bg-muted flex items-center justify-center overflow-hidden", className)}>
       {imageUrl ? (
         <img src={imageUrl} alt={t("imageAlt", { name })} className="size-full object-cover" />
       ) : (

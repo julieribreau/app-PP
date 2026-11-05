@@ -3,7 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Badge } from "@/components/ui/badge";
 
 // Un mot d'état ; côté boutique, seul « Rupture » est utilisé (ADR-002).
-const meta = { title: "Atoms/Badge", component: Badge, tags: ["autodocs"], args: { children: "Rupture" } } satisfies Meta<typeof Badge>;
+const meta = {
+  title: "Atoms/Badge",
+  component: Badge,
+  tags: ["autodocs"],
+  args: { children: "Rupture" },
+} satisfies Meta<typeof Badge>;
 export default meta;
 
 type Story = StoryObj<typeof meta>;

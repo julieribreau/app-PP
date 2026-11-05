@@ -84,13 +84,13 @@ export interface AdminProductsQuery {
 
 function adminUsersApi(http: Http) {
   return {
-    users: (query: AdminUsersQuery) =>
-      http.get<AdminUsersPage>(`/v1/admin/users${toQuery(query)}`),
+    users: (query: AdminUsersQuery) => http.get<AdminUsersPage>(`/v1/admin/users${toQuery(query)}`),
     user: (id: string) => http.get<AdminUser>(`/v1/admin/users/${id}`),
     suspend: (id: string, reason: string) =>
       http.post<AdminUser>(`/v1/admin/users/${id}/suspend`, { reason }),
     reactivate: (id: string) => http.post<AdminUser>(`/v1/admin/users/${id}/reactivate`),
-    setRole: (id: string, role: Role) => http.patch<AdminUser>(`/v1/admin/users/${id}/role`, { role }),
+    setRole: (id: string, role: Role) =>
+      http.patch<AdminUser>(`/v1/admin/users/${id}/role`, { role }),
     exportUsers: (query: AdminUsersQuery) =>
       http.download(`/v1/admin/users/export${toQuery({ ...query, page: undefined })}`),
     audit: (query: { targetType?: string; targetId?: string; page?: number; pageSize?: number }) =>
@@ -104,8 +104,10 @@ function adminCatalogApi(http: Http) {
     categories: () => http.get<AdminCategory[]>("/v1/admin/categories"),
     createCategory: (input: { slug: string; name: Localized; isActive: boolean }) =>
       http.post<AdminCategory>("/v1/admin/categories", input),
-    updateCategory: (id: string, input: Partial<{ slug: string; name: Localized; isActive: boolean; position: number }>) =>
-      http.patch<AdminCategory>(`/v1/admin/categories/${id}`, input),
+    updateCategory: (
+      id: string,
+      input: Partial<{ slug: string; name: Localized; isActive: boolean; position: number }>,
+    ) => http.patch<AdminCategory>(`/v1/admin/categories/${id}`, input),
     deleteCategory: (id: string) => http.delete<void>(`/v1/admin/categories/${id}`),
     products: (query: AdminProductsQuery) =>
       http.get<Page<AdminProductRow>>(`${base}${toQuery(query)}`),

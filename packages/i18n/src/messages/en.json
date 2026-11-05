@@ -299,7 +299,7 @@
     "globalSearch": "Search a user, a product…",
     "notifications": "Notifications, {count} to handle",
     "export": "Export",
-    "usersSummary": "{total} accounts · {unverified} unverified · {suspended} suspended",
+    "usersSummary": "{total, plural, one {# account} other {# accounts}} · {unverified} unverified · {suspended} suspended",
     "searchUsers": "Name or email",
     "role": "Role",
     "roles": {

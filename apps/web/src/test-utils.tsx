@@ -7,7 +7,11 @@ import type * as React from "react";
 /** Rendu d'un composant dans le fournisseur de traductions, comme dans l'app. */
 export function renderIntl(ui: React.ReactElement, locale: "fr" | "en" = "fr") {
   return render(
-    <NextIntlClientProvider locale={locale} messages={locale === "fr" ? fr : en} timeZone="Europe/Paris">
+    <NextIntlClientProvider
+      locale={locale}
+      messages={locale === "fr" ? fr : en}
+      timeZone="Europe/Paris"
+    >
       {ui}
     </NextIntlClientProvider>,
   );

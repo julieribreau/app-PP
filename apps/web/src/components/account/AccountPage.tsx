@@ -25,7 +25,15 @@ const SECTIONS = [
   ["donnees", "data"],
 ] as const;
 
-function AccountNav({ name, since, avatar }: { readonly name: string; readonly since: string; readonly avatar: React.ReactNode }) {
+function AccountNav({
+  name,
+  since,
+  avatar,
+}: {
+  readonly name: string;
+  readonly since: string;
+  readonly avatar: React.ReactNode;
+}) {
   const t = useTranslations("account");
   const ta = useTranslations("auth");
   const router = useRouter();
@@ -38,12 +46,25 @@ function AccountNav({ name, since, avatar }: { readonly name: string; readonly s
     <nav aria-label={t("nav")} className="flex flex-[1_1_240px] flex-col gap-1">
       <div className="flex items-center gap-3 px-3.5 pb-5">
         {avatar}
-        <div className="flex flex-col"><strong>{name}</strong><span className="text-sm text-muted-foreground">{t("memberSince", { date: since })}</span></div>
+        <div className="flex flex-col">
+          <strong>{name}</strong>
+          <span className="text-muted-foreground text-sm">{t("memberSince", { date: since })}</span>
+        </div>
       </div>
       {SECTIONS.map(([id, key]) => (
-        <a key={id} href={`#${id}`} className="flex h-11 items-center rounded-[14px] px-3.5 font-medium hover:bg-muted">{t(key)}</a>
+        <a
+          key={id}
+          href={`#${id}`}
+          className="hover:bg-muted flex h-11 items-center rounded-[14px] px-3.5 font-medium"
+        >
+          {t(key)}
+        </a>
       ))}
-      <button type="button" onClick={() => void signOut()} className="flex h-11 cursor-pointer items-center rounded-[14px] px-3.5 text-left font-medium text-muted-foreground hover:bg-muted">
+      <button
+        type="button"
+        onClick={() => void signOut()}
+        className="text-muted-foreground hover:bg-muted flex h-11 cursor-pointer items-center rounded-[14px] px-3.5 text-left font-medium"
+      >
         {ta("signOut")}
       </button>
     </nav>
@@ -66,7 +87,11 @@ export function AccountPage() {
   const name = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || profile.email;
   return (
     <main className="mx-auto flex max-w-[1280px] flex-wrap items-start gap-10 px-6 pt-10 pb-20 md:px-12">
-      <AccountNav name={name} since={formatDate(profile.createdAt, locale)} avatar={<Avatar profile={profile} />} />
+      <AccountNav
+        name={name}
+        since={formatDate(profile.createdAt, locale)}
+        avatar={<Avatar profile={profile} />}
+      />
       <div className="flex min-w-0 flex-[999_1_640px] flex-col gap-6">
         <h1 className="display m-0 text-[44px] leading-[48px]">{t("title")}</h1>
         <ProfileSection profile={profile} />

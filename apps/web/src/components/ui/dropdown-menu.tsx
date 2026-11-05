@@ -16,7 +16,7 @@ export function DropdownMenuContent({ className, ...props }: M.DropdownMenuConte
         sideOffset={6}
         align="end"
         className={cn(
-          "z-50 min-w-48 rounded-[14px] border border-border bg-popover p-1 text-popover-foreground shadow-[0_4px_16px_rgba(42,29,22,.12)]",
+          "border-border bg-popover text-popover-foreground z-50 min-w-48 rounded-[14px] border p-1 shadow-[0_4px_16px_rgba(42,29,22,.12)]",
           className,
         )}
         {...props}
@@ -29,7 +29,7 @@ export function DropdownMenuItem({ className, ...props }: M.DropdownMenuItemProp
   return (
     <M.Item
       className={cn(
-        "flex min-h-10 cursor-pointer items-center gap-2 rounded-[10px] px-3 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[highlighted]:bg-muted",
+        "data-[highlighted]:bg-muted flex min-h-10 cursor-pointer items-center gap-2 rounded-[10px] px-3 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -41,11 +41,15 @@ export function DropdownMenuRadioGroup(props: M.DropdownMenuRadioGroupProps) {
   return <M.RadioGroup {...props} />;
 }
 
-export function DropdownMenuRadioItem({ className, children, ...props }: M.DropdownMenuRadioItemProps) {
+export function DropdownMenuRadioItem({
+  className,
+  children,
+  ...props
+}: M.DropdownMenuRadioItemProps) {
   return (
     <M.RadioItem
       className={cn(
-        "flex min-h-10 cursor-pointer items-center justify-between gap-2 rounded-[10px] px-3 text-sm outline-none select-none data-[highlighted]:bg-muted data-[state=checked]:font-semibold",
+        "data-[highlighted]:bg-muted flex min-h-10 cursor-pointer items-center justify-between gap-2 rounded-[10px] px-3 text-sm outline-none select-none data-[state=checked]:font-semibold",
         className,
       )}
       {...props}
@@ -57,5 +61,5 @@ export function DropdownMenuRadioItem({ className, children, ...props }: M.Dropd
 }
 
 export function DropdownMenuLabel({ className, ...props }: M.DropdownMenuLabelProps) {
-  return <M.Label className={cn("px-3 py-2 eyebrow", className)} {...props} />;
+  return <M.Label className={cn("eyebrow px-3 py-2", className)} {...props} />;
 }

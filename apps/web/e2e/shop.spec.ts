@@ -17,14 +17,19 @@ test("boutique → fiche → ajout au panier → panier", async ({ page }) => {
   await page.getByRole("link", { name: /Avoine & cacao/ }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Avoine & cacao" })).toBeVisible();
   await page.getByRole("button", { name: "Boîte de 12" }).click();
-  await expect(page.getByRole("button", { name: "Boîte de 12" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Boîte de 12" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   // Stock de 3 : la quantité plafonne à 3.
   const plus = page.getByRole("button", { name: fr.product.increase });
   await plus.click();
   await plus.click();
   await expect(plus).toBeDisabled();
   await page.getByRole("button", { name: fr.product.addToCart }).click();
-  await expect(page.getByRole("status").filter({ hasText: "3 × Cacao · Boîte de 12" })).toBeVisible();
+  await expect(
+    page.getByRole("status").filter({ hasText: "3 × Cacao · Boîte de 12" }),
+  ).toBeVisible();
   expect(api.calls).toContain("POST /v1/cart/items");
 
   await page.getByRole("link", { name: fr.product.viewCart }).click();

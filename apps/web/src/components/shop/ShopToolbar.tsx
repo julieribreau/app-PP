@@ -33,16 +33,41 @@ export function ShopSearchSort({
     return () => clearTimeout(id);
   }, [text, q, onChange]);
   return (
-    <form role="search" className="flex flex-wrap items-end gap-3" onSubmit={(e) => { e.preventDefault(); onChange({ q: text }); }}>
+    <form
+      role="search"
+      className="flex flex-wrap items-end gap-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onChange({ q: text });
+      }}
+    >
       <div className="flex flex-col gap-1">
-        <label htmlFor="shop-q" className="text-sm font-medium">{t("searchLabel")}</label>
-        <Input id="shop-q" type="search" value={text} placeholder={t("searchPlaceholder")} onChange={(e) => setText(e.target.value)} className="w-[280px]" />
+        <label htmlFor="shop-q" className="text-sm font-medium">
+          {t("searchLabel")}
+        </label>
+        <Input
+          id="shop-q"
+          type="search"
+          value={text}
+          placeholder={t("searchPlaceholder")}
+          onChange={(e) => setText(e.target.value)}
+          className="w-[280px]"
+        />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="shop-sort" className="text-sm font-medium">{t("sortLabel")}</label>
-        <Select id="shop-sort" value={sort || "popular"} onChange={(e) => onChange({ sort: e.target.value === "popular" ? "" : e.target.value })} className="w-[200px]">
+        <label htmlFor="shop-sort" className="text-sm font-medium">
+          {t("sortLabel")}
+        </label>
+        <Select
+          id="shop-sort"
+          value={sort || "popular"}
+          onChange={(e) => onChange({ sort: e.target.value === "popular" ? "" : e.target.value })}
+          className="w-[200px]"
+        >
           {SORTS.map((s) => (
-            <option key={s.value} value={s.value}>{t(`sort.${s.key}`)}</option>
+            <option key={s.value} value={s.value}>
+              {t(`sort.${s.key}`)}
+            </option>
           ))}
         </Select>
       </div>
@@ -73,7 +98,7 @@ export function CategoryChips({
             aria-pressed={on}
             onClick={() => onChange(c.slug)}
             className={cn(
-              "h-10 cursor-pointer rounded-full border border-input px-[18px] text-sm font-medium",
+              "border-input h-10 cursor-pointer rounded-full border px-[18px] text-sm font-medium",
               on && "border-foreground bg-foreground text-background",
             )}
           >

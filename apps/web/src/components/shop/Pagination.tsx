@@ -38,7 +38,12 @@ export function Pagination({
           {p}
         </button>
       ))}
-      <button type="button" className={chip} disabled={page >= pageCount} onClick={() => onPage(page + 1)}>
+      <button
+        type="button"
+        className={chip}
+        disabled={page >= pageCount}
+        onClick={() => onPage(page + 1)}
+      >
         {t("next")}
       </button>
     </nav>

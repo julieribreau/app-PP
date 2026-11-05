@@ -9,7 +9,12 @@ function Demo({ max, initial }: { max: number; initial: number }) {
 }
 
 // Quantité bornée au stock ; − et + désactivés aux limites.
-const meta = { title: "Molecules/QuantityStepper", component: Demo, tags: ["autodocs"], args: { max: 3, initial: 1 } } satisfies Meta<typeof Demo>;
+const meta = {
+  title: "Molecules/QuantityStepper",
+  component: Demo,
+  tags: ["autodocs"],
+  args: { max: 3, initial: 1 },
+} satisfies Meta<typeof Demo>;
 export default meta;
 
 type Story = StoryObj<typeof meta>;

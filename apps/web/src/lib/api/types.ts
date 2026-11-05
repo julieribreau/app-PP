@@ -127,7 +127,9 @@ export interface Profile {
   createdAt: string;
 }
 
-export type ProfilePatch = Partial<Pick<Profile, "firstName" | "lastName" | "phone" | "locale" | "theme">>;
+export type ProfilePatch = Partial<
+  Pick<Profile, "firstName" | "lastName" | "phone" | "locale" | "theme">
+>;
 
 export interface Address {
   id: string;

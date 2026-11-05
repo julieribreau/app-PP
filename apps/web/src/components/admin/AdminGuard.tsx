@@ -24,7 +24,9 @@ export function AdminGuard({ children }: { readonly children: React.ReactNode })
     return (
       <main className="mx-auto flex max-w-[460px] flex-col items-start gap-4 px-6 py-16">
         <h1 className="display m-0 text-4xl">{t("forbidden")}</h1>
-        <Button asChild variant="outline"><Link href="/">{t("backToSite")}</Link></Button>
+        <Button asChild variant="outline">
+          <Link href="/">{t("backToSite")}</Link>
+        </Button>
       </main>
     );
   }

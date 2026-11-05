@@ -7,10 +7,25 @@ import { renderIntl } from "@/test-utils";
 import { ProductCard } from "./ProductCard";
 
 vi.mock("@/i18n/navigation", () => ({
-  Link: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => <a href={href} {...rest}>{children}</a>,
+  Link: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
 }));
 
-const base = { id: "p1", slug: "avoine-cacao", name: "Avoine & cacao", summary: "", category: { slug: "barres-cereales", name: "Barres céréales" }, imageUrl: null, priceFromCents: 290, priceVaries: true, variantSummary: "2 saveurs", available: true };
+const base = {
+  id: "p1",
+  slug: "avoine-cacao",
+  name: "Avoine & cacao",
+  summary: "",
+  category: { slug: "barres-cereales", name: "Barres céréales" },
+  imageUrl: null,
+  priceFromCents: 290,
+  priceVaries: true,
+  variantSummary: "2 saveurs",
+  available: true,
+};
 
 describe("ProductCard", () => {
   afterEach(cleanup);

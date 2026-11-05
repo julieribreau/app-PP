@@ -12,10 +12,30 @@ import { cn } from "@/lib/cn";
 // nettoyé par le backend (sanitize-html, liste blanche unique) à l'écriture et au rendu.
 
 const TOOLS = [
-  { key: "bold", icon: Bold, run: (e: Editor) => e.chain().focus().toggleBold().run(), active: "bold" },
-  { key: "italic", icon: Italic, run: (e: Editor) => e.chain().focus().toggleItalic().run(), active: "italic" },
-  { key: "bulletList", icon: List, run: (e: Editor) => e.chain().focus().toggleBulletList().run(), active: "bulletList" },
-  { key: "orderedList", icon: ListOrdered, run: (e: Editor) => e.chain().focus().toggleOrderedList().run(), active: "orderedList" },
+  {
+    key: "bold",
+    icon: Bold,
+    run: (e: Editor) => e.chain().focus().toggleBold().run(),
+    active: "bold",
+  },
+  {
+    key: "italic",
+    icon: Italic,
+    run: (e: Editor) => e.chain().focus().toggleItalic().run(),
+    active: "italic",
+  },
+  {
+    key: "bulletList",
+    icon: List,
+    run: (e: Editor) => e.chain().focus().toggleBulletList().run(),
+    active: "bulletList",
+  },
+  {
+    key: "orderedList",
+    icon: ListOrdered,
+    run: (e: Editor) => e.chain().focus().toggleOrderedList().run(),
+    active: "orderedList",
+  },
 ] as const;
 
 export function RichTextEditor({
@@ -31,20 +51,43 @@ export function RichTextEditor({
 }) {
   const t = useTranslations("admin.editor");
   const editor = useEditor({
-    extensions: [StarterKit.configure({ heading: false, codeBlock: false, code: false, blockquote: false, horizontalRule: false })],
+    extensions: [
+      StarterKit.configure({
+        heading: false,
+        codeBlock: false,
+        code: false,
+        blockquote: false,
+        horizontalRule: false,
+      }),
+    ],
     content: value,
     immediatelyRender: false,
-    editorProps: { attributes: { id, "aria-labelledby": `${id}-label`, "aria-multiline": "true", role: "textbox", class: "rich-text min-h-24 px-3.5 py-3 text-sm leading-[21px] outline-none" } },
+    editorProps: {
+      attributes: {
+        id,
+        "aria-labelledby": `${id}-label`,
+        "aria-multiline": "true",
+        role: "textbox",
+        class: "rich-text min-h-24 px-3.5 py-3 text-sm leading-[21px] outline-none",
+      },
+    },
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),
   });
   React.useEffect(() => {
-    if (editor && value !== editor.getHTML()) editor.commands.setContent(value, { emitUpdate: false });
+    if (editor && value !== editor.getHTML())
+      editor.commands.setContent(value, { emitUpdate: false });
   }, [editor, value]);
   return (
     <div className="flex flex-col gap-1.5">
-      <span id={`${id}-label`} className="text-[13px] leading-[18px] font-medium">{label}</span>
-      <div className="overflow-hidden rounded-[12px] border border-input bg-card focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring">
-        <div role="toolbar" aria-label={t("toolbar")} className="flex gap-0.5 border-b border-border bg-muted p-1">
+      <span id={`${id}-label`} className="text-[13px] leading-[18px] font-medium">
+        {label}
+      </span>
+      <div className="border-input bg-card focus-within:outline-ring overflow-hidden rounded-[12px] border focus-within:outline-2 focus-within:outline-offset-2">
+        <div
+          role="toolbar"
+          aria-label={t("toolbar")}
+          className="border-border bg-muted flex gap-0.5 border-b p-1"
+        >
           {TOOLS.map(({ key, icon: Icon, run, active }) => (
             <button
               key={key}
@@ -52,7 +95,10 @@ export function RichTextEditor({
               aria-label={t(key)}
               aria-pressed={editor?.isActive(active) ?? false}
               onClick={() => editor && run(editor)}
-              className={cn("inline-flex size-8 cursor-pointer items-center justify-center rounded-full hover:bg-card", editor?.isActive(active) && "bg-card")}
+              className={cn(
+                "hover:bg-card inline-flex size-8 cursor-pointer items-center justify-center rounded-full",
+                editor?.isActive(active) && "bg-card",
+              )}
             >
               <Icon aria-hidden="true" className="size-4" strokeWidth={1.75} />
             </button>

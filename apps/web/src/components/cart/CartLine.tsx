@@ -18,14 +18,27 @@ export function CartLine({ item }: { readonly item: CartItem }) {
   const update = useUpdateCartItem();
   const remove = useRemoveCartItem();
   return (
-    <li className="flex flex-wrap items-center gap-5 border-b border-border py-5">
-      <ProductImage name={item.productName} imageUrl={item.imageUrl} seed={item.productSlug} className="size-24 shrink-0 rounded-[14px]" fill="84%" />
+    <li className="border-border flex flex-wrap items-center gap-5 border-b py-5">
+      <ProductImage
+        name={item.productName}
+        imageUrl={item.imageUrl}
+        seed={item.productSlug}
+        className="size-24 shrink-0 rounded-[14px]"
+        fill="84%"
+      />
       <div className="flex min-w-0 flex-[1_1_200px] flex-col gap-1">
-        <Link href={`/boutique/${item.productSlug}`} className="display text-xl leading-[26px] hover:text-primary">
+        <Link
+          href={`/boutique/${item.productSlug}`}
+          className="display hover:text-primary text-xl leading-[26px]"
+        >
           {item.productName}
         </Link>
-        {item.variantLabel ? <span className="text-sm text-muted-foreground">{item.variantLabel}</span> : null}
-        <span className="font-numeric text-sm text-muted-foreground">{t("unit", { price: formatPrice(item.unitPriceCents, locale) })}</span>
+        {item.variantLabel ? (
+          <span className="text-muted-foreground text-sm">{item.variantLabel}</span>
+        ) : null}
+        <span className="font-numeric text-muted-foreground text-sm">
+          {t("unit", { price: formatPrice(item.unitPriceCents, locale) })}
+        </span>
       </div>
       <QuantityStepper
         size="sm"
@@ -35,8 +48,15 @@ export function CartLine({ item }: { readonly item: CartItem }) {
         disabled={update.isPending}
         onChange={(quantity) => update.mutate({ itemId: item.id, quantity })}
       />
-      <span className="w-24 text-right font-numeric text-lg font-medium">{formatPrice(item.lineTotalCents, locale)}</span>
-      <Button variant="ghost" size="icon" aria-label={t("remove", { name: item.productName })} onClick={() => remove.mutate(item.id)}>
+      <span className="font-numeric w-24 text-right text-lg font-medium">
+        {formatPrice(item.lineTotalCents, locale)}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={t("remove", { name: item.productName })}
+        onClick={() => remove.mutate(item.id)}
+      >
         <Trash2 aria-hidden="true" strokeWidth={1.75} />
       </Button>
     </li>

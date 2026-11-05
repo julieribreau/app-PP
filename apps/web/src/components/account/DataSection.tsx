@@ -17,7 +17,13 @@ import { useApi } from "@/providers/ApiProvider";
 
 const WORD: Record<string, string> = { fr: "SUPPRIMER", en: "DELETE" };
 
-function DeleteDialog({ open, onOpenChange }: { readonly open: boolean; readonly onOpenChange: (o: boolean) => void }) {
+function DeleteDialog({
+  open,
+  onOpenChange,
+}: {
+  readonly open: boolean;
+  readonly onOpenChange: (o: boolean) => void;
+}) {
   const t = useTranslations("account");
   const tc = useTranslations("common");
   const locale = useLocale();
@@ -42,8 +48,16 @@ function DeleteDialog({ open, onOpenChange }: { readonly open: boolean; readonly
           <Input value={value} onChange={(e) => setValue(e.target.value)} autoComplete="off" />
         </Field>
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>{tc("cancel")}</Button>
-          <Button variant="destructive" disabled={value.trim() !== word} onClick={() => void confirm()}>{t("deleteAccount")}</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            {tc("cancel")}
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={value.trim() !== word}
+            onClick={() => void confirm()}
+          >
+            {t("deleteAccount")}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -64,12 +78,21 @@ export function DataSection() {
     }
   };
   return (
-    <section id="donnees" aria-labelledby="data-title" className="flex flex-col gap-4 rounded-[24px] border border-border bg-card p-7">
+    <section
+      id="donnees"
+      aria-labelledby="data-title"
+      className="border-border bg-card flex flex-col gap-4 rounded-[24px] border p-7"
+    >
       <SectionTitle id="data-title">{t("data")}</SectionTitle>
-      <p className="m-0 text-muted-foreground">{t("dataLead")}</p>
+      <p className="text-muted-foreground m-0">{t("dataLead")}</p>
       <div className="flex flex-wrap gap-3">
-        <Button variant="outline" onClick={() => void exportData()}><Download aria-hidden="true" strokeWidth={1.75} />{t("export")}</Button>
-        <Button variant="destructive" onClick={() => setOpen(true)}>{t("deleteAccount")}</Button>
+        <Button variant="outline" onClick={() => void exportData()}>
+          <Download aria-hidden="true" strokeWidth={1.75} />
+          {t("export")}
+        </Button>
+        <Button variant="destructive" onClick={() => setOpen(true)}>
+          {t("deleteAccount")}
+        </Button>
       </div>
       <DeleteDialog open={open} onOpenChange={setOpen} />
     </section>

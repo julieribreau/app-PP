@@ -14,7 +14,9 @@ function Demo({ error, help }: { error?: string; help?: string }) {
   );
 }
 
-const meta = { title: "Atoms/Input", component: Demo, tags: ["autodocs"] } satisfies Meta<typeof Demo>;
+const meta = { title: "Atoms/Input", component: Demo, tags: ["autodocs"] } satisfies Meta<
+  typeof Demo
+>;
 export default meta;
 
 type Story = StoryObj<typeof meta>;

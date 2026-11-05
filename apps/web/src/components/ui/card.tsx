@@ -4,7 +4,12 @@ import { cn } from "@/lib/cn";
 
 /** Surface `card`, filet `border`, rayon 24 px (des filets, pas des ombres). */
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-[24px] border border-border bg-card text-card-foreground", className)} {...props} />;
+  return (
+    <div
+      className={cn("border-border bg-card text-card-foreground rounded-[24px] border", className)}
+      {...props}
+    />
+  );
 }
 
 export function SectionTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {

@@ -18,7 +18,13 @@ function makeQueryClient(): QueryClient {
 }
 
 /** Fournisseurs client de toute l'app : requêtes, API, thème, notifications. */
-export function Providers({ theme, children }: { readonly theme: Theme; readonly children: React.ReactNode }) {
+export function Providers({
+  theme,
+  children,
+}: {
+  readonly theme: Theme;
+  readonly children: React.ReactNode;
+}) {
   const [client] = React.useState(makeQueryClient);
   return (
     <QueryClientProvider client={client}>

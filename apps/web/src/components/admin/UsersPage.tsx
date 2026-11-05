@@ -41,10 +41,15 @@ export function UsersPage() {
   const api = useApi();
   const [state, set] = useUrlState(KEYS);
   const query = toQuery(state);
-  const { data, isPending, isError, refetch } = useQuery({ queryKey: ["admin", "users", query], queryFn: () => api.admin.users(query), placeholderData: keepPreviousData });
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["admin", "users", query],
+    queryFn: () => api.admin.users(query),
+    placeholderData: keepPreviousData,
+  });
   const columns = useUserColumns(locale);
   const sort: SortState = { key: query.sort ?? "createdAt", order: query.order ?? "desc" };
-  const onSort = (key: string) => set({ sort: key, order: sort.key === key && sort.order === "desc" ? "asc" : "desc" });
+  const onSort = (key: string) =>
+    set({ sort: key, order: sort.key === key && sort.order === "desc" ? "asc" : "desc" });
   const exportCsv = async () => {
     try {
       saveBlob(await api.admin.exportUsers(query), "usagers.csv");
@@ -58,23 +63,58 @@ export function UsersPage() {
       <AdminHeading
         title={t("users")}
         sub={data ? t("usersSummary", data.counts) : undefined}
-        actions={<Button variant="outline" size="sm" onClick={() => void exportCsv()}><Download aria-hidden="true" strokeWidth={1.75} />{t("export")}</Button>}
+        actions={
+          <Button variant="outline" size="sm" onClick={() => void exportCsv()}>
+            <Download aria-hidden="true" strokeWidth={1.75} />
+            {t("export")}
+          </Button>
+        }
       />
       <UsersFilters values={state} onChange={set} />
-      {isPending ? <Loading /> : isError ? <ErrorNote onRetry={() => void refetch()} /> : (
-        <DataTable rows={data.items} columns={columns} getRowId={(u) => u.id} caption={t("users")} sort={sort} onSort={onSort} />
+      {isPending ? (
+        <Loading />
+      ) : isError ? (
+        <ErrorNote onRetry={() => void refetch()} />
+      ) : (
+        <DataTable
+          rows={data.items}
+          columns={columns}
+          getRowId={(u) => u.id}
+          caption={t("users")}
+          sort={sort}
+          onSort={onSort}
+        />
       )}
       {data ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-sm text-muted-foreground">{t("range", { from: data.total ? from : 0, to: Math.min(from + data.items.length - 1, data.total), total: data.total })}</span>
+          <span className="text-muted-foreground text-sm">
+            {t("range", {
+              from: data.total ? from : 0,
+              to: Math.min(from + data.items.length - 1, data.total),
+              total: data.total,
+            })}
+          </span>
           <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <label className="text-muted-foreground flex items-center gap-1.5 text-sm">
               {t("rows")}
-              <select className="h-10 rounded-[12px] border border-input bg-card px-2 text-foreground" value={query.pageSize} onChange={(e) => set({ pageSize: e.target.value })}>
-                {[10, 25, 50].map((n) => <option key={n} value={n}>{n}</option>)}
+              <select
+                className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
+                value={query.pageSize}
+                onChange={(e) => set({ pageSize: e.target.value })}
+              >
+                {[10, 25, 50].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
               </select>
             </label>
-            <Pagination page={data.page} pageCount={Math.ceil(data.total / data.pageSize)} onPage={(p) => set({ page: p }, false)} label={t("pagination")} />
+            <Pagination
+              page={data.page}
+              pageCount={Math.ceil(data.total / data.pageSize)}
+              onPage={(p) => set({ page: p }, false)}
+              label={t("pagination")}
+            />
           </div>
         </div>
       ) : null}

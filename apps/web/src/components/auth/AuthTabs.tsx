@@ -14,12 +14,20 @@ export function AuthTabs({ initial = "signin" }: { readonly initial?: "signin" |
   const t = useTranslations("auth");
   return (
     <Tabs.Root defaultValue={initial} className="flex flex-col gap-6">
-      <Tabs.List aria-label={t("tabs")} className="flex gap-1 rounded-full bg-muted p-1">
-        <Tabs.Trigger value="signin" className={tab}>{t("signInTab")}</Tabs.Trigger>
-        <Tabs.Trigger value="signup" className={tab}>{t("signUpTab")}</Tabs.Trigger>
+      <Tabs.List aria-label={t("tabs")} className="bg-muted flex gap-1 rounded-full p-1">
+        <Tabs.Trigger value="signin" className={tab}>
+          {t("signInTab")}
+        </Tabs.Trigger>
+        <Tabs.Trigger value="signup" className={tab}>
+          {t("signUpTab")}
+        </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="signin"><SignInForm /></Tabs.Content>
-      <Tabs.Content value="signup"><SignUpForm /></Tabs.Content>
+      <Tabs.Content value="signin">
+        <SignInForm />
+      </Tabs.Content>
+      <Tabs.Content value="signup">
+        <SignUpForm />
+      </Tabs.Content>
     </Tabs.Root>
   );
 }

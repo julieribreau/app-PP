@@ -27,26 +27,82 @@ export function AuditPage() {
   const locale = useLocale();
   const api = useApi();
   const [state, set] = useUrlState(KEYS);
-  const query = { targetType: state.targetType || undefined, page: Math.max(1, Number(state.page) || 1), pageSize: 25 };
-  const { data, isPending, isError, refetch } = useQuery({ queryKey: ["admin", "audit", query], queryFn: () => api.admin.audit(query), placeholderData: keepPreviousData });
+  const query = {
+    targetType: state.targetType || undefined,
+    page: Math.max(1, Number(state.page) || 1),
+    pageSize: 25,
+  };
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["admin", "audit", query],
+    queryFn: () => api.admin.audit(query),
+    placeholderData: keepPreviousData,
+  });
   const columns: DataColumn<AuditEntry>[] = [
-    { id: "date", header: t("auditDate"), className: "font-numeric text-[13px]", cell: (e) => formatDateTime(e.createdAt, locale) },
+    {
+      id: "date",
+      header: t("auditDate"),
+      className: "font-numeric text-[13px]",
+      cell: (e) => formatDateTime(e.createdAt, locale),
+    },
     { id: "actor", header: t("auditActor"), cell: (e) => e.actor?.name ?? t("auditSystem") },
-    { id: "action", header: t("auditAction"), className: "font-numeric text-[13px]", cell: (e) => e.action },
-    { id: "target", header: t("auditTarget"), className: "font-numeric text-[13px]", cell: (e) => `${e.targetType}${e.targetId ? ` · ${e.targetId.slice(0, 8)}` : ""}` },
-    { id: "diff", header: t("auditChanges"), className: "text-[13px] text-muted-foreground", cell: (e) => diffSummary(e.diff) },
+    {
+      id: "action",
+      header: t("auditAction"),
+      className: "font-numeric text-[13px]",
+      cell: (e) => e.action,
+    },
+    {
+      id: "target",
+      header: t("auditTarget"),
+      className: "font-numeric text-[13px]",
+      cell: (e) => `${e.targetType}${e.targetId ? ` · ${e.targetId.slice(0, 8)}` : ""}`,
+    },
+    {
+      id: "diff",
+      header: t("auditChanges"),
+      className: "text-[13px] text-muted-foreground",
+      cell: (e) => diffSummary(e.diff),
+    },
   ];
   return (
     <>
       <AdminHeading title={t("audit")} />
-      <label className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground">{t("auditTarget")}
-        <select className="h-10 rounded-[12px] border border-input bg-card px-2 text-foreground" value={state.targetType} onChange={(e) => set({ targetType: e.target.value })}>
+      <label className="text-muted-foreground flex w-fit items-center gap-1.5 text-sm">
+        {t("auditTarget")}
+        <select
+          className="border-input bg-card text-foreground h-10 rounded-[12px] border px-2"
+          value={state.targetType}
+          onChange={(e) => set({ targetType: e.target.value })}
+        >
           <option value="">{t("all")}</option>
-          {["user", "product", "category"].map((k) => <option key={k} value={k}>{t(`auditTargets.${k}`)}</option>)}
+          {["user", "product", "category"].map((k) => (
+            <option key={k} value={k}>
+              {t(`auditTargets.${k}`)}
+            </option>
+          ))}
         </select>
       </label>
-      {isPending ? <Loading /> : isError ? <ErrorNote onRetry={() => void refetch()} /> : <DataTable rows={data.items} columns={columns} getRowId={(e) => e.id} caption={t("audit")} minWidth={820} />}
-      {data ? <Pagination page={data.page} pageCount={Math.ceil(data.total / data.pageSize)} onPage={(p) => set({ page: p }, false)} label={t("pagination")} /> : null}
+      {isPending ? (
+        <Loading />
+      ) : isError ? (
+        <ErrorNote onRetry={() => void refetch()} />
+      ) : (
+        <DataTable
+          rows={data.items}
+          columns={columns}
+          getRowId={(e) => e.id}
+          caption={t("audit")}
+          minWidth={820}
+        />
+      )}
+      {data ? (
+        <Pagination
+          page={data.page}
+          pageCount={Math.ceil(data.total / data.pageSize)}
+          onPage={(p) => set({ page: p }, false)}
+          label={t("pagination")}
+        />
+      ) : null}
     </>
   );
 }

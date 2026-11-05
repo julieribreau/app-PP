@@ -25,8 +25,8 @@ export function SiteHeader() {
     { href: "/#approche", key: "approach", label: t("approach") },
   ] as const;
   return (
-    <header className="flex flex-wrap items-center justify-between gap-6 border-b border-border px-6 py-4 md:px-12">
-      <Link href="/" className="display text-[26px] leading-8 hover:text-primary">
+    <header className="border-border flex flex-wrap items-center justify-between gap-6 border-b px-6 py-4 md:px-12">
+      <Link href="/" className="display hover:text-primary text-[26px] leading-8">
         {tc("appName")}
       </Link>
       <nav aria-label={t("main")} className="flex flex-wrap gap-8 font-medium">

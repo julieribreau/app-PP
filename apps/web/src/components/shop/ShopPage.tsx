@@ -29,27 +29,44 @@ export function ShopPage() {
     page,
     pageSize: PAGE_SIZE,
   };
-  const categories = useQuery({ queryKey: ["catalog", "categories"], queryFn: () => api.catalog.categories() });
+  const categories = useQuery({
+    queryKey: ["catalog", "categories"],
+    queryFn: () => api.catalog.categories(),
+  });
   const products = useQuery({
     queryKey: ["catalog", "products", query],
     queryFn: () => api.catalog.products(query),
     placeholderData: keepPreviousData,
   });
-  const onSearchSort = React.useCallback((patch: { q?: string; sort?: string }) => set(patch), [set]);
+  const onSearchSort = React.useCallback(
+    (patch: { q?: string; sort?: string }) => set(patch),
+    [set],
+  );
   const total = products.data?.total ?? 0;
 
   return (
     <main className="mx-auto flex max-w-[1280px] flex-col gap-8 px-6 pt-10 pb-20 md:px-12">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-2">
-          <span className="eyebrow" aria-live="polite">{products.data ? t("count", { count: total }) : " "}</span>
+          <span className="eyebrow" aria-live="polite">
+            {products.data ? t("count", { count: total }) : " "}
+          </span>
           <h1 className="display m-0 text-5xl leading-[52px]">{t("title")}</h1>
         </div>
         <ShopSearchSort q={state.q} sort={state.sort} onChange={onSearchSort} />
       </div>
-      <CategoryChips categories={categories.data ?? []} current={state.category} onChange={(category) => set({ category })} />
+      <CategoryChips
+        categories={categories.data ?? []}
+        current={state.category}
+        onChange={(category) => set({ category })}
+      />
       <ProductResults products={products} />
-      <Pagination page={page} pageCount={Math.ceil(total / PAGE_SIZE)} onPage={(p) => set({ page: p }, false)} label={t("pagination")} />
+      <Pagination
+        page={page}
+        pageCount={Math.ceil(total / PAGE_SIZE)}
+        onPage={(p) => set({ page: p }, false)}
+        label={t("pagination")}
+      />
     </main>
   );
 }
@@ -58,7 +75,8 @@ function ProductResults({ products }: { readonly products: UseQueryResult<Page<P
   const t = useTranslations("shop");
   if (products.isPending) return <Loading />;
   if (products.isError) return <ErrorNote onRetry={() => void products.refetch()} />;
-  if (!products.data.items.length) return <p className="py-12 text-center text-muted-foreground">{t("empty")}</p>;
+  if (!products.data.items.length)
+    return <p className="text-muted-foreground py-12 text-center">{t("empty")}</p>;
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-6">
       {products.data.items.map((product) => (

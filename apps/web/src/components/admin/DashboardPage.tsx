@@ -8,9 +8,20 @@ import { useApi } from "@/providers/ApiProvider";
 
 import { AdminHeading } from "./AdminShell";
 
-function Stat({ label, value, href }: { readonly label: string; readonly value: number | undefined; readonly href: string }) {
+function Stat({
+  label,
+  value,
+  href,
+}: {
+  readonly label: string;
+  readonly value: number | undefined;
+  readonly href: string;
+}) {
   return (
-    <Link href={href} className="flex flex-col gap-1 rounded-[18px] border border-border bg-card p-6 hover:border-primary">
+    <Link
+      href={href}
+      className="border-border bg-card hover:border-primary flex flex-col gap-1 rounded-[18px] border p-6"
+    >
       <span className="eyebrow">{label}</span>
       <span className="font-numeric text-[32px] leading-10 font-medium">{value ?? "—"}</span>
     </Link>
@@ -21,15 +32,29 @@ function Stat({ label, value, href }: { readonly label: string; readonly value: 
 export function DashboardPage() {
   const t = useTranslations("admin");
   const api = useApi();
-  const users = useQuery({ queryKey: ["admin", "users", { pageSize: 10 }], queryFn: () => api.admin.users({ pageSize: 10 }) });
-  const products = useQuery({ queryKey: ["admin", "products", { pageSize: 1 }], queryFn: () => api.admin.products({ pageSize: 1 }) });
+  const users = useQuery({
+    queryKey: ["admin", "users", { pageSize: 10 }],
+    queryFn: () => api.admin.users({ pageSize: 10 }),
+  });
+  const products = useQuery({
+    queryKey: ["admin", "products", { pageSize: 1 }],
+    queryFn: () => api.admin.products({ pageSize: 1 }),
+  });
   return (
     <>
       <AdminHeading title={t("dashboard")} />
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
         <Stat label={t("users")} value={users.data?.counts.total} href="/admin/usagers" />
-        <Stat label={t("statuses.unverified")} value={users.data?.counts.unverified} href="/admin/usagers?status=unverified" />
-        <Stat label={t("statuses.suspended")} value={users.data?.counts.suspended} href="/admin/usagers?status=suspended" />
+        <Stat
+          label={t("statuses.unverified")}
+          value={users.data?.counts.unverified}
+          href="/admin/usagers?status=unverified"
+        />
+        <Stat
+          label={t("statuses.suspended")}
+          value={users.data?.counts.suspended}
+          href="/admin/usagers?status=suspended"
+        />
         <Stat label={t("products")} value={products.data?.total} href="/admin/produits" />
       </div>
     </>

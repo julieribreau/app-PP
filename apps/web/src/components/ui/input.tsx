@@ -14,6 +14,9 @@ export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLS
   return <select className={cn(inputClass, "pr-8", className)} {...props} />;
 }
 
-export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function Textarea({
+  className,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <textarea className={cn(inputClass, "h-auto min-h-24 py-2", className)} {...props} />;
 }

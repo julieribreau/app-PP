@@ -37,7 +37,7 @@ export function VariantPicker({
                     aria-pressed={on}
                     onClick={() => onSelect(option.id, value.id)}
                     className={cn(
-                      "inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-input px-[18px] text-[15px] font-medium",
+                      "border-input inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border px-[18px] text-[15px] font-medium",
                       on && "border-foreground bg-foreground text-background",
                       !offered && !on && "text-muted-foreground line-through decoration-1",
                     )}

@@ -8,7 +8,13 @@ import { createApi, type Api } from "@/lib/api/endpoints";
 const ApiContext = React.createContext<Api | null>(null);
 
 /** Client API dans la langue de l'interface (en-tête Accept-Language). */
-export function ApiProvider({ children, api }: { readonly children: React.ReactNode; readonly api?: Api }) {
+export function ApiProvider({
+  children,
+  api,
+}: {
+  readonly children: React.ReactNode;
+  readonly api?: Api;
+}) {
   const locale = useLocale();
   const value = React.useMemo(() => api ?? createApi(locale), [api, locale]);
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;

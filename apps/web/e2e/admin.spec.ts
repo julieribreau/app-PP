@@ -13,7 +13,10 @@ test("admin avec 2FA : liste des usagers, tri et pagination", async ({ page }) =
   await expect(table.getByRole("row")).toHaveCount(11); // en-tête + 10 lignes
   await table.getByRole("button", { name: fr.admin.col.createdAt }).click();
   await expect(page).toHaveURL(/order=asc/);
-  await page.getByRole("navigation", { name: fr.admin.pagination }).getByRole("button", { name: "2" }).click();
+  await page
+    .getByRole("navigation", { name: fr.admin.pagination })
+    .getByRole("button", { name: "2" })
+    .click();
   await expect(page).toHaveURL(/page=2/);
   await expect(table.getByRole("row")).toHaveCount(3);
 });

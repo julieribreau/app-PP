@@ -17,7 +17,15 @@ export interface QuantityStepperProps {
 }
 
 /** − quantité + ; bornée entre min et max (stock), la valeur est annoncée à chaque changement. */
-export function QuantityStepper({ value, onChange, max = 99, min = 1, label, size = "md", disabled }: QuantityStepperProps) {
+export function QuantityStepper({
+  value,
+  onChange,
+  max = 99,
+  min = 1,
+  label,
+  size = "md",
+  disabled,
+}: QuantityStepperProps) {
   const t = useTranslations("product");
   const btn = cn(
     "inline-flex cursor-pointer items-center justify-center rounded-full disabled:cursor-not-allowed disabled:opacity-40",
@@ -27,15 +35,30 @@ export function QuantityStepper({ value, onChange, max = 99, min = 1, label, siz
     <div
       role="group"
       aria-label={label ?? t("quantity")}
-      className={cn("inline-flex items-center rounded-full border border-input", size === "md" ? "h-12" : "h-10")}
+      className={cn(
+        "border-input inline-flex items-center rounded-full border",
+        size === "md" ? "h-12" : "h-10",
+      )}
     >
-      <button type="button" className={btn} aria-label={t("decrease")} disabled={disabled || value <= min} onClick={() => onChange(Math.max(min, value - 1))}>
+      <button
+        type="button"
+        className={btn}
+        aria-label={t("decrease")}
+        disabled={disabled || value <= min}
+        onClick={() => onChange(Math.max(min, value - 1))}
+      >
         <Minus aria-hidden="true" className="size-4" strokeWidth={2} />
       </button>
-      <output aria-live="polite" className="min-w-8 text-center font-numeric">
+      <output aria-live="polite" className="font-numeric min-w-8 text-center">
         {value}
       </output>
-      <button type="button" className={btn} aria-label={t("increase")} disabled={disabled || value >= max} onClick={() => onChange(Math.min(max, value + 1))}>
+      <button
+        type="button"
+        className={btn}
+        aria-label={t("increase")}
+        disabled={disabled || value >= max}
+        onClick={() => onChange(Math.min(max, value + 1))}
+      >
         <Plus aria-hidden="true" className="size-4" strokeWidth={2} />
       </button>
     </div>

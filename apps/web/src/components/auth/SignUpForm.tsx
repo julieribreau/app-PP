@@ -33,7 +33,9 @@ export function SignUpForm() {
     const found = validate(form, t);
     setErrors(found);
     if (Object.keys(found).length) return;
-    const [firstName, lastName, email] = ["firstName", "lastName", "email"].map((k) => String(form.get(k)).trim());
+    const [firstName, lastName, email] = ["firstName", "lastName", "email"].map((k) =>
+      String(form.get(k)).trim(),
+    );
     setPending(true);
     const res = await authClient.signUp.email({
       email: email ?? "",
@@ -51,7 +53,10 @@ export function SignUpForm() {
 
   if (sentTo) {
     return (
-      <div role="status" className="flex flex-col gap-4 rounded-[24px] border border-border bg-card p-6">
+      <div
+        role="status"
+        className="border-border bg-card flex flex-col gap-4 rounded-[24px] border p-6"
+      >
         <h1 className="display m-0 text-3xl">{t("signUpTitle")}</h1>
         <p className="m-0">{t("verifyEmailSent", { email: sentTo })}</p>
       </div>
@@ -61,30 +66,63 @@ export function SignUpForm() {
     <form onSubmit={submit} className="flex flex-col gap-[18px]" noValidate>
       <div className="flex flex-col gap-2">
         <h1 className="display m-0 text-4xl leading-10">{t("signUpTitle")}</h1>
-        <p className="m-0 text-muted-foreground">{t("signUpLead")}</p>
+        <p className="text-muted-foreground m-0">{t("signUpLead")}</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Field id="su-first" label={t("firstName")}><Input name="firstName" autoComplete="given-name" required /></Field>
-        <Field id="su-last" label={t("lastName")}><Input name="lastName" autoComplete="family-name" required /></Field>
+        <Field id="su-first" label={t("firstName")}>
+          <Input name="firstName" autoComplete="given-name" required />
+        </Field>
+        <Field id="su-last" label={t("lastName")}>
+          <Input name="lastName" autoComplete="family-name" required />
+        </Field>
       </div>
-      <Field id="su-email" label={t("email")} help={t("emailHelp")}><Input name="email" type="email" autoComplete="email" required /></Field>
-      <Field id="su-password" label={t("password")} help={errors.password ? undefined : t("passwordHelp")} error={errors.password}>
+      <Field id="su-email" label={t("email")} help={t("emailHelp")}>
+        <Input name="email" type="email" autoComplete="email" required />
+      </Field>
+      <Field
+        id="su-password"
+        label={t("password")}
+        help={errors.password ? undefined : t("passwordHelp")}
+        error={errors.password}
+      >
         <Input name="password" type="password" autoComplete="new-password" required />
       </Field>
       <div className="flex flex-col gap-1">
         <label className="flex items-start gap-2.5 text-sm leading-5">
-          <input type="checkbox" name="terms" className="mt-0 size-5 shrink-0 accent-[var(--primary)]" aria-invalid={errors.terms ? true : undefined} aria-describedby={errors.terms ? "su-terms-error" : undefined} />
+          <input
+            type="checkbox"
+            name="terms"
+            className="mt-0 size-5 shrink-0 accent-[var(--primary)]"
+            aria-invalid={errors.terms ? true : undefined}
+            aria-describedby={errors.terms ? "su-terms-error" : undefined}
+          />
           <span>
             {t.rich("acceptTermsRich", {
-              terms: (chunks) => <Link href="/cgu" className="underline">{chunks}</Link>,
-              privacy: (chunks) => <Link href="/confidentialite" className="underline">{chunks}</Link>,
+              terms: (chunks) => (
+                <Link href="/cgu" className="underline">
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href="/confidentialite" className="underline">
+                  {chunks}
+                </Link>
+              ),
             })}
           </span>
         </label>
-        {errors.terms ? <span id="su-terms-error" className="text-sm text-destructive">{errors.terms}</span> : null}
+        {errors.terms ? (
+          <span id="su-terms-error" className="text-destructive text-sm">
+            {errors.terms}
+          </span>
+        ) : null}
       </div>
-      <div role="alert" className="text-sm text-destructive empty:hidden">{errors.form}</div>
-      <Button type="submit" size="lg" disabled={pending}>{t("signUp")}</Button>
+      <div role="alert" className="text-destructive text-sm empty:hidden">
+        {errors.form}
+      </div>
+      <Button type="submit" size="lg" disabled={pending}>
+        {t("signUp")}
+      </Button>
     </form>
   );
 }

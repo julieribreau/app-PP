@@ -35,7 +35,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
   return (
-    <html lang={locale} data-theme={theme === "system" ? undefined : theme} suppressHydrationWarning>
+    <html
+      lang={locale}
+      data-theme={theme === "system" ? undefined : theme}
+      suppressHydrationWarning
+    >
       <body>
         <NextIntlClientProvider messages={messages}>
           <Providers theme={theme}>

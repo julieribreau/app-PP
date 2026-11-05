@@ -2,9 +2,7 @@
 // en centimes TTC (contrat d'API) : jamais de flottant stocké, la division se fait ici.
 
 export function formatPrice(cents: number, locale: string): string {
-  return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(
-    cents / 100,
-  );
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(cents / 100);
 }
 
 /** Taux de TVA en points de base (550) → « 5,5 % ». */

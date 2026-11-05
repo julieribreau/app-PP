@@ -1,5 +1,12 @@
 // Next n'existe pas dans Storybook (Vite) : navigation simulée, sans effet.
-const router = { push: () => {}, replace: () => {}, refresh: () => {}, back: () => {}, forward: () => {}, prefetch: () => {} };
+const router = {
+  push: () => {},
+  replace: () => {},
+  refresh: () => {},
+  back: () => {},
+  forward: () => {},
+  prefetch: () => {},
+};
 
 export function useRouter() {
   return router;

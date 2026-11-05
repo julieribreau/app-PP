@@ -8,7 +8,10 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   const t = useTranslations("common");
   return (
     <div className="flex min-h-dvh flex-col">
-      <a href="#contenu" className="sr-only-focusable absolute top-2 left-2 z-50 rounded-full bg-primary px-4 py-2 text-primary-foreground">
+      <a
+        href="#contenu"
+        className="sr-only-focusable bg-primary text-primary-foreground absolute top-2 left-2 z-50 rounded-full px-4 py-2"
+      >
         {t("skipToContent")}
       </a>
       <SiteHeader />

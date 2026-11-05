@@ -32,12 +32,16 @@ function useCartMutation<V>(fn: (vars: V) => Promise<Cart>) {
 
 export function useAddToCart() {
   const api = useApi();
-  return useCartMutation((v: { variantId: string; quantity: number }) => api.cart.add(v.variantId, v.quantity));
+  return useCartMutation((v: { variantId: string; quantity: number }) =>
+    api.cart.add(v.variantId, v.quantity),
+  );
 }
 
 export function useUpdateCartItem() {
   const api = useApi();
-  return useCartMutation((v: { itemId: string; quantity: number }) => api.cart.update(v.itemId, v.quantity));
+  return useCartMutation((v: { itemId: string; quantity: number }) =>
+    api.cart.update(v.itemId, v.quantity),
+  );
 }
 
 export function useRemoveCartItem() {

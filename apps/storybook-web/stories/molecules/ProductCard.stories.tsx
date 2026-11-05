@@ -20,7 +20,13 @@ const meta = {
   title: "Molecules/ProductCard",
   component: ProductCard,
   tags: ["autodocs"],
-  decorators: [(Story) => <div style={{ width: 280 }}><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div style={{ width: 280 }}>
+        <Story />
+      </div>
+    ),
+  ],
   args: { product },
 } satisfies Meta<typeof ProductCard>;
 export default meta;
@@ -28,4 +34,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-export const OutOfStock: Story = { args: { product: { ...product, slug: "recup", name: "Récupération cacao", category: { slug: "boissons", name: "Boissons" }, priceFromCents: 2490, priceVaries: false, variantSummary: "Pot de 500 g", available: false } } };
+export const OutOfStock: Story = {
+  args: {
+    product: {
+      ...product,
+      slug: "recup",
+      name: "Récupération cacao",
+      category: { slug: "boissons", name: "Boissons" },
+      priceFromCents: 2490,
+      priceVaries: false,
+      variantSummary: "Pot de 500 g",
+      available: false,
+    },
+  },
+};

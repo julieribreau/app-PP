@@ -9,9 +9,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex min-h-dvh flex-wrap">
       <section className="flex flex-[1_1_520px] flex-col gap-10 px-6 pt-8 pb-12 md:px-12">
-        <Link href="/" className="display text-[26px] leading-8 hover:text-primary">{t("common.appName")}</Link>
+        <Link href="/" className="display hover:text-primary text-[26px] leading-8">
+          {t("common.appName")}
+        </Link>
         <div className="mx-auto flex w-full max-w-[420px] flex-col gap-6">{children}</div>
-        <nav aria-label={t("footer.legal")} className="mt-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+        <nav
+          aria-label={t("footer.legal")}
+          className="text-muted-foreground mt-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm"
+        >
           <Link href="/mentions-legales">{t("footer.mentions")}</Link>
           <span aria-hidden="true">·</span>
           <Link href="/confidentialite">{t("footer.privacy")}</Link>
@@ -21,11 +26,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <ConsentSettingsLink label={t("consent.settingsLink")} />
         </nav>
       </section>
-      <aside aria-hidden="true" className="relative min-h-[360px] flex-[1_1_480px] overflow-hidden bg-primary">
-        <div className="absolute top-[60px] -right-[60px] size-80 rounded-full bg-peach" />
-        <div className="absolute bottom-20 left-[60px] h-[300px] w-[180px] rounded-full bg-straw" />
-        <div className="absolute -bottom-10 left-[280px] h-[180px] w-[260px] rounded-[40px] bg-secondary" />
-        <p className="display absolute top-[72px] left-[60px] m-0 max-w-[360px] text-[40px] leading-[44px] text-primary-foreground">{t("auth.tagline")}</p>
+      <aside
+        aria-hidden="true"
+        className="bg-primary relative min-h-[360px] flex-[1_1_480px] overflow-hidden"
+      >
+        <div className="bg-peach absolute top-[60px] -right-[60px] size-80 rounded-full" />
+        <div className="bg-straw absolute bottom-20 left-[60px] h-[300px] w-[180px] rounded-full" />
+        <div className="bg-secondary absolute -bottom-10 left-[280px] h-[180px] w-[260px] rounded-[40px]" />
+        <p className="display text-primary-foreground absolute top-[72px] left-[60px] m-0 max-w-[360px] text-[40px] leading-[44px]">
+          {t("auth.tagline")}
+        </p>
       </aside>
     </div>
   );

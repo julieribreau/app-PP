@@ -9,7 +9,13 @@ import { useAddToCart } from "@/hooks/useCart";
 import { Link } from "@/i18n/navigation";
 import type { ProductDetail } from "@/lib/api/types";
 import { formatPrice, formatVatRate } from "@/lib/format";
-import { findVariant, initialSelection, maxQuantity, selectValue, selectionLabel } from "@/lib/variants";
+import {
+  findVariant,
+  initialSelection,
+  maxQuantity,
+  selectValue,
+  selectionLabel,
+} from "@/lib/variants";
 
 import { QuantityStepper } from "./QuantityStepper";
 import { VariantPicker } from "./VariantPicker";
@@ -42,28 +48,45 @@ export function BuyBox({ product }: { readonly product: ProductDetail }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-3">
-        <span className="font-numeric text-[32px] leading-10 font-medium">{formatPrice(unit * quantity, locale)}</span>
-        <span className="text-sm text-muted-foreground">
+        <span className="font-numeric text-[32px] leading-10 font-medium">
+          {formatPrice(unit * quantity, locale)}
+        </span>
+        <span className="text-muted-foreground text-sm">
           {tc("ttc")} · {tc("vatIncluded", { rate: formatVatRate(product.vatRateBps, locale) })}
         </span>
         {max === 0 ? <Badge tone="muted">{tc("outOfStock")}</Badge> : null}
       </div>
       <VariantPicker product={product} selection={selection} onSelect={onSelect} />
       <div className="flex flex-wrap items-center gap-3">
-        <QuantityStepper value={quantity} max={max || 1} onChange={(v) => { setQty(v); setAdded(null); }} disabled={max === 0} />
-        <Button size="lg" className="flex-[1_1_220px]" disabled={max === 0 || add.isPending} onClick={onAdd}>
+        <QuantityStepper
+          value={quantity}
+          max={max || 1}
+          onChange={(v) => {
+            setQty(v);
+            setAdded(null);
+          }}
+          disabled={max === 0}
+        />
+        <Button
+          size="lg"
+          className="flex-[1_1_220px]"
+          disabled={max === 0 || add.isPending}
+          onClick={onAdd}
+        >
           {max === 0 ? tc("unavailable") : t("addToCart")}
         </Button>
       </div>
       <div aria-live="polite" role="status">
         {added ? (
-          <div className="flex items-center justify-between gap-3 rounded-[14px] bg-secondary px-4 py-3 text-secondary-foreground">
+          <div className="bg-secondary text-secondary-foreground flex items-center justify-between gap-3 rounded-[14px] px-4 py-3">
             <span>{t("added", { label: added })}</span>
-            <Link href="/panier" className="font-semibold underline">{t("viewCart")}</Link>
+            <Link href="/panier" className="font-semibold underline">
+              {t("viewCart")}
+            </Link>
           </div>
         ) : null}
       </div>
-      <p className="m-0 text-sm text-muted-foreground">{t("payNote")}</p>
+      <p className="text-muted-foreground m-0 text-sm">{t("payNote")}</p>
     </div>
   );
 }

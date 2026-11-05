@@ -26,12 +26,22 @@ export function TotpChallenge({ onDone }: { readonly onDone: () => void | Promis
     <form onSubmit={submit} className="flex flex-col gap-[18px]" noValidate>
       <div className="flex flex-col gap-2">
         <h1 className="display m-0 text-4xl leading-10">{t("twoFactorTitle")}</h1>
-        <p className="m-0 text-muted-foreground">{t("twoFactorLead")}</p>
+        <p className="text-muted-foreground m-0">{t("twoFactorLead")}</p>
       </div>
       <Field id="totp" label={t("twoFactorCode")} error={error}>
-        <Input inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]*" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} autoFocus />
+        <Input
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          pattern="[0-9]*"
+          maxLength={6}
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          autoFocus
+        />
       </Field>
-      <Button type="submit" size="lg" disabled={pending || code.length !== 6}>{t("twoFactorVerify")}</Button>
+      <Button type="submit" size="lg" disabled={pending || code.length !== 6}>
+        {t("twoFactorVerify")}
+      </Button>
     </form>
   );
 }

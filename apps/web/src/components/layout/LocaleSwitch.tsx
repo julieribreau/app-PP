@@ -15,7 +15,7 @@ export function LocaleSwitch() {
     <Button
       variant="ghost"
       size="icon"
-      className="w-auto px-3 font-numeric text-[13px]"
+      className="font-numeric w-auto px-3 text-[13px]"
       aria-label={`${t("label")} : ${t(locale as "fr" | "en")}. ${t("switchTo", { language: t(next) })}`}
       lang={next}
       onClick={() => changeLocale(next)}

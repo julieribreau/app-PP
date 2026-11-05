@@ -129,6 +129,11 @@ allowBuilds:
   core-js: false
 
 overrides:
+  # Une seule copie de React dans le depot (web, mobile, packages/ui) : celle du SDK Expo,
+  # fixee dans le catalog. Certaines dependances tirent react-dom 19.3.1, qui ramenerait react
+  # 19.3.1 a cote de la 19.3.0 du mobile (deux React = hooks casses). A retirer avec le SDK suivant.
+  react: "19.3.0"
+  react-dom: "19.3.0"
   # drizzle-kit tire encore @esbuild-kit, qui fige esbuild 0.18 (GHSA-67mh-4wv8-2f99).
   # Meme correctif que bullify-verif.
   "@esbuild-kit/core-utils>esbuild": "^0.25.0"

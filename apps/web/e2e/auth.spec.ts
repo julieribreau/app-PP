@@ -27,6 +27,9 @@ test("inscription : mot de passe trop court refusé avant envoi", async ({ page 
   await page.getByRole("button", { name: fr.auth.signUp }).click();
   // Le mot de passe et la case des conditions sont signalés, rien n'est envoyé.
   await expect(page.getByText(fr.auth.termsRequired)).toBeVisible();
-  await expect(page.getByLabel(fr.auth.password, { exact: true })).toHaveAttribute("aria-invalid", "true");
+  await expect(page.getByLabel(fr.auth.password, { exact: true })).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
   expect(api.calls.some((c) => c.includes("sign-up"))).toBe(false);
 });

@@ -23,9 +23,12 @@ export function useProductSave(product: AdminProduct | null, onSaved: (p: AdminP
     mutationFn: async (draft: ProductDraft): Promise<AdminProduct> => {
       if (!product) return api.admin.createProduct(draft.input);
       let saved = product;
-      if (!sameJson(product.options, draft.options)) saved = await api.admin.setOptions(product.id, draft.options);
+      if (!sameJson(product.options, draft.options))
+        saved = await api.admin.setOptions(product.id, draft.options);
       saved = await api.admin.updateProduct(product.id, draft.input);
-      const changes = changedVariants(product.variants, draft.variants).filter((v) => saved.variants.some((s) => s.id === v.id));
+      const changes = changedVariants(product.variants, draft.variants).filter((v) =>
+        saved.variants.some((s) => s.id === v.id),
+      );
       if (changes.length) saved = await api.admin.updateVariants(product.id, changes);
       return saved;
     },

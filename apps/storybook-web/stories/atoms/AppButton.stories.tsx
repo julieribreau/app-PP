@@ -16,5 +16,9 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = { args: { variant: "primary" } };
 export const Secondary: Story = { args: { variant: "secondary", children: "Voir les saveurs" } };
 export const Outline: Story = { args: { variant: "outline", children: "Annuler" } };
-export const Destructive: Story = { args: { variant: "destructive", children: "Supprimer mon compte" } };
-export const Disabled: Story = { args: { disabled: true, children: "Paiement bientôt disponible" } };
+export const Destructive: Story = {
+  args: { variant: "destructive", children: "Supprimer mon compte" },
+};
+export const Disabled: Story = {
+  args: { disabled: true, children: "Paiement bientôt disponible" },
+};

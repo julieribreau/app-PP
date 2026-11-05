@@ -26,18 +26,36 @@ export interface SortState {
 
 const features = tableFeatures({});
 
-function SortButton<T>({ column, sort, onSort }: { readonly column: DataColumn<T>; readonly sort?: SortState; readonly onSort?: (key: string) => void }) {
+function SortButton<T>({
+  column,
+  sort,
+  onSort,
+}: {
+  readonly column: DataColumn<T>;
+  readonly sort?: SortState;
+  readonly onSort?: (key: string) => void;
+}) {
   const active = sort?.key === column.sortKey;
   const Icon = sort?.order === "asc" ? ArrowUp : ArrowDown;
   return (
-    <button type="button" onClick={() => column.sortKey && onSort?.(column.sortKey)} className={cn("inline-flex cursor-pointer items-center gap-1 uppercase", active && "text-foreground")}>
+    <button
+      type="button"
+      onClick={() => column.sortKey && onSort?.(column.sortKey)}
+      className={cn(
+        "inline-flex cursor-pointer items-center gap-1 uppercase",
+        active && "text-foreground",
+      )}
+    >
       {column.header}
       {active ? <Icon aria-hidden="true" className="size-3" strokeWidth={2} /> : null}
     </button>
   );
 }
 
-function ariaSort(column: { sortKey?: string }, sort?: SortState): "ascending" | "descending" | "none" | undefined {
+function ariaSort(
+  column: { sortKey?: string },
+  sort?: SortState,
+): "ascending" | "descending" | "none" | undefined {
   if (!column.sortKey) return undefined;
   if (sort?.key !== column.sortKey) return "none";
   return sort.order === "asc" ? "ascending" : "descending";
@@ -62,20 +80,39 @@ export function DataTable<T extends RowData>({
 }) {
   const tableColumns = React.useMemo(() => {
     const helper = createColumnHelper<typeof features, T>();
-    return helper.columns(columns.map((c) => helper.display({ id: c.id, cell: (info) => c.cell(info.row.original) })));
+    return helper.columns(
+      columns.map((c) => helper.display({ id: c.id, cell: (info) => c.cell(info.row.original) })),
+    );
   }, [columns]);
-  const table = useTable({ features, columns: tableColumns, data: rows, getRowId: (row) => getRowId(row) });
+  const table = useTable({
+    features,
+    columns: tableColumns,
+    data: rows,
+    getRowId: (row) => getRowId(row),
+  });
   const byId = new Map(columns.map((c) => [c.id, c]));
 
   return (
-    <div className="overflow-x-auto rounded-[18px] border border-border bg-card">
+    <div className="border-border bg-card overflow-x-auto rounded-[18px] border">
       <table className="w-full border-collapse text-[15px]" style={{ minWidth }}>
         <caption className="sr-only">{caption}</caption>
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.id} scope="col" aria-sort={ariaSort(column, sort)} className={cn("border-b border-border px-3.5 py-3 text-left font-numeric text-xs leading-4 font-medium tracking-[.06em] whitespace-nowrap text-muted-foreground uppercase", column.align === "right" && "text-right")}>
-                {column.sortKey ? <SortButton column={column} sort={sort} onSort={onSort} /> : column.header}
+              <th
+                key={column.id}
+                scope="col"
+                aria-sort={ariaSort(column, sort)}
+                className={cn(
+                  "border-border font-numeric text-muted-foreground border-b px-3.5 py-3 text-left text-xs leading-4 font-medium tracking-[.06em] whitespace-nowrap uppercase",
+                  column.align === "right" && "text-right",
+                )}
+              >
+                {column.sortKey ? (
+                  <SortButton column={column} sort={sort} onSort={onSort} />
+                ) : (
+                  column.header
+                )}
               </th>
             ))}
           </tr>
@@ -86,7 +123,14 @@ export function DataTable<T extends RowData>({
               {row.getAllCells().map((cell) => {
                 const column = byId.get(cell.column.id);
                 return (
-                  <td key={cell.id} className={cn("border-b border-border px-3.5 py-3 align-middle whitespace-nowrap", column?.align === "right" && "text-right", column?.className)}>
+                  <td
+                    key={cell.id}
+                    className={cn(
+                      "border-border border-b px-3.5 py-3 align-middle whitespace-nowrap",
+                      column?.align === "right" && "text-right",
+                      column?.className,
+                    )}
+                  >
                     <table.FlexRender cell={cell} />
                   </td>
                 );
