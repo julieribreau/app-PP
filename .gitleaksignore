@@ -1,0 +1,5 @@
+# Mots de passe de comptes de TEST fictifs (base e2e vidée à chaque passage, comptes créés par
+# les tests eux-mêmes). Aucun secret réel : revus le 2026-11-05.
+4fe9511230a5b3f5bb8d6ef4f2b2e46afd732086:apps/backend/test/helpers.ts:generic-api-key:10
+5576c2b9d4632ae55e379c78e353a7d865d50d73:apps/web/e2e-real/support.ts:generic-api-key:111
+9be2cc897412c447cb862ff7bd9abd82be69f56d:apps/web/e2e-real/finition-client.spec.ts:generic-api-key:159

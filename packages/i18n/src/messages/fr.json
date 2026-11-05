@@ -431,7 +431,8 @@
     "deleteProduct": "Supprimer le produit",
     "deleteProductConfirm": "Supprimer définitivement ce produit ? Un produit déjà mis au panier ne peut pas l'être : archivez-le.",
     "deleteProductInCart": "Ce produit est dans au moins un panier : archivez-le plutôt.",
-    "productDeleted": "Produit supprimé."
+    "productDeleted": "Produit supprimé.",
+    "unlimited": "illimité"
   },
   "mobile": {
     "tabs": {

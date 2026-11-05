@@ -117,6 +117,10 @@ function TopBar() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
+        {/* Envoi au clavier (Entrée) et pour les aides techniques : RGAA 11.9, technique H32. */}
+        <button type="submit" className="sr-only">
+          {t("globalSearch")}
+        </button>
       </form>
       <div className="flex items-center gap-1">
         <React.Suspense fallback={null}>

@@ -41,7 +41,7 @@ function VariantsSection({
           {t("variants")}
         </h2>
         <span className="text-muted-foreground text-[13px]">
-          {t("variantsSummary", { count: draft.variants.length, stock: stock ?? "∞" })}
+          {t("variantsSummary", { count: draft.variants.length, stock: stock ?? t("unlimited") })}
         </span>
       </div>
       <OptionsEditor

@@ -71,6 +71,10 @@ export function ShopSearchSort({
           ))}
         </Select>
       </div>
+      {/* La recherche part seule à la frappe ; ce bouton la lance au clavier (RGAA 11.9, H32). */}
+      <button type="submit" className="sr-only focus:not-sr-only">
+        {t("searchLabel")}
+      </button>
     </form>
   );
 }

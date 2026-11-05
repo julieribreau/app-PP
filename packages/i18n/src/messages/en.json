@@ -431,7 +431,8 @@
     "deleteProduct": "Delete product",
     "deleteProductConfirm": "Permanently delete this product? A product already added to a cart cannot be deleted: archive it instead.",
     "deleteProductInCart": "This product is in at least one cart: archive it instead.",
-    "productDeleted": "Product deleted."
+    "productDeleted": "Product deleted.",
+    "unlimited": "unlimited"
   },
   "mobile": {
     "tabs": {
