@@ -6,6 +6,7 @@
 // l'image. Les deux lisent le même journal (migrations/meta/_journal.json) et tiennent la
 // même table (drizzle.__drizzle_migrations) : une base migrée par l'un l'est pour l'autre.
 // Chaque migration tourne dans une transaction ; celles déjà jouées sont sautées.
+import "./load-env";
 import { join } from "node:path";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
