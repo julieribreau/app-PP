@@ -14,6 +14,26 @@ NutrionApp — NutrionApp (projet personnel).
 - Observabilité : Sentry + PostHog + Pino (toujours)
 - Monorepo : pnpm + Turborepo
 
+## Premier lancement (macOS)
+
+Prérequis : Node 24, pnpm (`corepack enable`), Docker Desktop, Xcode pour l'iPhone.
+
+```bash
+cp .env.example .env
+make install && make up && make db-migrate && make seed
+make backend         # :3001  · docs http://localhost:3001/docs
+make web             # :3000  · http://localhost:3000 (vitrine, /boutique, /admin)
+# Mobile : renseigner l'IP du Mac pour un téléphone physique
+echo "EXPO_PUBLIC_API_URL=http://$(ipconfig getifaddr en0):3001" > apps/mobile/.env.local
+make mobile          # Expo ; Face ID avec son texte : `npx expo run:ios` (build de dev)
+```
+
+Back-office : `admin@nutrion.local` / `Nutrion-Admin-2026`, puis activer la 2FA (QR code à scanner
+avec une app d'authentification). E-mails de dev : http://localhost:8025 (Mailpit).
+
+Design validé : [ADR-002](docs/architecture/ADR-002-design-system.md) · contrat d'API :
+[api-contract](docs/architecture/api-contract.md).
+
 ## Démarrer en local
 
 Via le **Makefile** (raccourcis homogènes — `make help` pour tout voir) :
