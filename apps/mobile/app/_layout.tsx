@@ -8,8 +8,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { AnalyticsGate } from "@/components/consent/AnalyticsGate";
 import { ConsentSheet } from "@/components/consent/ConsentSheet";
+import { AppProviders } from "@/components/layout/AppProviders";
 import { buildPostHogSettings } from "@/lib/analytics/posthog";
-import { messages } from "@/lib/i18n/messages";
+import { useI18n } from "@/lib/i18n/useI18n";
+import { useTheme } from "@/theme/useTheme";
 
 // app/ = NAVIGATION pure (expo-router). La logique vit dans src/ (screens/hooks/lib/stores).
 // Sentry initialisé ici dès l'init (socle observabilité). PostHog : seulement après
@@ -40,17 +42,45 @@ if (dsn) {
 // (finalités, version de la politique) : les changer à chaque rendu relirait le stockage.
 const posthogSettings = buildPostHogSettings();
 
+function Navigation() {
+  const { t } = useI18n();
+  const { color } = useTheme();
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: color.background },
+        headerTintColor: color.foreground,
+        headerTitleStyle: { fontFamily: "DMSans_600SemiBold" },
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: "minimal",
+        contentStyle: { backgroundColor: color.background },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="product/[slug]" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/sign-in" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="auth/sign-up" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="auth/forgot-password" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="account/profile" options={{ title: t.account.profile }} />
+      <Stack.Screen name="account/addresses" options={{ title: t.account.addressesTitle }} />
+      <Stack.Screen name="account/address/[id]" options={{ title: t.mobile.account.editAddress }} />
+      <Stack.Screen name="account/preferences" options={{ title: t.account.preferences }} />
+      <Stack.Screen name="account/security" options={{ title: t.account.security }} />
+      <Stack.Screen name="account/data" options={{ title: t.account.data }} />
+      <Stack.Screen name="privacy" options={{ title: t.settings.privacy }} />
+    </Stack>
+  );
+}
+
 function RootLayout() {
-  const t = messages();
   return (
     <SafeAreaProvider>
       <ConsentProvider store={AsyncStorage}>
-        <AnalyticsGate settings={posthogSettings}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="privacy" options={{ title: t.settings.privacy }} />
-          </Stack>
-        </AnalyticsGate>
+        <AppProviders>
+          <AnalyticsGate settings={posthogSettings}>
+            <Navigation />
+          </AnalyticsGate>
+        </AppProviders>
         <ConsentSheet />
       </ConsentProvider>
     </SafeAreaProvider>

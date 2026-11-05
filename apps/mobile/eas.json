@@ -20,7 +20,7 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "preprod",
         "EXPO_PUBLIC_TENANT_SLUG": "nutrion-app",
-        "EXPO_PUBLIC_API_BASE_URL": "https://nutrion-app.preprod.local/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://nutrion-app.preprod.local/api",
         "OTA_URL": "https://nutrion-app.preprod.local/api/v1/updates/manifest",
         "OTA_CHANNEL": "nutrion-app-preprod"
       }
@@ -32,7 +32,7 @@
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
         "EXPO_PUBLIC_TENANT_SLUG": "nutrion-app",
-        "EXPO_PUBLIC_API_BASE_URL": "https://nutrion-app.local/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://nutrion-app.local/api",
         "OTA_URL": "https://nutrion-app.local/api/v1/updates/manifest",
         "OTA_CHANNEL": "nutrion-app-production"
       }

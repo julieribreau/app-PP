@@ -7,14 +7,16 @@ import {
   type ConsentRecord,
   type KeyValueStore,
 } from "@nutrion/cmp";
-import en from "@nutrion/i18n/messages/en.json";
 import fr from "@nutrion/i18n/messages/fr.json";
 import { fireEvent, render, screen, userEvent, waitFor } from "@testing-library/react-native";
+
+import { usePrefsStore } from "@/stores/prefs.store";
 
 import { PrivacyScreen } from "./PrivacyScreen";
 
 const accepte = createRecord(config, { analytics: true }, new Date("2026-10-05T10:00:00Z"), null);
-const t = Intl.DateTimeFormat().resolvedOptions().locale.startsWith("en") ? en : fr;
+usePrefsStore.setState({ locale: "fr" });
+const t = fr;
 
 async function afficher(store: KeyValueStore) {
   await render(

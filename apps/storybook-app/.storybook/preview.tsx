@@ -3,6 +3,8 @@ import { defaultLocale, loadMessages, locales } from "@nutrion/i18n";
 import { tokens } from "@nutrion/ui-tokens";
 import { StyleSheet, View } from "react-native";
 
+import { usePrefsStore } from "@/stores/prefs.store";
+
 import { ColorSchemeContext, MessagesContext, type Messages } from "./context";
 
 /**
@@ -11,7 +13,10 @@ import { ColorSchemeContext, MessagesContext, type Messages } from "./context";
  */
 const withThemeAndLocale: Decorator = (Story, context) => {
   const scheme = context.globals["theme"] === "dark" ? "dark" : "light";
-  document.documentElement.lang = String(context.globals["locale"] ?? defaultLocale);
+  const locale = String(context.globals["locale"] ?? defaultLocale);
+  document.documentElement.lang = locale;
+  // Les composants de l'app lisent la langue dans leurs préférences (stores/prefs.store).
+  if (locale === "fr" || locale === "en") usePrefsStore.setState({ locale });
   // Sous l'écran, la page du navigateur : même fond, sur toute la hauteur de la capture.
   document.documentElement.style.backgroundColor = tokens.color[scheme].bg;
   return (

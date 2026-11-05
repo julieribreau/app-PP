@@ -1,9 +1,10 @@
 import { ConsentManager } from "@nutrion/cmp/native";
-import { tokens } from "@nutrion/ui-tokens";
 import * as React from "react";
-import { ScrollView, StyleSheet, Text, useColorScheme } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { deviceLocale, messages } from "@/lib/i18n/messages";
+import { AppText } from "@/components/ui/AppText";
+import { useI18n } from "@/lib/i18n/useI18n";
+import { useTheme } from "@/theme/useTheme";
 
 /**
  * Écran Confidentialité des réglages : l'usager y change d'avis à tout moment. Sans lui, le
@@ -11,18 +12,17 @@ import { deviceLocale, messages } from "@/lib/i18n/messages";
  * ajoutent ici l'export des données et la suppression du compte (brique rgpd-droits-personnes).
  */
 export function PrivacyScreen(): React.JSX.Element {
-  const locale = deviceLocale();
-  const t = messages(locale);
-  const palette = tokens.color[useColorScheme() === "dark" ? "dark" : "light"];
+  const { t, locale } = useI18n();
+  const { color } = useTheme();
   return (
     <ScrollView
-      style={{ backgroundColor: palette.bg }}
+      style={{ backgroundColor: color.background }}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
     >
-      <Text style={[styles.title, { color: palette.fg }]} accessibilityRole="header">
+      <AppText variant="h2" accessibilityRole="header">
         {t.consent.manager.title}
-      </Text>
+      </AppText>
       <ConsentManager copy={t.consent} locale={locale} />
     </ScrollView>
   );
@@ -30,5 +30,4 @@ export function PrivacyScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   content: { padding: 16, gap: 16 },
-  title: { fontSize: 20, fontWeight: "700" },
 });
