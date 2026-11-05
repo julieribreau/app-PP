@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { formatMessage, formatPrice, formatRate, htmlToText, initials } from "./format";
+import {
+  formatMessage,
+  formatPrice,
+  formatRate,
+  htmlToText,
+  initials,
+  pluralCategory,
+} from "./format";
 
 const nbsp = (s: string) => s.replace(/[\u00a0\u202f]/g, " ");
 
@@ -54,5 +61,25 @@ describe("initials", () => {
   it("prend la première lettre du prénom et du nom, sinon de l'e-mail", () => {
     expect(initials("Camille", "Martin")).toBe("CM");
     expect(initials(null, null, "hugo@exemple.fr")).toBe("H");
+  });
+});
+
+describe("pluralCategory sans Intl.PluralRules (Hermes)", () => {
+  it("retombe sur les règles fr et en quand le moteur n'a pas PluralRules", () => {
+    const original = Intl.PluralRules;
+    // Hermes n'expose pas Intl.PluralRules : formatMessage plantait sur l'écran Boutique.
+    (Intl as { PluralRules?: unknown }).PluralRules = undefined;
+    try {
+      expect(pluralCategory(0, "fr")).toBe("one");
+      expect(pluralCategory(1, "fr")).toBe("one");
+      expect(pluralCategory(12, "fr")).toBe("other");
+      expect(pluralCategory(1, "en")).toBe("one");
+      expect(pluralCategory(0, "en")).toBe("other");
+      expect(
+        formatMessage("{count, plural, one {# produit} other {# produits}}", { count: 12 }, "fr"),
+      ).toBe("12 produits");
+    } finally {
+      (Intl as { PluralRules?: unknown }).PluralRules = original;
+    }
   });
 });
