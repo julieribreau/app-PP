@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/ui/AppText";
 import { Button } from "@/components/ui/Button";
-import { TextField } from "@/components/ui/TextField";
+import { TextField, type TextFieldHandle } from "@/components/ui/TextField";
 import { useBiometricOffer } from "@/hooks/auth/useBiometricOffer";
 import { useAuthActions, type AuthErrorKind } from "@/hooks/auth/useSession";
 import { isEmail } from "@/lib/auth/validation";
@@ -31,6 +31,7 @@ export function SignInForm({
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const passwordRef = React.useRef<TextFieldHandle>(null);
 
   const messageFor = (kind: AuthErrorKind) =>
     kind === "invalidCredentials"
@@ -69,8 +70,13 @@ export function SignInForm({
         autoCapitalize="none"
         autoComplete="email"
         textContentType="username"
+        // Le clavier couvre le champ suivant dans la feuille : « Suivant » y passe.
+        returnKeyType="next"
+        submitBehavior="submit"
+        onSubmitEditing={() => passwordRef.current?.focus()}
       />
       <TextField
+        ref={passwordRef}
         testID="sign-in-password"
         label={t.auth.password}
         value={password}

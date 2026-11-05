@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/ui/AppText";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { TextField } from "@/components/ui/TextField";
+import { TextField, type TextFieldHandle } from "@/components/ui/TextField";
 import { useAuthActions } from "@/hooks/auth/useSession";
 import { isEmail, isStrongPassword } from "@/lib/auth/validation";
 import { useI18n } from "@/lib/i18n/useI18n";
@@ -103,6 +103,16 @@ function SignUpFields({
   errors: SignUpErrors;
 }) {
   const { t } = useI18n();
+  const lastName = React.useRef<TextFieldHandle>(null);
+  const email = React.useRef<TextFieldHandle>(null);
+  const password = React.useRef<TextFieldHandle>(null);
+  // « Suivant » du clavier passe au champ d'après, que le clavier recouvre dans la feuille.
+  const next = (target: React.RefObject<TextFieldHandle | null>) =>
+    ({
+      returnKeyType: "next",
+      submitBehavior: "submit",
+      onSubmitEditing: () => target.current?.focus(),
+    }) as const;
   return (
     <>
       <View style={styles.row}>
@@ -115,10 +125,12 @@ function SignUpFields({
             autoComplete="given-name"
             textContentType="givenName"
             error={errors.firstName}
+            {...next(lastName)}
           />
         </View>
         <View style={styles.flex}>
           <TextField
+            ref={lastName}
             testID="sign-up-last-name"
             label={t.auth.lastName}
             value={form.lastName}
@@ -126,10 +138,12 @@ function SignUpFields({
             autoComplete="family-name"
             textContentType="familyName"
             error={errors.lastName}
+            {...next(email)}
           />
         </View>
       </View>
       <TextField
+        ref={email}
         testID="sign-up-email"
         label={t.auth.email}
         help={t.auth.emailHelp}
@@ -140,8 +154,10 @@ function SignUpFields({
         autoComplete="email"
         textContentType="emailAddress"
         error={errors.email}
+        {...next(password)}
       />
       <TextField
+        ref={password}
         testID="sign-up-password"
         label={t.auth.password}
         help={t.auth.passwordHelp}

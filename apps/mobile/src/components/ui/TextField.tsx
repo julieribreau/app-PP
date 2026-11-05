@@ -6,7 +6,12 @@ import { useTheme } from "@/theme/useTheme";
 
 // Libellé toujours visible, champ de 48 pt au bord `input` (3:1), aide ou erreur reliée.
 
+/** Instance du champ natif, pour `focus()`. */
+export type TextFieldHandle = React.ComponentRef<typeof TextInput>;
+
 export interface TextFieldProps extends Omit<TextInputProps, "style"> {
+  /** Pour passer au champ suivant depuis la touche « Suivant » du clavier. */
+  ref?: React.Ref<TextFieldHandle>;
   label: string;
   help?: string;
   error?: string | null;

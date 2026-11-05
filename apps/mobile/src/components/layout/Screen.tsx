@@ -41,15 +41,19 @@ export function Screen({
   const { color } = useTheme();
   return (
     <SafeAreaView edges={edges} style={[styles.flex, { backgroundColor: color.background }]}>
+      {/* Avec défilement, iOS ajuste lui-même la zone visible au clavier : le padding du
+          KeyboardAvoidingView ne compte pas le décalage d'une feuille modale (connexion,
+          inscription) et laissait le champ mot de passe sous le clavier. */}
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" && !scroll ? "padding" : undefined}
       >
         {scroll ? (
           <ScrollView
             style={styles.flex}
             contentContainerStyle={[styles.content, contentStyle]}
             keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
             refreshControl={
               onRefresh ? (
                 <RefreshControl
