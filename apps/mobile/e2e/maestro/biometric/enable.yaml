@@ -1,0 +1,36 @@
+# Face ID (1/3) : activé à la connexion. Le script tient le capteur simulé sur « visage reconnu »
+# (notifyutil … pearl.match) pendant ce parcours.
+appId: io.bullify.nutrion-app
+name: Face ID — activation
+---
+- runFlow: ../subflows/launch-accepted.yaml
+- tapOn:
+    id: tab-account
+- tapOn:
+    id: account-sign-in
+- tapOn:
+    id: sign-in-email
+- eraseText: 60
+- inputText: camille.martin@exemple.fr
+- tapOn:
+    id: sign-in-password
+- inputText: Nutrion-Demo-2026
+- tapOn:
+    id: sign-in-submit
+- extendedWaitUntil:
+    visible: "Turn on Face ID\\?|Activer Face ID \\?"
+    timeout: 20000
+- tapOn: "Turn on|Activer"
+# Première utilisation : iOS demande l'autorisation d'utiliser Face ID.
+- runFlow:
+    when:
+      visible: ".*(use Face ID|utiliser Face ID).*"
+    commands:
+      - tapOn: "OK|Allow|Autoriser"
+- extendedWaitUntil:
+    visible:
+      id: account-biometric
+    timeout: 30000
+- assertVisible:
+    id: account-biometric
+    checked: true

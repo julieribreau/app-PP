@@ -1,6 +1,6 @@
 # Suite Maestro de l'app mobile, jouée contre la stack locale (scripts/local/test-ios-e2e.sh).
 # Les parcours de premier niveau tournent dans cet ordre ; subflows/ et scripts/ sont appelés
-# par eux. Les parcours Face ID (biometric-*.yaml) sont lancés à part par le script, qui simule
+# par eux. Les parcours Face ID (biometric/) sont lancés à part par le script, qui simule
 # le capteur avec notifyutil pendant qu'ils tournent.
 flows:
   - "*"

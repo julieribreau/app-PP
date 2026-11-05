@@ -31,7 +31,7 @@ name: Fiche produit
     enabled: false
 # Noisette en boîte de 12 : rupture, rien à ajouter.
 - tapOn: "Hazelnut"
-- assertVisible: "Out of stock"
+- assertVisible: ".*incl. VAT, Out of stock"
 - assertVisible:
     id: add-to-cart
     enabled: false
@@ -47,7 +47,7 @@ name: Fiche produit
     timeout: 10000
 - tapOn:
     id: add-to-cart
-- assertVisible: "Blueberry"
+- assertVisible: "Blueberry · Single bar"
 - assertVisible:
     id: cart-line-0-total
     text: "€2.90"
@@ -60,7 +60,7 @@ name: Fiche produit
     direction: DOWN
 - tapOn:
     id: product-recuperation-cacao
-- assertVisible: "Out of stock"
+- assertVisible: ".*incl. VAT, Out of stock"
 - assertVisible:
     id: add-to-cart
     enabled: false

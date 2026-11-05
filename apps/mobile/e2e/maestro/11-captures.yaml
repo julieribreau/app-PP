@@ -1,0 +1,10 @@
+# Chaque écran en anglais et en français, en clair et en sombre : captures dans
+# .local-test/maestro/captures/<appareil>/<langue>-<thème>/, relues à l'œil (texte coupé,
+# contraste, clé de traduction brute, français dans l'interface anglaise).
+appId: io.bullify.nutrion-app
+name: Captures EN / FR, clair / sombre
+---
+- runFlow: { file: subflows/captures-pass.yaml, env: { LOCALE: en, THEME: light } }
+- runFlow: { file: subflows/captures-pass.yaml, env: { LOCALE: en, THEME: dark } }
+- runFlow: { file: subflows/captures-pass.yaml, env: { LOCALE: fr, THEME: light } }
+- runFlow: { file: subflows/captures-pass.yaml, env: { LOCALE: fr, THEME: dark } }

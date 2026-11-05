@@ -1,0 +1,35 @@
+# Face ID (3/3) : visage non reconnu (notifyutil … pearl.nomatch) : l'app reste verrouillée sur
+# « Bon retour, Camille » ; le mot de passe la déverrouille.
+appId: io.bullify.nutrion-app
+name: Face ID — échec puis mot de passe
+---
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: biometric-unlock
+    timeout: 30000
+- extendedWaitUntil:
+    visible: ".*(Not Recognized|non reconnu|Try Face ID Again|Réessayer).*"
+    timeout: 20000
+- runFlow:
+    when:
+      visible: "Cancel|Annuler"
+    commands:
+      - tapOn: "Cancel|Annuler"
+- assertVisible: "Bon retour, Camille|Welcome back, Camille"
+- assertVisible:
+    id: biometric-unlock
+- tapOn:
+    id: sign-in-password
+- inputText: Nutrion-Demo-2026
+- tapOn:
+    id: sign-in-submit
+- extendedWaitUntil:
+    notVisible:
+      id: biometric-unlock
+    timeout: 20000
+- tapOn:
+    id: tab-account
+- assertVisible:
+    id: account-sign-out

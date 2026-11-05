@@ -1,0 +1,146 @@
+# Une passe de captures dans une langue et un thème (LOCALE, THEME), écran par écran. La
+# navigation passe par les liens nutrion:// : les mêmes captures sur tous les simulateurs, sans
+# dépendre de la position des onglets.
+appId: io.bullify.nutrion-app
+---
+- runFlow: launch-accepted.yaml
+- openLink: nutrion://account/preferences
+- tapOn:
+    id: locale-${LOCALE}
+- tapOn:
+    id: theme-${THEME}
+# Déconnecté.
+- openLink: nutrion:///
+- extendedWaitUntil:
+    visible:
+      id: product-avoine-cacao
+    timeout: 20000
+- runFlow: { file: screenshot.yaml, env: { NAME: 01-shop } }
+- openLink: nutrion://product/avoine-cacao
+- extendedWaitUntil:
+    visible:
+      id: add-to-cart
+    timeout: 20000
+- runFlow: { file: screenshot.yaml, env: { NAME: 02-product } }
+- tapOn:
+    id: add-to-cart
+- extendedWaitUntil:
+    visible:
+      id: add-to-cart
+      enabled: true
+    timeout: 15000
+- openLink: nutrion://product/recuperation-cacao
+- extendedWaitUntil:
+    visible:
+      id: add-to-cart
+    timeout: 20000
+- runFlow: { file: screenshot.yaml, env: { NAME: 03-product-out-of-stock } }
+- openLink: nutrion://cart
+- extendedWaitUntil:
+    visible:
+      id: cart-total
+    timeout: 20000
+- runFlow: { file: screenshot.yaml, env: { NAME: 04-cart-guest } }
+- openLink: nutrion://account
+- runFlow: { file: screenshot.yaml, env: { NAME: 05-account-signed-out } }
+- openLink: nutrion://privacy
+- runFlow: { file: screenshot.yaml, env: { NAME: 06-privacy } }
+- openLink: nutrion://auth/sign-up
+- extendedWaitUntil:
+    visible:
+      id: sign-up-submit
+    timeout: 15000
+- tapOn:
+    id: sign-up-submit
+- runFlow: { file: screenshot.yaml, env: { NAME: 07-sign-up-errors } }
+- openLink: nutrion://auth/forgot-password
+- extendedWaitUntil:
+    visible:
+      id: forgot-submit
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 08-forgot-password } }
+- openLink: nutrion://auth/sign-in
+- extendedWaitUntil:
+    visible:
+      id: sign-in-submit
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 09-sign-in } }
+# Connectée : Camille (sa langue et son thème s'appliquent, puis on remet ceux de la passe).
+- tapOn:
+    id: sign-in-email
+- eraseText: 60
+- inputText: camille.martin@exemple.fr
+- tapOn:
+    id: sign-in-password
+- inputText: Nutrion-Demo-2026
+- tapOn:
+    id: sign-in-submit
+- runFlow:
+    when:
+      visible: "Turn on Face ID\\?|Activer Face ID \\?"
+    commands:
+      - tapOn: "Not now|Plus tard"
+- extendedWaitUntil:
+    notVisible:
+      id: sign-in-submit
+    timeout: 20000
+- openLink: nutrion://account
+- extendedWaitUntil:
+    visible:
+      id: account-sign-out
+    timeout: 20000
+- openLink: nutrion://account/preferences
+- tapOn:
+    id: locale-${LOCALE}
+- tapOn:
+    id: theme-${THEME}
+- runFlow: { file: screenshot.yaml, env: { NAME: 10-account } }
+- scrollUntilVisible:
+    element:
+      id: account-sign-out
+    direction: DOWN
+- runFlow: { file: screenshot.yaml, env: { NAME: 11-account-bottom } }
+- openLink: nutrion://cart
+- extendedWaitUntil:
+    visible:
+      id: cart-total
+    timeout: 20000
+- runFlow: { file: screenshot.yaml, env: { NAME: 12-cart-merged } }
+- openLink: nutrion://account/profile
+- extendedWaitUntil:
+    visible:
+      id: profile-save
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 13-profile } }
+- openLink: nutrion://account/addresses
+- extendedWaitUntil:
+    visible:
+      id: address-add
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 14-addresses } }
+- openLink: nutrion://account/address/new
+- extendedWaitUntil:
+    visible:
+      id: address-save
+    timeout: 15000
+- tapOn:
+    id: address-save
+- runFlow: { file: screenshot.yaml, env: { NAME: 15-address-form-errors } }
+- openLink: nutrion://account/preferences
+- extendedWaitUntil:
+    visible:
+      id: theme-system
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 16-preferences } }
+- openLink: nutrion://account/security
+- extendedWaitUntil:
+    visible:
+      id: security-change-password
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 17-security } }
+- openLink: nutrion://account/data
+- extendedWaitUntil:
+    visible:
+      id: data-export
+    timeout: 15000
+- runFlow: { file: screenshot.yaml, env: { NAME: 18-data } }

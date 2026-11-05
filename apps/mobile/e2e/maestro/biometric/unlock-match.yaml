@@ -1,0 +1,16 @@
+# Face ID (2/3) : au relancement, l'app est verrouillée et le visage reconnu la déverrouille.
+appId: io.bullify.nutrion-app
+name: Face ID — déverrouillage réussi
+---
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: product-avoine-cacao
+    timeout: 30000
+- assertNotVisible:
+    id: biometric-unlock
+- tapOn:
+    id: tab-account
+- assertVisible:
+    id: account-sign-out
