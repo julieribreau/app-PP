@@ -38,7 +38,18 @@ pnpm install
 step "Infra docker, migrations, seed"
 docker compose up -d
 for i in $(seq 1 30); do docker compose exec -T db pg_isready -U postgres >/dev/null 2>&1 && break; sleep 2; done
-make db-migrate
+# Le conteneur ne crée la base qu'au premier démarrage de son volume : on la crée si elle manque.
+DB_NAME=$(sed -n 's#^DATABASE_URL=.*/\([^/?]*\).*#\1#p' .env | head -1)
+DB_NAME=${DB_NAME:-nutrion-app}
+docker compose exec -T db psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1 \
+  || docker compose exec -T db createdb -U postgres "$DB_NAME"
+if ! make db-migrate; then
+  echo
+  echo "La migration échoue alors que la base existe dans le conteneur : un autre PostgreSQL"
+  echo "écoute sans doute déjà sur le port 5432 de ce Mac (Homebrew, Postgres.app, autre projet)."
+  echo "Voir : lsof -nP -iTCP:5432 -sTCP:LISTEN   ·   arrêter : brew services stop postgresql"
+  exit 1
+fi
 make seed
 
 step "API (:3001) et site (:3000)"
