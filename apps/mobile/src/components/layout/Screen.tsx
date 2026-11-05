@@ -54,6 +54,10 @@ export function Screen({
             contentContainerStyle={[styles.content, contentStyle]}
             keyboardShouldPersistTaps="handled"
             automaticallyAdjustKeyboardInsets
+            // Pavés numérique et téléphone sans touche de retour : glisser referme le clavier,
+            // sinon il cachait « Enregistrer » sur le profil et l'adresse.
+            keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+            testID="screen-scroll"
             refreshControl={
               onRefresh ? (
                 <RefreshControl
