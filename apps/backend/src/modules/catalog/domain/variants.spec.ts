@@ -4,6 +4,7 @@ import {
   combinationKey,
   combinations,
   planVariantSync,
+  sortVariants,
   variantLabel,
   variantSummary,
 } from "./variants";
@@ -73,5 +74,25 @@ describe("libellés", () => {
   it("résume les axes", () => {
     expect(variantSummary(opts)).toBe("2 saveurs · 2 formats");
     expect(variantSummary([{ name: "Poids", values: [1] }])).toBeNull();
+  });
+});
+
+describe("ordre des variantes", () => {
+  it("suit l'ordre des axes puis des valeurs, pas celui de création", () => {
+    const v = (id: string, o1: string, o2: string) => ({ id, optionValues: { o1, o2 } });
+    const created = [
+      v("a", "noisette", "boite"),
+      v("b", "cacao", "boite"),
+      v("c", "noisette", "unite"),
+      v("d", "cacao", "unite"),
+    ];
+    expect(sortVariants([saveur, format], created).map((x) => x.id)).toEqual(["d", "b", "c", "a"]);
+  });
+
+  it("garde à la fin une variante dont une valeur a disparu", () => {
+    const v = (id: string, o1: string) => ({ id, optionValues: { o1 } });
+    expect(
+      sortVariants([saveur], [v("x", "myrtille"), v("y", "noisette")]).map((x) => x.id),
+    ).toEqual(["y", "x"]);
   });
 });

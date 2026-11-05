@@ -64,3 +64,28 @@ export function variantSummary(options: { name: string; values: unknown[] }[]): 
     });
   return parts.length ? parts.join(" · ") : null;
 }
+
+/**
+ * Variantes dans l'ordre des axes puis des valeurs (saisi au back-office), pas dans l'ordre de
+ * création : la fiche produit présélectionne la première variante disponible, et l'usager
+ * attend « Cacao · À l'unité » avant « Noisette · Boîte de 12 ». Une valeur inconnue va à la fin.
+ */
+export function sortVariants<V extends { optionValues: OptionValues }>(
+  options: OptionDef[],
+  variants: V[],
+): V[] {
+  const rank = (v: V) =>
+    options.map((o) => {
+      const i = o.values.findIndex((val) => val.id === v.optionValues[o.id]);
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    });
+  return [...variants].sort((a, b) => {
+    const ra = rank(a);
+    const rb = rank(b);
+    for (let i = 0; i < ra.length; i += 1) {
+      const d = ra[i]! - rb[i]!;
+      if (d !== 0) return d;
+    }
+    return 0;
+  });
+}

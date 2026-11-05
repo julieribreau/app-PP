@@ -17,6 +17,7 @@ import type { MailPort } from "../mail/mail.port";
 import { mailLocale, renderMail } from "../mail/templates";
 import { AUTH_BASE_PATH, type AuthConfig } from "./auth.config";
 import { afterFailedAttempt, hasDigit, isLocked } from "./domain/lockout";
+import { withDefaultCallback } from "./domain/callback";
 
 const PASSWORD_PATHS = new Set(["/sign-up/email", "/reset-password", "/change-password"]);
 type Body = Record<string, unknown>;
@@ -122,8 +123,14 @@ function mailSenders(mail: MailPort, config: AuthConfig) {
   return {
     resetPassword: ({ user, url }: { user: MailUser; url: string }) =>
       send("resetPassword", user, url),
-    verification: ({ user, url, token }: { user: MailUser; url: string; token: string }) =>
-      send(isEmailChangeToken(token) ? "changeEmail" : "verifyEmail", user, url),
+    verification: ({ user, url, token }: { user: MailUser; url: string; token: string }) => {
+      const kind = isEmailChangeToken(token) ? "changeEmail" : "verifyEmail";
+      return send(
+        kind,
+        user,
+        withDefaultCallback(url, config.WEB_URL, mailLocale(user.locale), kind),
+      );
+    },
   };
 }
 

@@ -11,6 +11,7 @@ import {
 import { and, asc, count, eq, inArray, type SQL } from "drizzle-orm";
 
 import { DRIZZLE } from "../../db/db.module";
+import { sortVariants } from "../domain/variants";
 
 export type CategoryRow = typeof category.$inferSelect;
 export type ProductRow = typeof product.$inferSelect;
@@ -81,14 +82,20 @@ export class CatalogRepository {
       .from(productVariant)
       .where(inArray(productVariant.productId, ids))
       .orderBy(asc(productVariant.createdAt), asc(productVariant.combinationKey));
-    return products.map(({ product: p, category: c }) => ({
-      product: p,
-      category: c,
-      options: options
+    return products.map(({ product: p, category: c }) => {
+      const productOptions = options
         .filter((o) => o.productId === p.id)
-        .map((o) => ({ ...o, values: values.filter((v) => v.optionId === o.id) })),
-      variants: variants.filter((v) => v.productId === p.id),
-    }));
+        .map((o) => ({ ...o, values: values.filter((v) => v.optionId === o.id) }));
+      return {
+        product: p,
+        category: c,
+        options: productOptions,
+        variants: sortVariants(
+          productOptions,
+          variants.filter((v) => v.productId === p.id),
+        ),
+      };
+    });
   }
 
   async loadProduct(where?: SQL): Promise<ProductAggregate | undefined> {
