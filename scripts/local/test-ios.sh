@@ -17,7 +17,17 @@ need node "Installe Node 24 : brew install node@24"
 need docker "Ouvre Docker Desktop"
 need xcrun "Installe Xcode et ses outils en ligne de commande : xcode-select --install"
 need pod "Installe CocoaPods : brew install cocoapods"
-command -v pnpm >/dev/null 2>&1 || corepack enable
+# pnpm à la version du dépôt (packageManager) ; répare un téléchargement corrompu de pnpm.
+PNPM_VERSION=$(node -p "require('./package.json').packageManager.split('@')[1]")
+if ! pnpm -v >/dev/null 2>&1; then
+  echo "pnpm $PNPM_VERSION indisponible : nettoyage du cache et nouvel essai"
+  rm -rf "$HOME/Library/pnpm/.tools/pnpm/$PNPM_VERSION"
+fi
+if ! pnpm -v >/dev/null 2>&1; then
+  npm install -g "pnpm@$PNPM_VERSION"
+  hash -r
+fi
+pnpm -v >/dev/null 2>&1 || { echo "MANQUE : pnpm $PNPM_VERSION ne démarre pas (essaie : npm install -g pnpm@$PNPM_VERSION)."; exit 1; }
 docker info >/dev/null 2>&1 || { echo "MANQUE : Docker Desktop n'est pas démarré."; exit 1; }
 node -v; pnpm -v; xcodebuild -version | head -1; pod --version
 
