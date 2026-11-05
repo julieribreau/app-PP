@@ -4,7 +4,7 @@ import { createAuthClient } from "better-auth/react";
 import { withApiEvents } from "@nutrion/analytics";
 import * as SecureStore from "expo-secure-store";
 
-import { analyticsClient } from "@/lib/analytics/posthog";
+import { analyticsClient } from "@/lib/analytics/current-client";
 import { API_URL, AUTH_BASE_PATH, AUTH_COOKIE_PREFIX } from "@/lib/api/config";
 
 // Client Better Auth (contrat §Authentification) : e-mail + mot de passe. La session vit dans le

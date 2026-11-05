@@ -39,3 +39,23 @@ vi.mock("expo-network", () => ({
 }));
 vi.mock("expo-web-browser", () => ({ openAuthSessionAsync: async () => ({ type: "dismiss" }) }));
 vi.mock("expo-localization", () => ({ getLocales: () => [{ languageCode: "fr" }] }));
+
+// Export de données (useAccount) : fichiers et feuille de partage, inutiles hors appareil.
+vi.mock("expo-file-system", () => ({
+  Paths: { cache: "/tmp" },
+  Directory: class {
+    exists = true;
+    create() {}
+  },
+  File: class {
+    exists = false;
+    create() {}
+    delete() {}
+    write() {}
+  },
+}));
+vi.mock("expo-sharing", () => ({
+  isAvailableAsync: async () => false,
+  shareAsync: async () => {},
+}));
+vi.mock("expo-image-picker", () => ({}));

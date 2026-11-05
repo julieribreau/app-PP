@@ -61,7 +61,7 @@ test("export CSV des usagers : en-têtes et une ligne par compte", async () => {
   expect(file.suggestedFilename()).toMatch(/\.csv$/);
   const csv = execFileSync("cat", [await file.path()])
     .toString()
-    .replace(/^﻿/, "");
+    .replace(/^\uFEFF/, "");
   const lines = csv.trim().split(/\r?\n/);
   expect(lines[0]).toMatch(/e-?mail/i);
   expect(lines.length - 1).toBe(counts.total);
