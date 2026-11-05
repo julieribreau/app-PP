@@ -14,6 +14,9 @@ const config: ExpoConfig = {
   version: "1.0.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
+  // Textes des demandes d'autorisation d'iOS (Face ID, photos) dans la langue de l'appareil :
+  // ceux de infoPlist ci-dessous (français) n'étaient montrés qu'en français, même en anglais.
+  locales: { fr: "./locales/fr.json", en: "./locales/en.json" },
   // Fond du thème clair (piste B, ADR-002) derrière l'écran de lancement et la vue racine.
   backgroundColor: "#fbf5ec",
   plugins: [

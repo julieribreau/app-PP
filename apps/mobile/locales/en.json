@@ -1,0 +1,7 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "NutrionApp",
+    "NSFaceIDUsageDescription": "NutrionApp uses Face ID to unlock your session without typing your password.",
+    "NSPhotoLibraryUsageDescription": "NutrionApp only accesses your photos to let you choose your profile picture."
+  }
+}
