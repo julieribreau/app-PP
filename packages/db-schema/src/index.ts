@@ -4,3 +4,4 @@ import type * as schema from "./schema";
 
 export * as dbSchema from "./schema";
 export type Drizzle = PostgresJsDatabase<typeof schema>;
+export * from "./schema";

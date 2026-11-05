@@ -29,6 +29,9 @@ catalog:
   zod: 4.6.7
   "better-auth": "1.7.18"
   "@better-auth/expo": "1.7.18"
+  # Stockage objet (Scaleway S3 en preprod/prod, adobe/s3mock en dev)
+  "@aws-sdk/client-s3": "3.1162.0"
+  "@aws-sdk/s3-request-presigner": "3.1162.0"
   # Front (web)
   next: 16.4.5
   "next-intl": "4.14.9"
