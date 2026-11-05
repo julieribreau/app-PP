@@ -76,7 +76,8 @@
     "vatIncluded": "incl. {rate} VAT",
     "priceFrom": "from {price}",
     "outOfStock": "Out of stock",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "skipToContent": "Skip to content"
   },
   "nav": {
     "home": "Home",
@@ -230,7 +231,19 @@
     "twoFactorVerify": "Verify",
     "twoFactorSetupTitle": "Turn on two-factor authentication",
     "twoFactorSetupLead": "Required to access the back office. Scan this QR code, then enter the code shown.",
-    "twoFactorBackupCodes": "Backup codes: keep them somewhere safe."
+    "twoFactorBackupCodes": "Backup codes: keep them somewhere safe.",
+    "tagline": "Something to keep you going until your next meal.",
+    "termsRequired": "Please accept the terms to create your account.",
+    "acceptTermsRich": "I accept the <terms>terms of use</terms> and have read the <privacy>privacy policy</privacy>.",
+    "backToSignIn": "Back to sign in",
+    "resetInvalid": "This link is no longer valid. Please request a new one.",
+    "verifying": "Checking…",
+    "verifyEmailTitle": "Email confirmation",
+    "verifyEmailDone": "Email confirmed. You can now sign in.",
+    "verifyEmailError": "This confirmation link is no longer valid.",
+    "twoFactorPasswordHelp": "Your password confirms it is really you.",
+    "twoFactorStart": "Continue",
+    "twoFactorQr": "QR code to scan with your authenticator app"
   },
   "account": {
     "title": "My account",
@@ -272,7 +285,8 @@
     "deleteAccount": "Delete my account",
     "deleteConfirmTitle": "Delete your account?",
     "deleteConfirmBody": "Your personal data will be anonymised and you will be signed out. This cannot be undone.",
-    "deleteConfirmInput": "Type DELETE to confirm"
+    "deleteConfirmInput": "Type DELETE to confirm",
+    "avatarError": "Photo rejected: JPG, PNG or WebP, 2 MB max."
   },
   "admin": {
     "title": "Back office",
@@ -323,7 +337,8 @@
       "sku": "SKU",
       "state": "State",
       "flavor": "Flavour",
-      "format": "Format"
+      "format": "Format",
+      "variant": "Variant"
     },
     "never": "never",
     "rows": "Rows",
@@ -366,6 +381,190 @@
       "disabled": "Disabled"
     },
     "forbidden": "Access restricted to administrators.",
-    "twoFactorRequired": "Turn on two-factor authentication to access the back office."
+    "twoFactorRequired": "Turn on two-factor authentication to access the back office.",
+    "backToSite": "Back to the website",
+    "confirmUser": "{name} ({email})",
+    "suspendReason": "Reason for suspension",
+    "pagination": "Pagination",
+    "productsCount": "{count, plural, =0 {No products} one {# product} other {# products}}",
+    "searchProducts": "Search a product",
+    "breadcrumb": "Breadcrumb",
+    "save": "Save",
+    "variantsAfterCreate": "Axes and variants can be set up once the product is created.",
+    "newValue": "New value",
+    "axisName": "Axis name",
+    "removeAxis": "Remove axis",
+    "addAxis": "Add an axis",
+    "variantActive": "Variant {label} active",
+    "variantSku": "SKU of {label}",
+    "variantPrice": "Price of {label}",
+    "variantStock": "Stock of {label}",
+    "editor": {
+      "toolbar": "Formatting",
+      "bold": "Bold",
+      "italic": "Italic",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list"
+    },
+    "newCategory": "New category",
+    "slug": "Address (slug)",
+    "slugHelp": "Lowercase letters, digits and hyphens; derived from the name if empty.",
+    "isActive": "Visible in the shop",
+    "deleteCategoryError": "A category that contains products cannot be deleted.",
+    "auditDate": "Date",
+    "auditActor": "Author",
+    "auditAction": "Action",
+    "auditTarget": "Object",
+    "auditChanges": "Changed fields",
+    "auditSystem": "System",
+    "auditTargets": {
+      "user": "User",
+      "product": "Product",
+      "category": "Category"
+    }
+  },
+  "mobile": {
+    "tabs": {
+      "shop": "Shop",
+      "cart": "Cart",
+      "account": "Account"
+    },
+    "shop": {
+      "openSearch": "Search",
+      "closeSearch": "Close search"
+    },
+    "product": {
+      "back": "Back",
+      "unavailableCombination": "This combination is no longer available.",
+      "optionsHint": "Choose a value"
+    },
+    "cart": {
+      "guestNote": "Cart kept on this phone.",
+      "guestCta": "Sign in",
+      "guestNoteEnd": "to find it everywhere."
+    },
+    "auth": {
+      "biometricOfferTitle": "Turn on {method}?",
+      "biometricOfferBody": "Next time, unlock NutrionApp without typing your password.",
+      "biometricOfferAccept": "Turn on",
+      "later": "Not now",
+      "biometricPrompt": "Unlock NutrionApp",
+      "otherAccount": "Use another account",
+      "checkInboxTitle": "Check your inbox",
+      "backToSignIn": "Back to sign in",
+      "mustAcceptTerms": "Accept the terms to continue.",
+      "requiredField": "This field is required.",
+      "invalidEmail": "Invalid email address.",
+      "weakPassword": "At least 12 characters, including a digit."
+    },
+    "account": {
+      "signedOutTitle": "Your account",
+      "signedOutBody": "Sign in to find your cart, addresses and preferences.",
+      "informations": "My details",
+      "securitySection": "Security",
+      "password": "Password",
+      "privacy": "Privacy and cookies",
+      "exportReady": "Your export is ready.",
+      "deleted": "Your account has been deleted.",
+      "photoPermission": "Allow photo access to change your profile picture.",
+      "newAddress": "New address",
+      "editAddress": "Edit address",
+      "deleteAddressConfirm": "Delete this address?",
+      "noAddress": "No saved address.",
+      "passwordUpdated": "Password changed.",
+      "unknownDevice": "Unknown device",
+      "biometricUnavailable": "No biometrics are set up on this device.",
+      "confirmWord": "DELETE",
+      "profileSaved": "Profile saved.",
+      "emailChangeSent": "A confirmation link was sent to the new address."
+    }
+  },
+  "legal": {
+    "updated": "Last updated: [date to complete]",
+    "draftNote": "Draft document: text in brackets must be completed by the publisher before going live.",
+    "mentions": {
+      "title": "Legal notice",
+      "sections": {
+        "editor": {
+          "title": "Publisher",
+          "body": "[Legal name and form]\n[Registered address]\nSIRET: [TO COMPLETE]\nPhone: [TO COMPLETE] · Email: [TO COMPLETE]"
+        },
+        "director": {
+          "title": "Publication director",
+          "body": "[Name of the publication director]"
+        },
+        "host": {
+          "title": "Hosting",
+          "body": "Scaleway SAS, 8 rue de la Ville l'Évêque, 75008 Paris, France. [To confirm at launch]"
+        },
+        "ip": {
+          "title": "Intellectual property",
+          "body": "Texts, visuals and trademarks on this website belong to the publisher unless stated otherwise. [TO COMPLETE]"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "sections": {
+        "controller": {
+          "title": "Data controller",
+          "body": "[Publisher], reachable at [DPO or personal data contact email]."
+        },
+        "data": {
+          "title": "Data processed",
+          "body": "Account: last name, first name, email, phone, profile photo (optional), shipping addresses, language and theme preferences.\nCart: chosen products, including without an account (anonymous token)."
+        },
+        "purposes": {
+          "title": "Purposes and legal bases",
+          "body": "Account and cart management (performance of contract). Audience measurement, only with your consent."
+        },
+        "retention": {
+          "title": "Retention periods",
+          "body": "Inactive account: anonymised after 2 years. Guest cart: 90 days. [To confirm]"
+        },
+        "rights": {
+          "title": "Your rights",
+          "body": "Access, rectification, erasure, portability, objection: from “My account” (export and deletion) or by writing to [contact]. You may lodge a complaint with the CNIL."
+        },
+        "processors": {
+          "title": "Processors",
+          "body": "Hosting: Scaleway (France). Emails: Brevo (France). Audience measurement: PostHog (EU instance), after consent. Error tracking: Sentry. [To complete]"
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of use",
+      "sections": {
+        "object": {
+          "title": "Purpose",
+          "body": "These terms govern the use of the NutrionApp website and app. [TO COMPLETE]"
+        },
+        "account": {
+          "title": "Account",
+          "body": "Creating an account is free. You are responsible for keeping your password confidential."
+        },
+        "orders": {
+          "title": "Orders",
+          "body": "Online payment is not open yet: the cart can be filled and kept, with no commitment. Terms of sale will be published when ordering opens."
+        },
+        "law": {
+          "title": "Applicable law",
+          "body": "French law. [Consumer mediator to complete]"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookie policy",
+      "sections": {
+        "essential": {
+          "title": "Essential trackers",
+          "body": "Sign-in session, cart, language and theme choice, record of your consent choices. They do not require your consent."
+        },
+        "analytics": {
+          "title": "Audience measurement",
+          "body": "PostHog (European instance), only after your consent. You can withdraw it at any time with “Manage cookies” in the footer."
+        }
+      }
+    }
   }
 }

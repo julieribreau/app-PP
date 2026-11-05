@@ -76,7 +76,8 @@
     "vatIncluded": "dont TVA {rate}",
     "priceFrom": "dès {price}",
     "outOfStock": "Rupture",
-    "unavailable": "Indisponible"
+    "unavailable": "Indisponible",
+    "skipToContent": "Aller au contenu"
   },
   "nav": {
     "home": "Accueil",
@@ -230,7 +231,19 @@
     "twoFactorVerify": "Vérifier",
     "twoFactorSetupTitle": "Activer la double authentification",
     "twoFactorSetupLead": "Obligatoire pour accéder au back-office. Scannez ce QR code, puis saisissez le code affiché.",
-    "twoFactorBackupCodes": "Codes de secours : gardez-les en lieu sûr."
+    "twoFactorBackupCodes": "Codes de secours : gardez-les en lieu sûr.",
+    "tagline": "De quoi tenir jusqu'au prochain repas.",
+    "termsRequired": "Acceptez les conditions pour créer votre compte.",
+    "acceptTermsRich": "J'accepte les <terms>conditions d'utilisation</terms> et j'ai lu la <privacy>politique de confidentialité</privacy>.",
+    "backToSignIn": "Retour à la connexion",
+    "resetInvalid": "Ce lien n'est plus valable. Demandez-en un nouveau.",
+    "verifying": "Vérification en cours…",
+    "verifyEmailTitle": "Confirmation de l'adresse",
+    "verifyEmailDone": "Adresse confirmée. Vous pouvez vous connecter.",
+    "verifyEmailError": "Ce lien de confirmation n'est plus valable.",
+    "twoFactorPasswordHelp": "Votre mot de passe confirme que c'est bien vous.",
+    "twoFactorStart": "Continuer",
+    "twoFactorQr": "QR code à scanner avec votre application d'authentification"
   },
   "account": {
     "title": "Mon compte",
@@ -272,7 +285,8 @@
     "deleteAccount": "Supprimer mon compte",
     "deleteConfirmTitle": "Supprimer votre compte ?",
     "deleteConfirmBody": "Vos données personnelles seront anonymisées et vous serez déconnecté. Cette action est définitive.",
-    "deleteConfirmInput": "Saisissez SUPPRIMER pour confirmer"
+    "deleteConfirmInput": "Saisissez SUPPRIMER pour confirmer",
+    "avatarError": "Photo refusée : JPG, PNG ou WebP, 2 Mo maximum."
   },
   "admin": {
     "title": "Back-office",
@@ -323,7 +337,8 @@
       "sku": "SKU",
       "state": "État",
       "flavor": "Saveur",
-      "format": "Format"
+      "format": "Format",
+      "variant": "Variante"
     },
     "never": "jamais",
     "rows": "Lignes",
@@ -366,6 +381,190 @@
       "disabled": "Désactivée"
     },
     "forbidden": "Accès réservé aux administrateurs.",
-    "twoFactorRequired": "Activez la double authentification pour accéder au back-office."
+    "twoFactorRequired": "Activez la double authentification pour accéder au back-office.",
+    "backToSite": "Retour au site",
+    "confirmUser": "{name} ({email})",
+    "suspendReason": "Motif de la suspension",
+    "pagination": "Pagination",
+    "productsCount": "{count, plural, =0 {Aucun produit} one {# produit} other {# produits}}",
+    "searchProducts": "Rechercher un produit",
+    "breadcrumb": "Fil d'Ariane",
+    "save": "Enregistrer",
+    "variantsAfterCreate": "Les axes et les variantes se configurent une fois le produit créé.",
+    "newValue": "Nouvelle valeur",
+    "axisName": "Nom de l'axe",
+    "removeAxis": "Retirer l'axe",
+    "addAxis": "Ajouter un axe",
+    "variantActive": "Variante {label} active",
+    "variantSku": "SKU de {label}",
+    "variantPrice": "Prix de {label}",
+    "variantStock": "Stock de {label}",
+    "editor": {
+      "toolbar": "Mise en forme",
+      "bold": "Gras",
+      "italic": "Italique",
+      "bulletList": "Liste à puces",
+      "orderedList": "Liste numérotée"
+    },
+    "newCategory": "Nouvelle catégorie",
+    "slug": "Adresse (slug)",
+    "slugHelp": "Lettres minuscules, chiffres et tirets ; déduite du nom si vide.",
+    "isActive": "Visible dans la boutique",
+    "deleteCategoryError": "Impossible de supprimer une catégorie qui contient des produits.",
+    "auditDate": "Date",
+    "auditActor": "Auteur",
+    "auditAction": "Action",
+    "auditTarget": "Objet",
+    "auditChanges": "Champs modifiés",
+    "auditSystem": "Système",
+    "auditTargets": {
+      "user": "Usager",
+      "product": "Produit",
+      "category": "Catégorie"
+    }
+  },
+  "mobile": {
+    "tabs": {
+      "shop": "Boutique",
+      "cart": "Panier",
+      "account": "Compte"
+    },
+    "shop": {
+      "openSearch": "Rechercher",
+      "closeSearch": "Fermer la recherche"
+    },
+    "product": {
+      "back": "Retour",
+      "unavailableCombination": "Cette combinaison n'est plus disponible.",
+      "optionsHint": "Choisissez une valeur"
+    },
+    "cart": {
+      "guestNote": "Panier gardé sur ce téléphone.",
+      "guestCta": "Connectez-vous",
+      "guestNoteEnd": "pour le retrouver partout."
+    },
+    "auth": {
+      "biometricOfferTitle": "Activer {method} ?",
+      "biometricOfferBody": "À la prochaine ouverture, déverrouillez NutrionApp sans saisir votre mot de passe.",
+      "biometricOfferAccept": "Activer",
+      "later": "Plus tard",
+      "biometricPrompt": "Déverrouiller NutrionApp",
+      "otherAccount": "Utiliser un autre compte",
+      "checkInboxTitle": "Vérifiez votre boîte mail",
+      "backToSignIn": "Retour à la connexion",
+      "mustAcceptTerms": "Acceptez les conditions pour continuer.",
+      "requiredField": "Ce champ est obligatoire.",
+      "invalidEmail": "Adresse e-mail invalide.",
+      "weakPassword": "12 caractères minimum, dont un chiffre."
+    },
+    "account": {
+      "signedOutTitle": "Votre compte",
+      "signedOutBody": "Connectez-vous pour retrouver votre panier, vos adresses et vos préférences.",
+      "informations": "Mes informations",
+      "securitySection": "Sécurité",
+      "password": "Mot de passe",
+      "privacy": "Confidentialité et cookies",
+      "exportReady": "Votre export est prêt.",
+      "deleted": "Votre compte a été supprimé.",
+      "photoPermission": "Autorisez l'accès aux photos pour changer votre photo de profil.",
+      "newAddress": "Nouvelle adresse",
+      "editAddress": "Modifier l'adresse",
+      "deleteAddressConfirm": "Supprimer cette adresse ?",
+      "noAddress": "Aucune adresse enregistrée.",
+      "passwordUpdated": "Mot de passe modifié.",
+      "unknownDevice": "Appareil inconnu",
+      "biometricUnavailable": "Aucune biométrie n'est configurée sur cet appareil.",
+      "confirmWord": "SUPPRIMER",
+      "profileSaved": "Profil enregistré.",
+      "emailChangeSent": "Un lien de confirmation a été envoyé à la nouvelle adresse."
+    }
+  },
+  "legal": {
+    "updated": "Mise à jour : [date à compléter]",
+    "draftNote": "Document provisoire : les passages entre crochets sont à compléter par l'éditeur avant la mise en ligne.",
+    "mentions": {
+      "title": "Mentions légales",
+      "sections": {
+        "editor": {
+          "title": "Éditeur du site",
+          "body": "[Dénomination et forme juridique]\n[Adresse du siège]\nSIRET : [À COMPLÉTER]\nTéléphone : [À COMPLÉTER] · E-mail : [À COMPLÉTER]"
+        },
+        "director": {
+          "title": "Directeur de la publication",
+          "body": "[Nom du directeur de la publication]"
+        },
+        "host": {
+          "title": "Hébergement",
+          "body": "Scaleway SAS, 8 rue de la Ville l'Évêque, 75008 Paris, France. [À confirmer à la mise en production]"
+        },
+        "ip": {
+          "title": "Propriété intellectuelle",
+          "body": "Les textes, visuels et marques présentés sur le site appartiennent à l'éditeur, sauf mention contraire. [À COMPLÉTER]"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "sections": {
+        "controller": {
+          "title": "Responsable du traitement",
+          "body": "[Éditeur], joignable à [e-mail du DPO ou du contact données personnelles]."
+        },
+        "data": {
+          "title": "Données traitées",
+          "body": "Compte : nom, prénom, adresse e-mail, téléphone, photo de profil (facultative), adresses de livraison, préférences de langue et de thème.\nPanier : produits choisis, y compris sans compte (jeton anonyme)."
+        },
+        "purposes": {
+          "title": "Finalités et bases légales",
+          "body": "Gestion du compte et du panier (exécution du contrat). Mesure d'audience, uniquement avec votre accord (consentement)."
+        },
+        "retention": {
+          "title": "Durées de conservation",
+          "body": "Compte inactif : anonymisé au bout de 2 ans. Panier invité : 90 jours. [À valider]"
+        },
+        "rights": {
+          "title": "Vos droits",
+          "body": "Accès, rectification, effacement, portabilité, opposition : depuis « Mon compte » (export et suppression) ou en écrivant à [contact]. Réclamation possible auprès de la CNIL."
+        },
+        "processors": {
+          "title": "Sous-traitants",
+          "body": "Hébergement : Scaleway (France). Envoi d'e-mails : Brevo (France). Mesure d'audience : PostHog (instance UE), après consentement. Suivi des erreurs : Sentry. [À compléter]"
+        }
+      }
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation",
+      "sections": {
+        "object": {
+          "title": "Objet",
+          "body": "Ces conditions encadrent l'utilisation du site et de l'application NutrionApp. [À COMPLÉTER]"
+        },
+        "account": {
+          "title": "Compte",
+          "body": "La création d'un compte est gratuite. Vous êtes responsable de la confidentialité de votre mot de passe."
+        },
+        "orders": {
+          "title": "Commandes",
+          "body": "Le paiement en ligne n'est pas encore ouvert : le panier peut être composé et conservé, sans engagement. Les conditions de vente seront publiées à l'ouverture des commandes."
+        },
+        "law": {
+          "title": "Droit applicable",
+          "body": "Droit français. [Médiateur de la consommation à compléter]"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Politique cookies",
+      "sections": {
+        "essential": {
+          "title": "Traceurs indispensables",
+          "body": "Session de connexion, panier, choix de langue et de thème, mémorisation de vos choix de consentement. Ils ne nécessitent pas votre accord."
+        },
+        "analytics": {
+          "title": "Mesure d'audience",
+          "body": "PostHog (instance européenne), uniquement après votre accord. Vous pouvez le retirer à tout moment par « Gérer mes cookies », en pied de page."
+        }
+      }
+    }
   }
 }

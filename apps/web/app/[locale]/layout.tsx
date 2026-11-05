@@ -1,17 +1,33 @@
+import "@fontsource/dm-mono/400.css";
+import "@fontsource/dm-mono/500.css";
+import "@fontsource/dm-sans/400.css";
+import "@fontsource/dm-sans/500.css";
+import "@fontsource/dm-sans/600.css";
+import "@fontsource/fraunces/600.css";
+import { isLocale } from "@nutrion/i18n";
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import { ConsentSettingsLink } from "@nutrion/cmp/web";
+
 import { AppConsent } from "@/components/consent/AppConsent";
 import { PreprodBanner } from "@/components/env/PreprodBanner";
-import "@nutrion/ui-tokens/tokens.css"; // design tokens partagés (charte)
+import { THEME_COOKIE, parseTheme } from "@/lib/theme";
+import { Providers } from "@/providers/Providers";
+import "@nutrion/ui-tokens/tokens.css"; // design tokens partagés (piste B, ADR-002)
 import "@nutrion/cmp/web/consent.css"; // bandeau et gestionnaire de consentement
 import "@nutrion/ui/ui.css"; // composants partagés (packages/ui)
-import "../globals.css"; // base et composants locaux de l'app
+import "../globals.css"; // Tailwind + base de l'app
 
-// Layout racine localisé — fr,en. Sentry branché dès l'init : instrumentation*.ts et
-// app/global-error.tsx. PostHog : seulement après consentement, par AppConsent (skill
-// frontend-dev §15). Quand la politique cookies est publiée, AppConsent reçoit son lien
-// (`policyHref`) et le pied de page la liste avec les autres pages légales.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("common");
+  return { title: { default: t("appName"), template: `%s · ${t("appName")}` } };
+}
+
+// Layout racine localisé — fr,en. Polices auto-hébergées (@fontsource, aucun appel à Google).
+// Le thème choisi (cookie) est posé sur <html> dès le rendu serveur : pas de flash. Sentry :
+// instrumentation*.ts et app/global-error.tsx. PostHog : seulement après consentement.
 export default async function LocaleLayout({
   children,
   params,
@@ -20,19 +36,19 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  if (!isLocale(locale)) notFound();
   const messages = await getMessages();
-  const t = await getTranslations("consent");
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
   return (
-    <html lang={locale}>
+    <html lang={locale} data-theme={theme === "system" ? undefined : theme} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AppConsent>
-            <PreprodBanner appEnv={process.env.NEXT_PUBLIC_APP_ENV} />
-            {children}
-            <footer>
-              <ConsentSettingsLink label={t("settingsLink")} />
-            </footer>
-          </AppConsent>
+          <Providers theme={theme}>
+            <AppConsent>
+              <PreprodBanner appEnv={process.env.NEXT_PUBLIC_APP_ENV} />
+              {children}
+            </AppConsent>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

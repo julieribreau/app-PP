@@ -20,6 +20,12 @@ const nextConfig = {
     "@nutrion/analytics",
   ],
   // Appels API → backend NestJS par @nutrion/api-port uniquement, jamais de logique métier ici.
+  // Le navigateur n'appelle que /api/… (même origine) : cookies de session et de panier en
+  // httpOnly, sans CORS. Next relaie vers le backend (docs/architecture/api-contract.md).
+  async rewrites() {
+    const backend = process.env.BACKEND_URL ?? "http://localhost:3001";
+    return [{ source: "/api/:path*", destination: `${backend}/:path*` }];
+  },
 };
 
 // Sourcemaps envoyées à Sentry pendant `next build`, seulement si SENTRY_AUTH_TOKEN est là :

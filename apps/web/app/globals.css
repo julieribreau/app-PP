@@ -1,35 +1,136 @@
-/* Styles de base et composants locaux de l'app web : uniquement les tokens de
-   @nutrion/ui-tokens (thème clair ou sombre, couleurs du tenant), jamais de valeur en dur.
-   Importé par le layout et par le Storybook web : la story montre le rendu de l'app. */
-body {
-  margin: 0;
-  background: var(--color-bg);
-  color: var(--color-fg);
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
+/* Base de l'app web : Tailwind CSS 4 branché sur les tokens de @nutrion/ui-tokens (piste B,
+   ADR-002). `@theme inline` fait lire aux utilitaires les variables du thème courant (clair,
+   sombre, système) : aucune couleur en dur ici ni dans les composants. Importé par le layout
+   et par le Storybook web. */
+@import "tailwindcss";
+
+@source "../src";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sage: var(--sage);
+  --color-straw: var(--straw);
+  --color-peach: var(--peach);
+  --color-cacao: var(--cacao);
+  /* Familles : titres (Fraunces), texte (DM Sans), chiffres (DM Mono). */
+  --font-heading: var(--font-display);
+  --font-body: var(--font-sans);
+  --font-numeric: var(--font-mono);
 }
 
-.card {
-  max-width: 40rem;
-  padding: var(--space-4);
-  border: 1px solid var(--color-muted);
-  border-radius: var(--radius);
-  overflow-wrap: anywhere;
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  html {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
 }
 
-.card-title {
-  margin: 0 0 var(--space-2);
-  font-size: 1.25rem;
-}
+@layer components {
+  .overline {
+    font: 500 12px/16px var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
 
-.card-text {
-  margin: 0;
-}
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
 
-.preprod-banner {
-  padding: var(--space-2) var(--space-4);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-weight: 600;
-  text-align: center;
+  .sr-only-focusable:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .preprod-banner {
+    padding: var(--space-2) var(--space-4);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Texte enrichi des fiches produit (HTML nettoyé par le backend, liste blanche du socle). */
+  .rich-text p {
+    margin: 0 0 12px;
+  }
+  .rich-text ul,
+  .rich-text ol {
+    margin: 0 0 12px;
+    padding-left: 20px;
+  }
+  .rich-text ul {
+    list-style: disc;
+  }
+  .rich-text ol {
+    list-style: decimal;
+  }
+  .rich-text a {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  .rich-text strong {
+    font-weight: 600;
+  }
 }
