@@ -10,7 +10,7 @@ help: ## Liste les commandes
 install: ## Installe les dépendances
 	pnpm install
 
-up: ## Démarre l'infra docker (db, redis, s3)
+up: ## Démarre l'infra docker (db, redis, s3, mailpit : e-mails sur http://localhost:8025)
 	docker compose up -d
 
 down: ## Arrête l'infra docker

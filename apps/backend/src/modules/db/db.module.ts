@@ -25,6 +25,9 @@ export class DbModule implements OnApplicationShutdown {
   constructor(@Inject(DRIZZLE) private readonly db: Drizzle) {}
 
   async onApplicationShutdown() {
-    await this.db.$client.end({ timeout: 5 });
+    // drizzle(postgres()) expose le client sous $client, absent du type générique Drizzle.
+    await (
+      this.db as unknown as { $client: { end(o: { timeout: number }): Promise<void> } }
+    ).$client.end({ timeout: 5 });
   }
 }

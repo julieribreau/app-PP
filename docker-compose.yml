@@ -45,6 +45,14 @@ services:
       retries: 10
       start_period: 10s
 
+  # Boîte de réception de dev : capte tout e-mail envoyé en SMTP par le backend (aucun envoi
+  # réel). Interface : http://localhost:8025. En préprod et prod : Brevo (BREVO_API_KEY).
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   db-data:
   s3-data:

@@ -10,15 +10,11 @@ vi.mock("@nutrion/sentry", () => ({
   withoutQuery: (url: string) => url.split(/[?#]/)[0],
 }));
 
+import { AppError } from "./app-error";
 import { HttpExceptionFilter } from "./http-exception.filter";
 
 function requete(url: string) {
-  const res = {
-    status: vi.fn().mockReturnThis(),
-    type: vi.fn().mockReturnThis(),
-    send: vi.fn().mockReturnThis(),
-    json: vi.fn().mockReturnThis(),
-  };
+  const res = { status: vi.fn().mockReturnThis(), json: vi.fn().mockReturnThis() };
   const host = {
     switchToHttp: () => ({
       getRequest: () => ({ id: 7, method: "GET", url }),
@@ -40,52 +36,60 @@ describe("HttpExceptionFilter", () => {
     captureHttpException.mockReset();
   });
 
-  it("rend une erreur inattendue en 500 problem+json, sans son message, et la signale", () => {
+  it("rend une erreur inattendue en 500 sans son message, et la signale", () => {
     captureHttpException.mockReturnValue(true);
-    const { res, host } = requete("/v1/examples?token=secret");
+    const { res, host } = requete("/v1/cart?token=secret");
     const err = new Error("connexion refusée à 10.0.0.3");
 
     new HttpExceptionFilter().catch(err, host);
 
     expect(captureHttpException).toHaveBeenCalledWith(err, {
       status: 500,
-      url: "/v1/examples?token=secret",
+      url: "/v1/cart?token=secret",
       traceId: "7",
     });
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.type).toHaveBeenCalledWith("application/problem+json");
-    expect(res.send).toHaveBeenCalledWith({
-      type: "about:blank",
-      title: "Internal Server Error",
-      status: 500,
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 500,
+      code: "INTERNAL_ERROR",
+      message: "Internal Server Error",
     });
-    // Journalisée sans la chaîne de requête.
     expect(erreurJournal).toHaveBeenCalledWith(
-      expect.objectContaining({ trace_id: "7", method: "GET", path: "/v1/examples" }),
+      expect.objectContaining({ path: "/v1/cart", trace_id: "7" }),
       "HTTP 500",
     );
   });
 
-  it("rend une 404 avec son titre, sans journal d'erreur", () => {
-    captureHttpException.mockReturnValue(false);
-    const { res, host } = requete("/v1/examples/inconnu");
+  it("garde le code d'une erreur métier", () => {
+    const { res, host } = requete("/v1/cart/items");
+    new HttpExceptionFilter().catch(
+      new AppError(409, "VARIANT_OUT_OF_STOCK", "Stock épuisé"),
+      host,
+    );
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 409,
+      code: "VARIANT_OUT_OF_STOCK",
+      message: "Stock épuisé",
+    });
+  });
 
-    new HttpExceptionFilter().catch(new NotFoundException(), host);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.send).toHaveBeenCalledWith({ type: "about:blank", title: "Not Found", status: 404 });
+  it("déduit le code du statut d'une exception Nest", () => {
+    const { res, host } = requete("/v1/inconnue");
+    new HttpExceptionFilter().catch(new NotFoundException("Cannot GET /v1/inconnue"), host);
+    expect(res.json).toHaveBeenCalledWith({
+      statusCode: 404,
+      code: "NOT_FOUND",
+      message: "Cannot GET /v1/inconnue",
+    });
     expect(erreurJournal).not.toHaveBeenCalled();
   });
 
-  it("laisse passer le corps de la sonde de santé, qui nomme la dépendance tombée", () => {
-    captureHttpException.mockReturnValue(false);
+  it("laisse passer tel quel le corps d'une sonde de santé en échec", () => {
     const { res, host } = requete("/v1/health/ready");
-    const corps = { status: "error", details: { db: { status: "down", message: "timeout" } } };
-
+    const corps = { status: "error", details: { db: { status: "down" } } };
     new HttpExceptionFilter().catch(new ServiceUnavailableException(corps), host);
-
     expect(res.status).toHaveBeenCalledWith(503);
     expect(res.json).toHaveBeenCalledWith(corps);
-    expect(res.send).not.toHaveBeenCalled();
   });
 });

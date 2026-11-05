@@ -20,7 +20,13 @@ tout écart se corrige ici et dans le code en même temps.
 - Dates en ISO 8601 UTC.
 - Pagination : `?page=1&pageSize=24` → `{ items, total, page, pageSize }`.
 - Erreurs : `{ statusCode, code, message }`, `code` stable en `SCREAMING_SNAKE` (ex.
-  `VARIANT_OUT_OF_STOCK`, `TWO_FACTOR_REQUIRED`, `FORBIDDEN`, `VALIDATION_FAILED`).
+  `VARIANT_OUT_OF_STOCK`, `TWO_FACTOR_REQUIRED`, `FORBIDDEN`, `VALIDATION_FAILED`,
+  `UNAUTHORIZED`, `NOT_FOUND`). Les routes Better Auth (`/v1/auth/*`) répondent dans leur
+  propre format `{ code, message }` (ex. `EMAIL_NOT_VERIFIED`, `INVALID_EMAIL_OR_PASSWORD`,
+  `PASSWORD_TOO_WEAK`, `ACCOUNT_LOCKED` en 429, `ACCOUNT_SUSPENDED` en 403).
+- Santé : `GET /v1/health` (vivant) et `GET /v1/health/ready` (db, redis, storage).
+- Cookies : session `nutrion.session_token` (préfixe `__Secure-` hors dev), panier invité
+  `nutrion_cart`. Le CORS expose l'en-tête `X-Cart-Token`.
 - Images : `imageUrl` absolue (URL S3 signée ou publique), `null` si aucune photo.
 
 ## Authentification (Better Auth, `/v1/auth/*`)
@@ -28,8 +34,17 @@ tout écart se corrige ici et dans le code en même temps.
 E-mail + mot de passe uniquement (pas de SSO pour ce lot), e-mail vérifié obligatoire avant
 connexion, mot de passe 12 caractères minimum dont un chiffre, verrouillage 15 min après
 5 échecs. Endpoints Better Auth standard : `sign-up/email`, `sign-in/email`, `sign-out`,
-`get-session`, `forget-password` (`request-password-reset`), `reset-password`, `verify-email`,
-`change-email`, `change-password`, `list-sessions`, `revoke-session`, `two-factor/*`.
+`get-session`, `request-password-reset` (`{ email, redirectTo }`), `reset-password`,
+`verify-email`, `change-email`, `change-password`, `list-sessions`, `revoke-session`,
+`two-factor/enable` (`{ password }` → `totpURI`, `backupCodes`), `two-factor/verify-totp`
+(`{ code }`), `two-factor/disable`.
+
+- Les liens des e-mails pointent sur `WEB_URL/api/v1/auth/...` (proxy du site) : le clic sur
+  « Confirmer mon adresse » vérifie, ouvre la session (`autoSignInAfterVerification`) puis
+  redirige vers le `callbackURL` donné à l'inscription. Le lien de réinitialisation redirige
+  vers `redirectTo?token=…`, page du site qui appelle `reset-password`.
+- `sign-in/email` d'un admin à 2FA répond `{ twoFactorRedirect: true }` : le client appelle
+  ensuite `two-factor/verify-totp`.
 
 - `sign-up/email` accepte en plus `firstName`, `lastName` (champs additionnels du user).
 - Rôles : `user` (défaut) ou `admin`. `get-session` renvoie `user.role`.
@@ -152,11 +167,11 @@ Toutes les routes acceptent session et/ou jeton invité ; réponse = `Cart`.
 ```
 
 - `GET /v1/cart` : panier courant (vide si aucun : `items: []`, `id: null`).
-- `POST /v1/cart/items` `{ variantId, quantity }` : ajoute (cumule si déjà présent). 409
+- `POST /v1/cart/items` `{ variantId, quantity }` → 201 : ajoute (cumule si déjà présent). 409
   `VARIANT_OUT_OF_STOCK` si le stock ne suffit pas, 404 `VARIANT_NOT_FOUND` si inactive.
 - `PATCH /v1/cart/items/:itemId` `{ quantity }` (≥ 1, plafonné au stock).
 - `DELETE /v1/cart/items/:itemId`.
-- `POST /v1/cart/merge` (session requise).
+- `POST /v1/cart/merge` (session requise) → 200 ; sans session, 401.
 - À chaque lecture, les variantes archivées ou épuisées sont retirées et les quantités
   plafonnées ; `adjustments` le dit au client, qui l'affiche une fois.
 - TVA : par ligne, `ttc - round(ttc / (1 + taux))`, sommée.
@@ -204,8 +219,10 @@ Chaque écriture ajoute une ligne au journal d'audit.
   (`name` dans la langue de l'admin, `stockTotal: null` si une variante est illimitée).
 - `POST /v1/admin/products`
   `{ slug?, categoryId, name: {fr,en}, summary: {fr,en}, description: {fr,en}, priceCents, vatRateBps, status }`
-  → produit complet, avec sa variante unique créée d'office.
-- `GET /v1/admin/products/:id` → `{ …champs ci-dessus, imageUrl, options: [{ id, name: {fr,en}, values: [{ id, label: {fr,en} }] }], variants: [{ id, optionValues, label, sku, priceCents, stock, isActive }] }`
+  → 201, produit complet, avec sa variante unique créée d'office (slug déduit du nom fr).
+- `GET /v1/admin/products/:id` → `{ …champs ci-dessus, id, imageUrl, options: [{ id, name: {fr,en}, values: [{ id, label: {fr,en} }] }], variants: [{ id, optionValues, label, sku, priceCents, effectivePriceCents, stock, isActive }] }`
+  (`priceCents` de la variante : `null` = hérite ; `effectivePriceCents` : le prix appliqué ;
+  `label` en français).
 - `PATCH /v1/admin/products/:id` (mêmes champs, partiels). La description passe par
   `sanitize-html` (liste blanche du socle).
 - `PUT /v1/admin/products/:id/image` (multipart) ; `DELETE /v1/admin/products/:id/image`.
@@ -213,7 +230,8 @@ Chaque écriture ajoute une ligne au journal d'audit.
   → régénère les combinaisons : les variantes existantes sont gardées, les nouvelles créées
   actives, celles dont une valeur disparaît désactivées (jamais supprimées si elles ont servi).
 - `PATCH /v1/admin/products/:id/variants` `{ variants: [{ id, isActive?, sku?, priceCents?, stock? }] }`.
-- `POST /v1/admin/products/:id/archive`, `DELETE /v1/admin/products/:id` (si jamais mis au panier).
+- `POST /v1/admin/products/:id/archive`, `DELETE /v1/admin/products/:id` → 204 (409
+  `PRODUCT_IN_CART` si une variante est dans un panier : l'archiver).
 
 ### Journal d'audit
 
@@ -222,9 +240,9 @@ Chaque écriture ajoute une ligne au journal d'audit.
 
 ## Comptes de démonstration (seed)
 
-| Compte                     | Mot de passe       | Rôle                                   |
-| -------------------------- | ------------------ | -------------------------------------- |
-| `admin@nutrion.local`      | `Nutrion-Admin-2026` | admin (2FA à activer au 1er accès BO) |
+| Compte                      | Mot de passe         | Rôle                                  |
+| --------------------------- | -------------------- | ------------------------------------- |
+| `admin@nutrion.local`       | `Nutrion-Admin-2026` | admin (2FA à activer au 1er accès BO) |
 | `camille.martin@exemple.fr` | `Nutrion-Demo-2026`  | user, e-mail vérifié                  |
 
 Plus ~10 usagers, 5 catégories (barres céréales, barres protéinées, granolas, boissons,

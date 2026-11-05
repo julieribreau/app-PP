@@ -35,6 +35,8 @@ export const product = pgTable(
     slug: text("slug").notNull().unique(),
     categoryId: uuid("category_id").references(() => category.id, { onDelete: "set null" }),
     name: jsonb("name").$type<LocalizedText>().notNull(),
+    // Accroche d'une ligne, affichée sous le nom dans les listes.
+    summary: jsonb("summary").$type<LocalizedText>().notNull().default({ fr: "" }),
     // Texte enrichi, passé par sanitize-html à l'écriture (liste blanche unique, socle).
     description: jsonb("description").$type<LocalizedText>().notNull(),
     imageKey: text("image_key"), // une photo par produit, sur le stockage objet

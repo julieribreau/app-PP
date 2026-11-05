@@ -1,0 +1,13 @@
+{
+  // dist/ en CommonJS, pour le backend Nest compilé en CommonJS (même schéma que
+  // packages/sentry) : à l'exécution, Node lit dist/, jamais la source TypeScript.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "verbatimModuleSyntax": false,
+    "composite": false,
+    "declaration": true
+  },
+  "exclude": ["dist", "node_modules", "src/**/*.spec.ts", "src/dbml.ts"]
+}

@@ -1,6 +1,7 @@
 import type { ArgumentsHost, ExceptionFilter } from "@nestjs/common";
 import { Catch, HttpException, HttpStatus, Logger } from "@nestjs/common";
 import { captureHttpException, withoutQuery } from "@nutrion/sentry";
+import { ZodValidationException } from "nestjs-zod";
 
 const SONDE = /\/health(\/ready)?$/;
 
@@ -10,10 +11,24 @@ interface RequeteVue {
   url?: string;
 }
 
+/** Code stable déduit du statut quand l'exception n'en porte pas. */
+const CODES: Record<number, string> = {
+  400: "BAD_REQUEST",
+  401: "UNAUTHORIZED",
+  403: "FORBIDDEN",
+  404: "NOT_FOUND",
+  409: "CONFLICT",
+  413: "PAYLOAD_TOO_LARGE",
+  415: "UNSUPPORTED_MEDIA_TYPE",
+  422: "UNPROCESSABLE_ENTITY",
+  429: "TOO_MANY_REQUESTS",
+  503: "SERVICE_UNAVAILABLE",
+};
+
 /**
- * Exception filter global — réponses d'erreur normalisées (problem+json), jamais de stack
- * trace en clair côté client. Un 5xx part dans Sentry, hors routes de santé (cf socle
- * §Hardening backend, skill error-tracking §3). Enregistré dans main.ts.
+ * Exception filter global : réponses d'erreur au format du contrat d'API
+ * `{ statusCode, code, message }`, jamais de stack trace côté client. Un 5xx part dans
+ * Sentry, hors routes de santé (socle §Hardening backend, skill error-tracking §3).
  */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -29,7 +44,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (captureHttpException(exception, { status, url: req.url, traceId })) {
       // Sans cette ligne, un 5xx n'existe que dans Sentry : invisible dès le quota épuisé.
-      // Méthode et chemin seulement : ni corps, ni chaîne de requête.
       this.logger.error(
         {
           err: exception,
@@ -48,20 +62,34 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    res
-      .status(status)
-      .type("application/problem+json")
-      .send({
-        type: "about:blank",
-        title: titre(exception, status),
-        status,
-        // pas de détail interne exposé
-      });
+    res.status(status).json(corps(exception, status));
   }
 }
 
-/** Le message d'une HttpException est écrit pour le client ; celui d'une autre erreur, non. */
-function titre(exception: unknown, status: number): string {
-  if (exception instanceof HttpException && status < 500) return exception.message;
-  return status === 503 ? "Service Unavailable" : "Internal Server Error";
+/** Le code porté par l'exception (AppError, Better Auth), sinon celui du statut. */
+function codeOf(exception: HttpException, status: number): string {
+  const reponse = exception.getResponse();
+  if (
+    typeof reponse === "object" &&
+    reponse !== null &&
+    "code" in reponse &&
+    typeof reponse.code === "string"
+  )
+    return reponse.code;
+  return CODES[status] ?? "ERROR";
+}
+
+export function corps(exception: unknown, status: number) {
+  if (exception instanceof ZodValidationException) {
+    return { statusCode: status, code: "VALIDATION_FAILED", message: "Données invalides" };
+  }
+  if (exception instanceof HttpException && status < 500) {
+    return { statusCode: status, code: codeOf(exception, status), message: exception.message };
+  }
+  const indisponible = status === 503;
+  return {
+    statusCode: status,
+    code: indisponible ? "SERVICE_UNAVAILABLE" : "INTERNAL_ERROR",
+    message: indisponible ? "Service Unavailable" : "Internal Server Error",
+  };
 }

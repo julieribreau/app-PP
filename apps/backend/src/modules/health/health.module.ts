@@ -5,6 +5,7 @@ import {
   Inject,
   Module,
   type OnModuleDestroy,
+  Optional,
 } from "@nestjs/common";
 import {
   HealthCheck,
@@ -17,6 +18,7 @@ import { Redis } from "ioredis";
 import postgres from "postgres";
 
 import { loadEnv } from "../../config/env";
+import { STORAGE, type StoragePort } from "../storage/storage.port";
 
 // Santé OBLIGATOIRE (socle, brique sante-services-supervision).
 // /v1/health        : vivant, sans dépendance, lu par le HEALTHCHECK Docker.
@@ -58,6 +60,8 @@ class HealthController implements OnModuleDestroy {
     private readonly health: HealthCheckService,
     private readonly indicateurs: HealthIndicatorService,
     @Inject(SERVICE) private readonly service: string,
+    // Présent dans l'API (StorageModule global), absent du process cron : sonde facultative.
+    @Optional() @Inject(STORAGE) private readonly storage?: StoragePort,
   ) {}
 
   @Get()
@@ -71,7 +75,8 @@ class HealthController implements OnModuleDestroy {
     return this.health.check([
       () => this.sonder("db", () => sql`SELECT 1`),
       () => this.sonder("redis", () => redis.ping()),
-      // + "storage" (HeadBucket S3) si le projet stocke des fichiers, et chaque fournisseur bloquant.
+      // Avatars et photos produit : le seau S3 répond (HeadBucket).
+      ...(this.storage ? [() => this.sonder("storage", () => this.storage!.ping())] : []),
     ]);
   }
 

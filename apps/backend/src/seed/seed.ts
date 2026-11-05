@@ -1,7 +1,14 @@
+import "../load-env";
+
+import { createDb } from "@nutrion/db";
+
+import { seedAccounts, seedCarts } from "./seed-accounts";
+import { seedCatalog } from "./seed-catalog";
+
 /**
- * Seed NutrionApp — données de démarrage RÉALISTES, synthétiques et anonymisées (cf skill `seed`).
- * Orchestrateur : `pnpm seed`. Découper par domaine (un fichier seed-<domaine>.ts par module).
- * Réutilisé par les tests e2e / la CI. Seeder ≥ 2 tenants si none.
+ * Seed NutrionApp : données de démarrage RÉALISTES, synthétiques (skill `seed`). Idempotent :
+ * ce qui existe déjà (même e-mail, même slug) est laissé tel quel. Réutilisé par la CI.
+ * Mono-tenant (ADR-001) : pas de tenant à seeder.
  */
 async function main() {
   // Jamais de données de démonstration dans la prod d'un client (skill seed). Le garde-fou
@@ -10,11 +17,19 @@ async function main() {
     console.error("[seed] refusé : APP_ENV=production");
     process.exit(1);
   }
-  // await seedTenant();       // multi-tenant par défaut : seeder ≥1 tenant (le client) — même mono-client
-  // await seedAccounts();     // personae crédibles (familles, agents…), pas de foo/bar — avec tenant_id
-  // await seedCatalog();      // volumes plausibles
-  // await seedEdgeCases();    // dossier incomplet, paiement échoué, compte désactivé…
-  console.log("[seed] done"); // script en ligne de commande : no-console levé par eslint.config.mjs
+  const url = process.env["DATABASE_URL"];
+  if (!url) throw new Error("DATABASE_URL manquante");
+  const db = createDb(url);
+  try {
+    const catalog = await seedCatalog(db);
+    const accounts = await seedAccounts(db);
+    await seedCarts(db, accounts.ids);
+    console.log(
+      `[seed] ${catalog.categories} catégories, ${catalog.productsCreated} produits créés, ${accounts.users} comptes`,
+    );
+  } finally {
+    await (db as unknown as { $client: { end(): Promise<void> } }).$client.end();
+  }
 }
 
 main().catch((e) => {

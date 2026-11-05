@@ -41,6 +41,44 @@ make visual          # régression visuelle des stories (Docker, image Playwrigh
 pnpm load-test       # montée en charge (k6), backend démarré
 ```
 
+## Backend (API NestJS)
+
+Contrat : [`docs/architecture/api-contract.md`](docs/architecture/api-contract.md). Référence générée :
+http://localhost:3001/docs (Scalar), `/swagger`, `/openapi.json`. Santé : `/v1/health`, `/v1/health/ready`.
+
+```bash
+make up              # db, redis, s3 (s3mock), mailpit
+make db-migrate      # migrations Drizzle
+make seed            # comptes, catalogue, paniers de démonstration (idempotent)
+make backend         # API sur :3001 (construit d'abord les paquets du workspace)
+open http://localhost:8025   # Mailpit : e-mails de vérification et de réinitialisation
+```
+
+Comptes de démonstration (seed) :
+
+| Compte                      | Mot de passe         | Rôle                                                    |
+| --------------------------- | -------------------- | ------------------------------------------------------- |
+| `admin@nutrion.local`       | `Nutrion-Admin-2026` | admin : la 2FA s'active au premier accès au back-office |
+| `camille.martin@exemple.fr` | `Nutrion-Demo-2026`  | usager, avec adresses et panier                         |
+
+Les autres usagers du seed (`*@exemple.fr`) ont le mot de passe `Nutrion-Demo-2026`.
+
+- **Auth** : Better Auth sous `/v1/auth/*` (e-mail + mot de passe, vérification obligatoire, 12
+  caractères dont un chiffre, verrouillage 15 min après 5 échecs, 2FA TOTP exigée au
+  back-office, plugin Expo). Rôle `user` ou `admin` sur la table `user`.
+- **Web** : passe par le proxy du site (`/api/*` → backend), même origine : cookies
+  `nutrion.session_token` et `nutrion_cart` en `httpOnly`. Les liens des e-mails pointent sur
+  `WEB_URL/api/v1/auth/...`.
+- **Mobile** : appelle l'API directement ; panier invité par l'en-tête `X-Cart-Token`.
+- **Tests** : `pnpm --filter @nutrion/backend test` (unitaires) et `pnpm --filter
+@nutrion/backend test:e2e` (intégration : vraie base `nutrion-app-e2e`, créée, migrée et
+  vidée à chaque passage ; e-mails et stockage en mémoire). Vitest compile par SWC pour les
+  métadonnées de décorateurs, comme `nest build`.
+- **Sans Docker** : PostgreSQL 16+ et `redis-server` locaux sur 5432 / 6379 conviennent
+  (même `DATABASE_URL` / `REDIS_URL`) ; sans s3mock, `/health/ready` signale `storage` en
+  panne et seuls les envois d'images échouent ; sans Mailpit, inscription et
+  réinitialisation échouent à l'envoi de l'e-mail.
+
 ## Structure
 
 ```

@@ -24,7 +24,12 @@ export class S3StorageAdapter implements StoragePort {
 
   async put(key: string, body: Uint8Array, contentType: string) {
     await this.client.send(
-      new PutObjectCommand({ Bucket: this.config.S3_BUCKET, Key: key, Body: body, ContentType: contentType }),
+      new PutObjectCommand({
+        Bucket: this.config.S3_BUCKET,
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      }),
     );
   }
 

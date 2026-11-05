@@ -19,6 +19,9 @@ export const user = pgTable(
     phone: text("phone"),
     locale: text("locale").notNull().default("fr"),
     theme: text("theme").notNull().default("system"), // 'system' | 'light' | 'dark'
+    // Rôle applicatif : 'user' (défaut) ou 'admin' (back-office, 2FA obligatoire). Les tables
+    // role / user_role (brique roles-permissions) restent prêtes pour des rôles plus fins.
+    role: text("role").notNull().default("user"),
     twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
     // Brique rgpd-droits-personnes : suspension (agent ou système) et anonymisation.
     suspendedAt: timestamp("suspended_at", { withTimezone: true }),
@@ -27,6 +30,7 @@ export const user = pgTable(
     anonymizedAt: timestamp("anonymized_at", { withTimezone: true }),
     // Verrouillage après 5 échecs (comptes back-office, socle).
     failedLoginAttempts: integer("failed_login_attempts").notNull().default(0),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }), // 15 min après 5 échecs
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -100,5 +104,8 @@ export const twoFactor = pgTable(
     failedVerificationCount: integer("failed_verification_count").default(0),
     lockedUntil: timestamp("locked_until", { withTimezone: true }),
   },
-  (t) => [index("two_factor_user_id_idx").on(t.userId), index("two_factor_secret_idx").on(t.secret)],
+  (t) => [
+    index("two_factor_user_id_idx").on(t.userId),
+    index("two_factor_secret_idx").on(t.secret),
+  ],
 );
