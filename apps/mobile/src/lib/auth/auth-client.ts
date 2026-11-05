@@ -1,8 +1,10 @@
 import { expoClient } from "@better-auth/expo/client";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { withApiEvents } from "@nutrion/analytics";
 import * as SecureStore from "expo-secure-store";
 
+import { analyticsClient } from "@/lib/analytics/posthog";
 import { API_URL, AUTH_BASE_PATH, AUTH_COOKIE_PREFIX } from "@/lib/api/config";
 
 // Client Better Auth (contrat §Authentification) : e-mail + mot de passe. La session vit dans le
@@ -10,6 +12,10 @@ import { API_URL, AUTH_BASE_PATH, AUTH_COOKIE_PREFIX } from "@/lib/api/config";
 export const authClient = createAuthClient({
   baseURL: API_URL,
   basePath: AUTH_BASE_PATH,
+  // Inscription, connexion, déconnexion : événements du catalogue, après consentement.
+  fetchOptions: {
+    customFetchImpl: withApiEvents((input, init) => fetch(input, init), analyticsClient),
+  },
   plugins: [
     expoClient({
       scheme: "nutrion",

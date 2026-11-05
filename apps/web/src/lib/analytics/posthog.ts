@@ -79,3 +79,8 @@ export function identifyUser(userId: string): void {
 export function track<N extends EventName>(name: N, properties: EventCatalog[N]): void {
   trackEvent(client, name, properties);
 }
+
+/** Le client courant : null tant que l'usager n'a pas accepté la mesure d'audience. */
+export function analyticsClient(): PostHog | null {
+  return wanted ? client : null;
+}

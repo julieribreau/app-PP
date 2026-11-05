@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { Button } from "@/components/ui/Button";
 import { useBiometricLabel } from "@/hooks/auth/useBiometricOffer";
 import { useAuthActions } from "@/hooks/auth/useSession";
+import { track } from "@/lib/analytics/posthog";
 import { authenticate, biometricSupport, type BiometricKind } from "@/lib/auth/biometric";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { FORGOT_PASSWORD_ROUTE } from "@/lib/routes";
@@ -28,7 +29,10 @@ export function BiometricUnlockScreen() {
 
   const tryBiometric = React.useCallback(async () => {
     const ok = await authenticate(t.mobile.auth.biometricPrompt, t.common.cancel);
-    if (ok) unlock();
+    if (ok) {
+      track("auth.logged_in", { method: "biometric" });
+      unlock();
+    }
   }, [t, unlock]);
 
   React.useEffect(() => {

@@ -12,6 +12,7 @@ import PostHog, { PostHogPersistedProperty } from "posthog-react-native";
 // Seul module qui parle à posthog-react-native. Le client n'est créé qu'au premier oui de
 // l'usager : avant, aucune instance, donc ni requête ni stockage (skill mobile-dev-expo §8).
 let client: PostHog | null = null;
+let optedIn = false;
 
 /** Clé et hôte du profil de build ; la configuration du tenant peut les remplacer. */
 export function buildPostHogSettings(): PostHogSettings {
@@ -41,6 +42,7 @@ export function startAnalytics(settings: PostHogSettings): PostHog | null {
     disableRemoteFeatureFlags: true,
   });
   // Un retrait d'un lancement précédent reste mémorisé par le SDK : le oui d'aujourd'hui l'annule.
+  optedIn = true;
   void client.optIn();
   void client.register(superProperties(process.env.EXPO_PUBLIC_APP_ENV, "mobile"));
   return client;
@@ -48,6 +50,7 @@ export function startAnalytics(settings: PostHogSettings): PostHog | null {
 
 /** Refus ou retrait : ce que le SDK gardait est effacé, puis plus rien ne part. */
 export async function stopAnalytics(): Promise<void> {
+  optedIn = false;
   if (!client) return;
   // Identifiants et propriétés. `reset()` garde la file d'événements en attente : vidée aussi,
   // rien de ce qui attendait ne partira. Puis l'opt-out, après : `reset()` remet le consentement
@@ -64,4 +67,9 @@ export function identifyUser(userId: string): void {
 
 export function track<N extends EventName>(name: N, properties: EventCatalog[N]): void {
   trackEvent(client, name, properties);
+}
+
+/** Le client courant : null tant que l'usager n'a pas accepté la mesure d'audience. */
+export function analyticsClient(): PostHog | null {
+  return optedIn ? client : null;
 }

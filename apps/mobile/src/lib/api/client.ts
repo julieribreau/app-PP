@@ -1,6 +1,8 @@
+import { withApiEvents } from "@nutrion/analytics";
 import { ApiError, createApiClient } from "@nutrion/api-port";
 import * as SecureStore from "expo-secure-store";
 
+import { analyticsClient } from "@/lib/analytics/posthog";
 import { createAppFetch } from "@/lib/api/app-fetch";
 import { API_V1 } from "@/lib/api/config";
 import { authClient } from "@/lib/auth/auth-client";
@@ -15,6 +17,8 @@ export const appFetch = createAppFetch({
   getLocale: () => usePrefsStore.getState().locale,
   getCookie: async () => authClient.getCookie(),
   cartTokens,
+  // Événements métier du catalogue (@nutrion/analytics), seulement après consentement.
+  fetch: withApiEvents((input, init) => fetch(input, init), analyticsClient),
 });
 
 export const api = createApiClient({

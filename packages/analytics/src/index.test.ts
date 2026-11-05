@@ -17,9 +17,12 @@ describe("analytics", () => {
 
   it("n'envoie qu'un événement du catalogue, et rien sans client", () => {
     const client = { capture: vi.fn() };
-    track(client, "example.opened", { exampleId: "e1" });
-    expect(client.capture).toHaveBeenCalledWith("example.opened", { exampleId: "e1" });
-    expect(() => track(null, "example.opened", { exampleId: "e1" })).not.toThrow();
+    track(client, "product.viewed", { productId: "p1", slug: "avoine" });
+    expect(client.capture).toHaveBeenCalledWith("product.viewed", {
+      productId: "p1",
+      slug: "avoine",
+    });
+    expect(() => track(null, "auth.logged_out", {})).not.toThrow();
     // @ts-expect-error nom hors catalogue : refusé à la compilation
     track(client, "example.unknown", {});
   });

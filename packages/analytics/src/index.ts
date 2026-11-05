@@ -1,7 +1,16 @@
+import { eventForApiCall, type ApiCall, type EventName } from "./api-events";
 import type { EventCatalog } from "./events";
 
 export type { EventCatalog } from "./events";
-export type EventName = keyof EventCatalog;
+export { PERSONAL_KEYS } from "./events";
+export {
+  eventForApiCall,
+  normalizePath,
+  scrubProperties,
+  type ApiCall,
+  type EventName,
+  type TrackedEvent,
+} from "./api-events";
 
 /**
  * Instance PostHog de l'Union européenne : l'ingestion (`api_host`) passe par `eu.i.posthog.com`,
@@ -38,4 +47,13 @@ export function track<N extends EventName>(
   properties: EventCatalog[N],
 ): void {
   client?.capture(name, properties);
+}
+
+/** L'événement métier d'un appel d'API terminé, envoyé s'il y en a un (et un client : consenti). */
+export { reportFetch, withApiEvents } from "./fetch-reporter";
+
+export function trackApiCall(client: CaptureClient | null, call: ApiCall): void {
+  if (!client) return;
+  const event = eventForApiCall(call);
+  if (event) client.capture(event.name, event.properties as Record<string, unknown>);
 }
