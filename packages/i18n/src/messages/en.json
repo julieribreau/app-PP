@@ -244,7 +244,12 @@
     "twoFactorPasswordHelp": "Your password confirms it is really you.",
     "twoFactorStart": "Continue",
     "twoFactorQr": "QR code to scan with your authenticator app",
-    "twoFactorManualKey": "Key to enter manually"
+    "twoFactorManualKey": "Key to enter manually",
+    "useBackupCode": "Use a backup code",
+    "useTotpCode": "Use the authenticator code",
+    "backupCode": "Backup code",
+    "backupCodeLead": "Enter one of the backup codes you received when turning it on. Each code works once.",
+    "invalidCode": "Incorrect or already used code."
   },
   "account": {
     "title": "My account",
@@ -422,7 +427,11 @@
       "user": "User",
       "product": "Product",
       "category": "Category"
-    }
+    },
+    "deleteProduct": "Delete product",
+    "deleteProductConfirm": "Permanently delete this product? A product already added to a cart cannot be deleted: archive it instead.",
+    "deleteProductInCart": "This product is in at least one cart: archive it instead.",
+    "productDeleted": "Product deleted."
   },
   "mobile": {
     "tabs": {

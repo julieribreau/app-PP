@@ -106,7 +106,6 @@ export class AdminCatalogController {
   }
 
   @Delete("products/:id/image")
-  @HttpCode(204)
   removeImage(@CurrentSession() s: AuthSession, @Param("id", uuid) id: string) {
     return this.catalog.removeImage(s.user.id, id);
   }

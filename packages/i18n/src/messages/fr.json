@@ -244,7 +244,12 @@
     "twoFactorPasswordHelp": "Votre mot de passe confirme que c'est bien vous.",
     "twoFactorStart": "Continuer",
     "twoFactorQr": "QR code à scanner avec votre application d'authentification",
-    "twoFactorManualKey": "Clé à saisir manuellement"
+    "twoFactorManualKey": "Clé à saisir manuellement",
+    "useBackupCode": "Utiliser un code de secours",
+    "useTotpCode": "Utiliser le code de l'application",
+    "backupCode": "Code de secours",
+    "backupCodeLead": "Saisissez l'un des codes de secours reçus à l'activation. Chaque code ne sert qu'une fois.",
+    "invalidCode": "Code incorrect ou déjà utilisé."
   },
   "account": {
     "title": "Mon compte",
@@ -422,7 +427,11 @@
       "user": "Usager",
       "product": "Produit",
       "category": "Catégorie"
-    }
+    },
+    "deleteProduct": "Supprimer le produit",
+    "deleteProductConfirm": "Supprimer définitivement ce produit ? Un produit déjà mis au panier ne peut pas l'être : archivez-le.",
+    "deleteProductInCart": "Ce produit est dans au moins un panier : archivez-le plutôt.",
+    "productDeleted": "Produit supprimé."
   },
   "mobile": {
     "tabs": {

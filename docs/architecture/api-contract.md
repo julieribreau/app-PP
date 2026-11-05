@@ -225,7 +225,9 @@ Chaque écriture ajoute une ligne au journal d'audit.
   `label` en français).
 - `PATCH /v1/admin/products/:id` (mêmes champs, partiels). La description passe par
   `sanitize-html` (liste blanche du socle).
-- `PUT /v1/admin/products/:id/image` (multipart) ; `DELETE /v1/admin/products/:id/image`.
+- `PUT /v1/admin/products/:id/image` (multipart `file`, jpg/png/webp vérifiés sur leur contenu, 2 Mo :
+  415 `UNSUPPORTED_MEDIA_TYPE`, 413 `PAYLOAD_TOO_LARGE`) et `DELETE /v1/admin/products/:id/image` :
+  tous deux renvoient la fiche admin complète (200).
 - `PUT /v1/admin/products/:id/options` `[{ id?, name: {fr,en}, values: [{ id?, label: {fr,en} }] }]`
   → régénère les combinaisons : les variantes existantes sont gardées, les nouvelles créées
   actives, celles qui ne correspondent plus à aucune combinaison supprimées, ou seulement désactivées si un panier les référence encore.

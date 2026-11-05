@@ -85,4 +85,15 @@ export class Client {
     }
     return { status: res.status, headers: res.headers, json: json as any }; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
+
+  /** Envoi multipart d'un fichier (champ `file`), comme le formulaire du site ou l'app. */
+  async upload(path: string, bytes: Uint8Array, type: string, name = "fichier") {
+    const form = new FormData();
+    form.append("file", new Blob([bytes as Uint8Array<ArrayBuffer>], { type }), name);
+    const h = this.headers(undefined, {});
+    const res = await fetch(`${this.base}${path}`, { method: "PUT", headers: h, body: form });
+    this.keep(res.headers.getSetCookie());
+    const text = await res.text();
+    return { status: res.status, json: (text ? JSON.parse(text) : undefined) as any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+  }
 }

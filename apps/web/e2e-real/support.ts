@@ -1,4 +1,11 @@
 import { createHmac } from "node:crypto";
+import {
+  existsSync as fileExists,
+  mkdirSync as makeDir,
+  readFileSync as readFile,
+  writeFileSync as writeFile,
+} from "node:fs";
+import { dirname as dirOf, join as joinPath } from "node:path";
 
 import { expect, type Page } from "@playwright/test";
 
@@ -126,3 +133,62 @@ export async function createVerifiedUser(
   if (verify.status >= 400) throw new Error(`vérification ${verify.status}`);
   return { email, password };
 }
+
+// --- Finition : session admin par l'API, textes FR restants sur les pages EN ---------------
+
+export const SITE_ORIGIN = process.env["E2E_BASE_URL"] ?? "http://localhost:3000";
+const ADMIN_STATE = joinPath(__dirname, ".state", "admin-totp.json");
+
+/**
+ * Ouvre une session admin dans le contexte de `page` (cookies partagés) : mot de passe, puis
+ * défi TOTP si la 2FA est active, sinon activation de la 2FA et secret gardé dans .state/.
+ */
+export async function adminSession(page: Page): Promise<string> {
+  const headers = { origin: SITE_ORIGIN };
+  const signInRes = await page.request.post("/api/v1/auth/sign-in/email", { data: ADMIN, headers });
+  expect(signInRes.ok(), await signInRes.text()).toBe(true);
+  let secret = fileExists(ADMIN_STATE)
+    ? (JSON.parse(readFile(ADMIN_STATE, "utf8")) as { secret: string }).secret
+    : "";
+  if ((await signInRes.json()).twoFactorRedirect) {
+    if (!secret) throw new Error("2FA admin active sans secret connu : relancer `make seed`");
+  } else {
+    const enable = await page.request.post("/api/v1/auth/two-factor/enable", {
+      data: { password: ADMIN.password },
+      headers,
+    });
+    expect(enable.ok(), await enable.text()).toBe(true);
+    secret = new URL((await enable.json()).totpURI).searchParams.get("secret")!;
+    makeDir(dirOf(ADMIN_STATE), { recursive: true });
+    writeFile(ADMIN_STATE, JSON.stringify({ secret }));
+  }
+  const verify = await page.request.post("/api/v1/auth/two-factor/verify-totp", {
+    data: { code: totp(secret) },
+    headers,
+  });
+  expect(verify.ok(), await verify.text()).toBe(true);
+  return secret;
+}
+
+type Messages = Record<string, unknown>;
+
+function leaves(d: Messages, prefix = ""): [string, string][] {
+  return Object.entries(d).flatMap(([k, v]) =>
+    typeof v === "string"
+      ? [[prefix + k, v] as [string, string]]
+      : leaves(v as Messages, `${prefix}${k}.`),
+  );
+}
+
+/** Textes d'interface propres au français (absents de l'anglais), assez longs pour être sûrs. */
+export function frenchOnlyStrings(fr: Messages, en: Messages): string[] {
+  const english = new Map(leaves(en));
+  return leaves(fr)
+    .filter(([key, value]) => english.get(key) !== value)
+    .map(([, value]) => value.split(/\{[^}]*\}/)[0]!.trim())
+    .filter((v) => v.length >= 10 && !/[{}<>]/.test(v));
+}
+
+/** Une clé de traduction affichée brute (« admin.users », « cart.title »). */
+export const RAW_KEY =
+  /\b(common|nav|theme|locale|footer|landing|shop|product|cart|auth|account|admin|consent|env|home|legal)\.[a-z][a-zA-Z]+(\.[a-zA-Z]+)*\b/;

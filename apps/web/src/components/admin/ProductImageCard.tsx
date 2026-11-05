@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ProductImage } from "@/components/shop/ProductImage";
 import { Button } from "@/components/ui/button";
 import type { AdminProduct } from "@/lib/api/types";
+import { errorCode } from "@/lib/api/http";
 import { useApi } from "@/providers/ApiProvider";
 
 /** Une photo par produit (JPG, PNG, WebP, 2 Mo) ; envoyée tout de suite sur le stockage objet. */
@@ -26,8 +27,13 @@ export function ProductImageCard({
     if (file.size > 2 * 1024 * 1024) return void toast.error(t("imageHelp"));
     try {
       onChange(await api.admin.uploadImage(product.id, file));
-    } catch {
-      toast.error(tc("error"));
+    } catch (e) {
+      const code = errorCode(e);
+      toast.error(
+        code === "UNSUPPORTED_MEDIA_TYPE" || code === "PAYLOAD_TOO_LARGE"
+          ? t("imageHelp")
+          : tc("error"),
+      );
     }
   };
   return (

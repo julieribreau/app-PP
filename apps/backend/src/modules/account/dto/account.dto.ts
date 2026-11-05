@@ -16,19 +16,23 @@ export class UpdateMeDto extends createZodDto(
   }),
 ) {}
 
-const addressInput = z.object({
+const addressFields = z.object({
   label: text(40).nullable().optional(),
   recipientName: text(120).min(1),
   line1: text(200).min(1),
   line2: text(200).nullable().optional(),
   postalCode: text(12).min(2),
   city: text(120).min(1),
-  countryCode: z.string().length(2).toUpperCase().default("FR"),
+  countryCode: z.string().length(2).toUpperCase(),
   phone: text(30).nullable().optional(),
   isDefault: z.boolean().optional(),
 });
+// Le pays par défaut ne vaut qu'à la création : une modification partielle garde le sien.
+const addressInput = addressFields.extend({
+  countryCode: addressFields.shape.countryCode.default("FR"),
+});
 export class CreateAddressDto extends createZodDto(addressInput) {}
-export class UpdateAddressDto extends createZodDto(addressInput.partial()) {}
+export class UpdateAddressDto extends createZodDto(addressFields.partial()) {}
 
 export class DeleteAccountDto extends createZodDto(
   z.object({ confirm: z.enum(["SUPPRIMER", "DELETE"]) }),
