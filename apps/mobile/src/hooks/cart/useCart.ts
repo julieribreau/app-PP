@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
 
 import { api, cartTokens } from "@/lib/api/client";
 import { queryKeys } from "@/lib/api/query";
+import { useI18n } from "@/lib/i18n/useI18n";
 import { EMPTY_CART, type Cart } from "@/types/api";
 
 // Panier (contrat §Panier) : chaque écriture renvoie le panier complet, qui remplace le cache.
@@ -12,6 +14,21 @@ export function useCart() {
     queryFn: async () => (await api.get<Cart>("/cart")) ?? EMPTY_CART,
     placeholderData: EMPTY_CART,
   });
+}
+
+/**
+ * Noms de produits et libellés de variantes du panier arrivent dans la langue de la requête :
+ * à un changement de langue, le panier est relu (il restait dans l'ancienne langue).
+ */
+export function useCartFollowsLocale(): void {
+  const { locale } = useI18n();
+  const client = useQueryClient();
+  const shown = React.useRef(locale);
+  React.useEffect(() => {
+    if (shown.current === locale) return;
+    shown.current = locale;
+    void client.invalidateQueries({ queryKey: queryKeys.cart });
+  }, [locale, client]);
 }
 
 function useCartWrite<V>(write: (vars: V) => Promise<Cart>) {

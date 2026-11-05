@@ -6,6 +6,7 @@ import * as React from "react";
 import { StyleSheet, View } from "react-native";
 
 import { usePrefsSync } from "@/hooks/account/usePreferences";
+import { useCartFollowsLocale } from "@/hooks/cart/useCart";
 import { queryClient } from "@/lib/api/query";
 import { authClient } from "@/lib/auth/auth-client";
 import { BiometricUnlockScreen } from "@/screens/auth/BiometricUnlockScreen";
@@ -33,6 +34,7 @@ function Boot({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   useApplyThemePreference();
   usePrefsSync();
+  useCartFollowsLocale();
 
   React.useEffect(() => {
     if (!hydrated || useLockStore.getState().status !== "checking") return;
