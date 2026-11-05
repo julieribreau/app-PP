@@ -35,3 +35,4 @@ apps/mobile/certs-private/
 
 # Généré par Next (next typegen, next build)
 next-env.d.ts
+.local-test/
