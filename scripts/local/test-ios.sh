@@ -29,7 +29,7 @@ if ! pnpm -v >/dev/null 2>&1; then
 fi
 pnpm -v >/dev/null 2>&1 || { echo "MANQUE : pnpm $PNPM_VERSION ne démarre pas (essaie : npm install -g pnpm@$PNPM_VERSION)."; exit 1; }
 docker info >/dev/null 2>&1 || { echo "MANQUE : Docker Desktop n'est pas démarré."; exit 1; }
-node -v; pnpm -v; xcodebuild -version | head -1; pod --version
+node -v; pnpm -v; xcodebuild -version 2>/dev/null | sed -n 1p || true; pod --version || true
 
 step "Dépendances"
 [ -f .env ] || cp .env.example .env
