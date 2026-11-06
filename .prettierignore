@@ -18,3 +18,5 @@ scripts/check-*.mjs
 scripts/maj-*.mjs
 scripts/notify-ticketing.mjs
 apps/web/e2e-real/.state
+qa/a11y/pages.json
+qa/a11y/resultats.json

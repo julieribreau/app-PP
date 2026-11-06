@@ -9,6 +9,8 @@ import {
 } from "@nutrion/analytics";
 import PostHog, { PostHogPersistedProperty } from "posthog-react-native";
 
+import { setAnalyticsClient } from "./current-client";
+
 // Seul module qui parle à posthog-react-native. Le client n'est créé qu'au premier oui de
 // l'usager : avant, aucune instance, donc ni requête ni stockage (skill mobile-dev-expo §8).
 let client: PostHog | null = null;
@@ -41,6 +43,7 @@ export function startAnalytics(settings: PostHogSettings): PostHog | null {
     disableRemoteFeatureFlags: true,
   });
   // Un retrait d'un lancement précédent reste mémorisé par le SDK : le oui d'aujourd'hui l'annule.
+  setAnalyticsClient(client);
   void client.optIn();
   void client.register(superProperties(process.env.EXPO_PUBLIC_APP_ENV, "mobile"));
   return client;
@@ -48,6 +51,7 @@ export function startAnalytics(settings: PostHogSettings): PostHog | null {
 
 /** Refus ou retrait : ce que le SDK gardait est effacé, puis plus rien ne part. */
 export async function stopAnalytics(): Promise<void> {
+  setAnalyticsClient(null);
   if (!client) return;
   // Identifiants et propriétés. `reset()` garde la file d'événements en attente : vidée aussi,
   // rien de ce qui attendait ne partira. Puis l'opt-out, après : `reset()` remet le consentement

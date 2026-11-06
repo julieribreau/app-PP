@@ -59,6 +59,23 @@ export default tseslint.config(
     rules: { "@typescript-eslint/no-require-imports": "off" },
   },
   {
+    // qa/a11y : scripts Node hors workspace (pa11y + puppeteer) ; le code passé à
+    // page.evaluate tourne dans la page, d'où les globales du navigateur.
+    files: ["qa/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        URL: "readonly",
+        Buffer: "readonly",
+        fetch: "readonly",
+        console: "readonly",
+        document: "readonly",
+        getComputedStyle: "readonly",
+      },
+    },
+    rules: { "no-console": "off" },
+  },
+  {
     // Scénarios k6 : globales du moteur k6, pas de Node.
     files: ["apps/load-tests/**/*.js"],
     languageOptions: { globals: { __ENV: "readonly", __ITER: "readonly", __VU: "readonly" } },

@@ -1,5 +1,8 @@
 import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { withApiEvents } from "@nutrion/analytics";
+
+import { analyticsClient } from "@/lib/analytics/posthog";
 
 // Client Better Auth, monté sous /v1/auth côté backend et joint par le proxy même origine
 // (/api/v1/auth) : la session reste un cookie httpOnly du domaine du site.
@@ -10,6 +13,10 @@ const origin =
 
 export const authClient = createAuthClient({
   baseURL: `${origin}/api/v1/auth`,
+  // Inscription, connexion, déconnexion, 2FA : événements du catalogue, après consentement.
+  fetchOptions: {
+    customFetchImpl: withApiEvents((input, init) => fetch(input, init), analyticsClient),
+  },
   plugins: [
     twoFactorClient(),
     inferAdditionalFields({

@@ -1,0 +1,13 @@
+{
+  "name": "@nutrion/a11y",
+  "private": true,
+  "//": "Contrôle RGAA manuel (CI réduite) : pa11y, htmlcs + axe, WCAG2AA, toutes les pages fr/en, clair/sombre. Stack lancée et seedée, e2e réels passés une fois (secret TOTP admin). hors workspace pnpm (puppeteer télécharge Chrome) : `cd qa/a11y && npm install && npm run check`.",
+  "type": "module",
+  "scripts": {
+    "check": "node pages.mjs && node run.mjs"
+  },
+  "dependencies": {
+    "pa11y": "^9.0.0",
+    "puppeteer": "^24.0.0"
+  }
+}

@@ -36,6 +36,9 @@
 .consent-text {
   margin: 0 0 var(--space-2);
   line-height: 1.5;
+  /* Fond posé sur le texte lui-même (le bandeau, fixe, recouvre la page) : la mesure de
+     contraste lit ce fond-ci et non la page dessous. Même couleur que le bandeau. */
+  background: var(--color-bg);
 }
 
 .consent-muted {

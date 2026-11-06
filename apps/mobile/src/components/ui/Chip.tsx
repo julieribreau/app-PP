@@ -33,14 +33,18 @@ export function Chip({
 }: ChipProps) {
   const { color } = useTheme();
   const tone = chipTone(color, selected, disabled);
-  const state = role === "radio" ? { checked: selected, disabled } : { selected, disabled };
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       accessibilityRole={role}
       accessibilityLabel={label}
-      accessibilityState={state}
+      // aria-checked plutôt qu'accessibilityState pour un radio : même effet sur iOS et
+      // Android, et rendu sur le web (react-native-web ignore accessibilityState). Un bouton
+      // n'a pas d'aria-checked : son état « sélectionné » reste natif.
+      aria-checked={role === "radio" ? selected : undefined}
+      accessibilityState={role === "radio" ? undefined : { selected }}
+      aria-disabled={disabled}
       style={[styles.base, styles[size], { backgroundColor: tone.bg, borderColor: tone.border }]}
     >
       <AppText variant="label" style={[{ color: tone.fg }, disabled && styles.struck]}>

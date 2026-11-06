@@ -1,11 +1,18 @@
+import { withApiEvents } from "@nutrion/analytics";
 import { ApiError, createApiClient } from "@nutrion/api-port";
+
+import { analyticsClient } from "@/lib/analytics/posthog";
 
 // Accès HTTP au backend, toujours par le proxy même origine de Next (/api → BACKEND_URL) :
 // le navigateur garde les cookies de session et de panier (httpOnly) sans CORS.
 export const API_BASE = "/api";
 
+// Chaque appel réussi (ou échec suivi) devient un événement métier du catalogue
+// (@nutrion/analytics), envoyé seulement si l'usager a accepté la mesure d'audience.
+const trackedFetch = withApiEvents((input, init) => fetch(input, init), analyticsClient);
+
 function withCredentials(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  return fetch(input, { ...init, credentials: "include" });
+  return trackedFetch(input, { ...init, credentials: "include" });
 }
 
 async function readError(res: Response): Promise<ApiError> {

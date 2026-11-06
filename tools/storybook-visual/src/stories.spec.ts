@@ -13,6 +13,9 @@ const THEMES = ["light", "dark"] as const;
 const ORIGIN = "http://storybook.test";
 
 const root = process.env["STORYBOOK_STATIC_DIR"] ?? "";
+const axeDisabledRules = (process.env["STORYBOOK_AXE_DISABLED_RULES"] ?? "")
+  .split(",")
+  .filter(Boolean);
 const indexFile = join(root, "index.json");
 if (!existsSync(indexFile)) {
   throw new Error(`${indexFile} absent : lancer \`pnpm build-storybook\` avant la régression.`);
@@ -60,6 +63,7 @@ for (const story of stories) {
         const { violations } = await new AxeBuilder({ page })
           .include("#storybook-root")
           .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+          .disableRules(axeDisabledRules)
           .analyze();
         expect(violations.map((v) => `${v.id} : ${v.help}`)).toEqual([]);
       });

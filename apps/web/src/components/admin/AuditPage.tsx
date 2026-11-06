@@ -36,7 +36,7 @@ function useAuditColumns(): DataColumn<AuditEntry>[] {
       id: "action",
       header: t("auditAction"),
       className: "font-numeric text-[13px]",
-      cell: (e) => e.action,
+      cell: (e) => <AuditActionLabel action={e.action} />,
     },
     {
       id: "target",
@@ -123,4 +123,11 @@ export function AuditPage() {
       ) : null}
     </>
   );
+}
+
+/** Libellé traduit de l'action ; un code encore inconnu des messages reste affiché tel quel. */
+function AuditActionLabel({ action }: { readonly action: string }) {
+  const t = useTranslations("admin.auditActions");
+  const key = action.replaceAll(".", "_");
+  return <span title={action}>{t.has(key) ? t(key as Parameters<typeof t>[0]) : action}</span>;
 }

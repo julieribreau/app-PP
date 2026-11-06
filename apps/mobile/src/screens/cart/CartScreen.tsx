@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { useSession } from "@/hooks/auth/useSession";
 import { useCart, useRemoveCartItem, useUpdateCartItem } from "@/hooks/cart/useCart";
+import { useCartViewed } from "@/hooks/cart/useCartViewed";
 import { useI18n } from "@/lib/i18n/useI18n";
 import { productRoute, SHOP_ROUTE, SIGN_IN_ROUTE } from "@/lib/routes";
 import { useCartNoticeStore } from "@/stores/cart-notice.store";
@@ -20,6 +21,7 @@ import { EMPTY_CART, type Cart, type CartItem } from "@/types/api";
 
 export function CartScreen() {
   const cart = useCart();
+  useCartViewed(cart.data);
   if (cart.isError && !cart.data) {
     return (
       <Screen>

@@ -10,35 +10,43 @@ const slug = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "slug en minuscules et tirets")
   .max(80);
 
-export const categoryInput = z.object({
+// Les valeurs par défaut ne valent qu'à la création : `.partial()` les garderait, et une
+// modification partielle (renommer une catégorie, corriger une description) remettrait alors
+// silencieusement position, activation, TVA ou statut à leur défaut.
+const categoryFields = z.object({
   slug: slug.optional(),
   name: localizedTextSchema,
-  position: z.number().int().min(0).default(0),
-  isActive: z.boolean().default(true),
+  position: z.number().int().min(0),
+  isActive: z.boolean(),
+});
+export const categoryInput = categoryFields.extend({
+  position: categoryFields.shape.position.default(0),
+  isActive: categoryFields.shape.isActive.default(true),
 });
 export class CreateCategoryDto extends createZodDto(categoryInput) {}
-export class UpdateCategoryDto extends createZodDto(categoryInput.partial()) {}
+export class UpdateCategoryDto extends createZodDto(categoryFields.partial()) {}
 
 const productStatus = z.enum(["draft", "active", "archived"]);
 
-export const productInput = z.object({
+const productFields = z.object({
   slug: slug.optional(),
   categoryId: z.uuid().nullable(),
   name: localizedTextSchema,
-  summary: optionalLocalizedTextSchema.default({ fr: "" }),
-  description: optionalLocalizedTextSchema.default({ fr: "" }),
+  summary: optionalLocalizedTextSchema,
+  description: optionalLocalizedTextSchema,
   priceCents: z.number().int().min(0).max(10_000_000),
-  vatRateBps: z.number().int().min(0).max(2000).default(550),
-  status: productStatus.default("draft"),
+  vatRateBps: z.number().int().min(0).max(2000),
+  status: productStatus,
   position: z.number().int().min(0).optional(),
 });
+export const productInput = productFields.extend({
+  summary: optionalLocalizedTextSchema.default({ fr: "" }),
+  description: optionalLocalizedTextSchema.default({ fr: "" }),
+  vatRateBps: productFields.shape.vatRateBps.default(550),
+  status: productStatus.default("draft"),
+});
 export class CreateProductDto extends createZodDto(productInput) {}
-export class UpdateProductDto extends createZodDto(
-  productInput.partial().extend({
-    summary: optionalLocalizedTextSchema.optional(),
-    description: optionalLocalizedTextSchema.optional(),
-  }),
-) {}
+export class UpdateProductDto extends createZodDto(productFields.partial()) {}
 
 export class AdminProductsQueryDto extends createZodDto(
   paginationSchema(25, 100).extend({

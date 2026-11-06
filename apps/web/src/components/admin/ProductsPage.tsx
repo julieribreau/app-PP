@@ -77,7 +77,7 @@ function useColumns(locale: string): DataColumn<AdminProductRow>[] {
         header: t("col.stock"),
         align: "right",
         className: "font-numeric text-[13px]",
-        cell: (p) => (p.stockTotal === null ? "∞" : p.stockTotal),
+        cell: (p) => (p.stockTotal === null ? t("unlimited") : p.stockTotal),
       },
       {
         id: "status",

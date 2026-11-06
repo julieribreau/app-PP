@@ -84,3 +84,23 @@ describe("initials", () => {
     expect(initials(null, null, "hugo@exemple.fr")).toBe("H");
   });
 });
+
+describe("pluralCategory sans Intl.PluralRules (Hermes)", () => {
+  it("retombe sur les règles fr et en quand le moteur n'a pas PluralRules", () => {
+    const original = Intl.PluralRules;
+    // Hermes n'expose pas Intl.PluralRules : formatMessage plantait sur l'écran Boutique.
+    (Intl as { PluralRules?: unknown }).PluralRules = undefined;
+    try {
+      expect(pluralCategory(0, "fr")).toBe("one");
+      expect(pluralCategory(1, "fr")).toBe("one");
+      expect(pluralCategory(12, "fr")).toBe("other");
+      expect(pluralCategory(1, "en")).toBe("one");
+      expect(pluralCategory(0, "en")).toBe("other");
+      expect(
+        formatMessage("{count, plural, one {# produit} other {# produits}}", { count: 12 }, "fr"),
+      ).toBe("12 produits");
+    } finally {
+      (Intl as { PluralRules?: unknown }).PluralRules = original;
+    }
+  });
+});

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ErrorNote, Loading } from "@/components/ui/spinner";
 import { useCart } from "@/hooks/useCart";
+import { useCartViewed } from "@/hooks/useCartViewed";
 import { useSession } from "@/hooks/useSession";
 import { Link } from "@/i18n/navigation";
 
@@ -36,6 +37,7 @@ export function CartPage() {
   const t = useTranslations("cart");
   const { user, isPending: sessionPending } = useSession();
   const { data: cart, isPending, isError, refetch } = useCart();
+  useCartViewed(cart);
   if (isPending) return <Loading />;
   if (isError) return <ErrorNote onRetry={() => void refetch()} />;
   const empty = cart.items.length === 0;

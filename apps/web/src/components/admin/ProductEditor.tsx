@@ -11,6 +11,7 @@ import type { AdminProduct } from "@/lib/api/types";
 import { useApi } from "@/providers/ApiProvider";
 
 import { AdminHeading } from "./AdminShell";
+import { DeleteProductButton } from "./DeleteProductButton";
 import { OptionsEditor } from "./OptionsEditor";
 import { ProductImageCard } from "./ProductImageCard";
 import { ProductMainFields } from "./ProductMainFields";
@@ -40,7 +41,7 @@ function VariantsSection({
           {t("variants")}
         </h2>
         <span className="text-muted-foreground text-[13px]">
-          {t("variantsSummary", { count: draft.variants.length, stock: stock ?? "∞" })}
+          {t("variantsSummary", { count: draft.variants.length, stock: stock ?? t("unlimited") })}
         </span>
       </div>
       <OptionsEditor
@@ -119,6 +120,7 @@ export function ProductEditor({ product: initial }: { readonly product: AdminPro
                 <Link href={`/boutique/${product.slug}`}>{t("viewInShop")}</Link>
               </Button>
             ) : null}
+            {product ? <DeleteProductButton productId={product.id} /> : null}
             <Button
               type="submit"
               size="sm"

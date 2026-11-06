@@ -244,7 +244,12 @@
     "twoFactorPasswordHelp": "Your password confirms it is really you.",
     "twoFactorStart": "Continue",
     "twoFactorQr": "QR code to scan with your authenticator app",
-    "twoFactorManualKey": "Key to enter manually"
+    "twoFactorManualKey": "Key to enter manually",
+    "useBackupCode": "Use a backup code",
+    "useTotpCode": "Use the authenticator code",
+    "backupCode": "Backup code",
+    "backupCodeLead": "Enter one of the backup codes you received when turning it on. Each code works once.",
+    "invalidCode": "Incorrect or already used code."
   },
   "account": {
     "title": "My account",
@@ -422,7 +427,31 @@
       "user": "User",
       "product": "Product",
       "category": "Category"
-    }
+    },
+    "auditActions": {
+      "account_delete": "Account deleted by the user",
+      "account_export": "Personal data export",
+      "account_export_list": "Users CSV export",
+      "account_reactivate": "Account reactivated",
+      "account_role": "Role changed",
+      "account_suspend": "Account suspended",
+      "catalog_product_create": "Product created",
+      "catalog_product_update": "Product updated",
+      "catalog_product_image": "Product photo replaced",
+      "catalog_product_image_delete": "Product photo removed",
+      "catalog_product_options": "Variant axes updated",
+      "catalog_product_variants": "Variants updated",
+      "catalog_product_archive": "Product archived",
+      "catalog_product_delete": "Product deleted",
+      "catalog_category_create": "Category created",
+      "catalog_category_update": "Category updated",
+      "catalog_category_delete": "Category deleted"
+    },
+    "deleteProduct": "Delete product",
+    "deleteProductConfirm": "Permanently delete this product? A product already added to a cart cannot be deleted: archive it instead.",
+    "deleteProductInCart": "This product is in at least one cart: archive it instead.",
+    "productDeleted": "Product deleted.",
+    "unlimited": "unlimited"
   },
   "mobile": {
     "tabs": {

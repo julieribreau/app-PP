@@ -4,7 +4,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { category, product, productOption, productVariant } from "@nutrion/db-schema";
 import { and, eq, inArray, type SQL } from "drizzle-orm";
 
-import { AppError, badRequest, conflict, notFound } from "../../../common/app-error";
+import { badRequest, conflict, notFound } from "../../../common/app-error";
+import { checkImage } from "../../../common/image-check";
 import { type Locale, localize } from "../../../common/locale";
 import { AuditService } from "../../audit/services/audit.service";
 import { STORAGE, type StoragePort } from "../../storage/storage.port";
@@ -21,11 +22,6 @@ import { CatalogRepository, type ProductAggregate } from "../repositories/catalo
 import { type OptionInput, syncValues, upsertOption } from "../repositories/option-sync";
 import { adminProductView } from "./catalog-view";
 
-const IMAGE_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 type Upload = { buffer: Buffer; mimetype: string; size: number };
@@ -160,27 +156,27 @@ export class AdminCatalogService {
   }
 
   async setImage(actorId: string, id: string, file: Upload | undefined) {
-    if (!file) throw badRequest("FILE_REQUIRED", "Fichier manquant");
-    const ext = IMAGE_TYPES[file.mimetype];
-    if (!ext) throw new AppError(415, "UNSUPPORTED_MEDIA_TYPE", "JPG, PNG ou WebP uniquement");
-    if (file.size > MAX_IMAGE_BYTES) throw new AppError(413, "PAYLOAD_TOO_LARGE", "2 Mo maximum");
+    const { ext, type } = checkImage(file, MAX_IMAGE_BYTES);
     const before = (await this.load(id)).product;
     const key = `products/${id}/${randomUUID()}.${ext}`;
-    await this.storage.put(key, file.buffer, file.mimetype);
+    await this.storage.put(key, file!.buffer, type);
     await this.db.update(product).set({ imageKey: key }).where(eq(product.id, id));
     if (before.imageKey) await this.storage.delete(before.imageKey).catch(() => undefined);
     await this.audit.log(actorId, "catalog.product.image", "product", id, {
       after: { imageKey: key },
     });
-    return { imageUrl: await this.storage.signedUrl(key) };
+    // Contrat : la fiche complète, que le back-office affiche telle quelle.
+    return this.get(id);
   }
 
   async removeImage(actorId: string, id: string) {
     const before = (await this.load(id)).product;
-    if (!before.imageKey) return;
-    await this.db.update(product).set({ imageKey: null }).where(eq(product.id, id));
-    await this.storage.delete(before.imageKey).catch(() => undefined);
-    await this.audit.log(actorId, "catalog.product.image.delete", "product", id);
+    if (before.imageKey) {
+      await this.db.update(product).set({ imageKey: null }).where(eq(product.id, id));
+      await this.storage.delete(before.imageKey).catch(() => undefined);
+      await this.audit.log(actorId, "catalog.product.image.delete", "product", id);
+    }
+    return this.get(id);
   }
 
   /** Remplace les axes et régénère les combinaisons (contrat §Catalogue, PUT options). */

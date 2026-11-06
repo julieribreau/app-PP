@@ -55,7 +55,8 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: inactive, busy: loading }}
+      aria-disabled={inactive}
+      aria-busy={loading}
       style={({ pressed }) => [
         styles.base,
         size === "lg" ? styles.lg : styles.md,
@@ -65,7 +66,7 @@ export function Button({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={tone.fg} />
+        <ActivityIndicator color={tone.fg} accessibilityLabel={label} />
       ) : (
         <View style={styles.row}>
           {icon ? <Icon name={icon} color={tone.fg} size={22} /> : null}

@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { Inject, Injectable } from "@nestjs/common";
 import { strToU8, zipSync } from "fflate";
 
-import { AppError, badRequest, notFound } from "../../../common/app-error";
+import { notFound } from "../../../common/app-error";
+import { checkImage } from "../../../common/image-check";
 import type { Locale } from "../../../common/locale";
 import { AuditService } from "../../audit/services/audit.service";
 import { CartService } from "../../cart/services/cart.service";
@@ -11,11 +12,6 @@ import { STORAGE, type StoragePort } from "../../storage/storage.port";
 import type { CreateAddressDto, UpdateAddressDto, UpdateMeDto } from "../dto/account.dto";
 import { AccountRepository, type AddressRow } from "../repositories/account.repository";
 
-const AVATAR_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
 export const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
 type Upload = { buffer: Buffer; mimetype: string; size: number };
@@ -63,13 +59,10 @@ export class AccountService {
   }
 
   async setAvatar(userId: string, file: Upload | undefined) {
-    if (!file) throw badRequest("FILE_REQUIRED", "Fichier manquant");
-    const ext = AVATAR_TYPES[file.mimetype];
-    if (!ext) throw new AppError(415, "UNSUPPORTED_MEDIA_TYPE", "JPG, PNG ou WebP uniquement");
-    if (file.size > MAX_AVATAR_BYTES) throw new AppError(413, "PAYLOAD_TOO_LARGE", "2 Mo maximum");
+    const { ext, type } = checkImage(file, MAX_AVATAR_BYTES);
     const u = await this.load(userId);
     const key = `avatars/${userId}/${randomUUID()}.${ext}`;
-    await this.storage.put(key, file.buffer, file.mimetype);
+    await this.storage.put(key, file!.buffer, type);
     await this.repo.updateUser(userId, { image: key });
     if (u.image) await this.storage.delete(u.image).catch(() => undefined);
     return { imageUrl: await this.storage.signedUrl(key) };

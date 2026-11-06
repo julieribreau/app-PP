@@ -6,8 +6,14 @@ import { cn } from "@/lib/cn";
 export const inputClass =
   "h-11 w-full rounded-[14px] border border-input bg-card px-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:bg-muted aria-[invalid=true]:border-destructive";
 
-export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(inputClass, className)} {...props} />;
+// `type="text"` explicite : sans lui, l'autocomplétion (given-name, tel…) n'est pas reconnue
+// comme valide par les contrôles RGAA (critère 11.13, technique H98).
+export function Input({
+  className,
+  type = "text",
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <input type={type} className={cn(inputClass, className)} {...props} />;
 }
 
 export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {

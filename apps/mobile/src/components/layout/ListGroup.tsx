@@ -109,8 +109,6 @@ export function SwitchRow({
       <Switch
         testID={testID}
         accessibilityLabel={label}
-        accessibilityRole="switch"
-        accessibilityState={{ checked: value, disabled }}
         value={value}
         disabled={disabled}
         onValueChange={onValueChange}
