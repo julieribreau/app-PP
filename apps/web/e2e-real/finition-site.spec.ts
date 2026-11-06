@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { expect, type Page, test } from "@playwright/test";
 import en from "@nutrion/i18n/messages/en.json";
 import fr from "@nutrion/i18n/messages/fr.json";
@@ -13,6 +16,19 @@ import {
 } from "./support";
 
 // Site public, langues et thèmes, contre la vraie stack (docs/qa/matrice-tests.md).
+
+/** Clé PostHog du site : celle de l'environnement, sinon celle du .env du dépôt (make web). */
+function sitePostHogKey(): string {
+  const fromEnv = process.env["NEXT_PUBLIC_POSTHOG_KEY"];
+  if (fromEnv !== undefined) return fromEnv;
+  const file = resolve(__dirname, "../../../.env");
+  if (!existsSync(file)) return "";
+  return (
+    readFileSync(file, "utf8")
+      .match(/^NEXT_PUBLIC_POSTHOG_KEY=(.*)$/m)?.[1]
+      ?.trim() ?? ""
+  );
+}
 const LABELS = { email: fr.auth.email, password: fr.auth.password, submit: fr.auth.signIn };
 const PUBLIC = [
   "/",
@@ -186,6 +202,13 @@ test("consentement : PostHog ne part qu'après « Accepter »", async ({ browser
   await page.waitForLoadState("networkidle");
   expect(posthog, "requêtes PostHog avant consentement").toEqual([]);
   await page.getByRole("button", { name: fr.consent.banner.accept }).click();
-  await expect.poll(() => posthog.length, { timeout: 10_000 }).toBeGreaterThan(0);
+  if (sitePostHogKey()) {
+    await expect.poll(() => posthog.length, { timeout: 10_000 }).toBeGreaterThan(0);
+  } else {
+    // Site sans clé PostHog (poste local) : rien ne doit partir, même après le oui.
+    test.info().annotations.push({ type: "posthog", description: "pas de clé : aucun envoi" });
+    await page.waitForLoadState("networkidle");
+    expect(posthog, "requêtes PostHog sans clé configurée").toEqual([]);
+  }
   await context.close();
 });
