@@ -27,6 +27,8 @@ export class CatalogService {
       this.repo.categories(),
       this.repo.productCountByCategory(),
     ]);
+    // Une catégorie sans produit en vente (vide, ou seulement brouillons et archives) n'est pas
+    // montrée : sa puce menait la boutique, site comme app, à une liste vide.
     return cats
       .filter((c) => c.isActive)
       .map((c) => ({
@@ -36,7 +38,8 @@ export class CatalogService {
         productCount: counts
           .filter((n) => n.categoryId === c.id && n.status === "active")
           .reduce((s, n) => s + n.n, 0),
-      }));
+      }))
+      .filter((c) => c.productCount > 0);
   }
 
   async list(q: CatalogQueryDto, locale: Locale) {

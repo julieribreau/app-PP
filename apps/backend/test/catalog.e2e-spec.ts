@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { category, product } from "@nutrion/db-schema";
+
 import { seedCatalog } from "../src/seed/seed-catalog";
 import { startApp } from "./app";
 
@@ -30,6 +32,25 @@ describe("catalogue public", () => {
     ]);
     // « Figue & noix » est en brouillon : pas compté.
     expect(json[0].productCount).toBe(2);
+  });
+
+  it("ne montre pas une catégorie sans produit en vente", async () => {
+    const [cat] = await ctx.db
+      .insert(category)
+      .values({ slug: "compotes-e2e", name: { fr: "Compotes", en: "Fruit purees" }, position: 9 })
+      .returning({ id: category.id });
+    await ctx.db.insert(product).values({
+      slug: "compote-archivee-e2e",
+      categoryId: cat!.id,
+      name: { fr: "Compote", en: "Puree" },
+      summary: { fr: "", en: "" },
+      description: { fr: "", en: "" },
+      priceCents: 190,
+      vatRateBps: 550,
+      status: "archived",
+    });
+    const { json } = await get("/v1/catalog/categories");
+    expect(json.map((c: { slug: string }) => c.slug)).not.toContain("compotes-e2e");
   });
 
   it("liste les produits actifs, prix minimal et disponibilité", async () => {
