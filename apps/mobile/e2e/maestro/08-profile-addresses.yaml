@@ -18,6 +18,7 @@ name: Profil, photo et adresses
 - launchApp
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible: ".*Camille-QA Martin.*"
     timeout: 20000
@@ -101,6 +102,7 @@ name: Profil, photo et adresses
 - launchApp
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - tapOn:
     id: account-addresses
 - extendedWaitUntil:

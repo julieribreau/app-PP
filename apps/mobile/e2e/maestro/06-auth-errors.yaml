@@ -6,6 +6,7 @@ name: Erreurs de connexion et verrouillage
 - runFlow: subflows/launch-accepted.yaml
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - tapOn:
     id: account-sign-in
 # E-mail mal formé, puis mot de passe manquant : contrôlés avant tout appel.

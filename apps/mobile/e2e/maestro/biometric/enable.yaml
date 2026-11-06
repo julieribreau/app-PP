@@ -6,6 +6,7 @@ name: Face ID — activation
 - runFlow: ../subflows/launch-accepted.yaml
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - tapOn:
     id: account-sign-in
 - runFlow:

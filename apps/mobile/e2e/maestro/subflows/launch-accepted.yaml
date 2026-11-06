@@ -6,3 +6,6 @@ appId: io.bullify.nutrion-app
     id: consent-accept
 - assertNotVisible:
     id: consent-accept
+# Le bandeau se retire : un toucher pendant ce temps pouvait se perdre (onglet resté sur Boutique).
+- waitForAnimationToEnd:
+    timeout: 3000

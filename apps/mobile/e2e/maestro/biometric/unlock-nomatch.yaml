@@ -29,4 +29,5 @@ name: Face ID — échec puis mot de passe
 - runFlow: ../subflows/after-sign-in.yaml
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - runFlow: ../subflows/dismiss-save-password.yaml

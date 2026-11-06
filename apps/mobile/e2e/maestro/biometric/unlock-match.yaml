@@ -12,5 +12,6 @@ name: Face ID — déverrouillage réussi
     id: biometric-unlock
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - assertVisible:
     id: account-profile-card

@@ -6,6 +6,8 @@ name: Fiche produit
 - runFlow: subflows/launch-accepted.yaml
 - tapOn:
     id: product-avoine-cacao
+- waitForAnimationToEnd:
+    timeout: 3000
 - assertVisible:
     id: product-price
     text: "€2.90"
@@ -54,6 +56,7 @@ name: Fiche produit
 # Produit sans variante en rupture.
 - tapOn:
     id: tab-shop
+    retryTapIfNoChange: true
 - runFlow: { file: subflows/tap-low.yaml, env: { ID: product-recuperation-cacao } }
 - assertVisible: ".*incl. VAT, Out of stock"
 - assertVisible:

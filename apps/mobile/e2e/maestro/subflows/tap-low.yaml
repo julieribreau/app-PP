@@ -8,3 +8,6 @@ appId: io.bullify.nutrion-app
     centerElement: true
 - tapOn:
     id: ${ID}
+# Un écran poussé s'anime : un toucher pendant l'animation se perdait (« Ajouter au panier »).
+- waitForAnimationToEnd:
+    timeout: 3000

@@ -8,6 +8,7 @@ name: Inscription
 - evalScript: ${output.password = 'Qa-Signup-' + Date.now()}
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - tapOn:
     id: account-sign-up
 # Formulaire vide : chaque champ obligatoire le dit, les CGU aussi.
@@ -75,6 +76,7 @@ name: Inscription
 - runFlow: subflows/after-sign-in.yaml
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible:
       id: account-profile-card

@@ -4,6 +4,7 @@ appId: io.bullify.nutrion-app
 ---
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - tapOn:
     id: account-sign-in
 - runFlow:

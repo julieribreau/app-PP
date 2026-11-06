@@ -22,6 +22,7 @@ name: Connexion et fusion du panier invité
 - assertVisible: "Compte"
 - tapOn:
     id: tab-cart
+    retryTapIfNoChange: true
 - assertVisible: "Votre panier invité a été ajouté à votre compte."
 - assertVisible: "Granola fruits rouges"
 - assertVisible: "Avoine & cacao"
@@ -31,6 +32,7 @@ name: Connexion et fusion du panier invité
 - launchApp
 - tapOn:
     id: tab-cart
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible: "Granola fruits rouges"
     timeout: 15000

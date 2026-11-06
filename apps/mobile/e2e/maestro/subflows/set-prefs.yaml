@@ -3,6 +3,7 @@ appId: io.bullify.nutrion-app
 ---
 - tapOn:
     id: tab-account
+    retryTapIfNoChange: true
 - runFlow: { file: tap-low.yaml, env: { ID: account-theme } }
 - tapOn:
     id: locale-${LOCALE}

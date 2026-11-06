@@ -6,9 +6,11 @@ name: Panier invité
 - runFlow: subflows/launch-accepted.yaml
 - tapOn:
     id: tab-cart
+    retryTapIfNoChange: true
 - assertVisible: "Your cart is empty."
 - tapOn:
     id: tab-shop
+    retryTapIfNoChange: true
 # Granola fruits rouges (7,90 €, TVA 5,5 %) et Électrolytes citron (9,90 €).
 - runFlow: { file: subflows/tap-low.yaml, env: { ID: product-granola-fruits-rouges } }
 - tapOn:
@@ -62,6 +64,7 @@ name: Panier invité
 - launchApp
 - tapOn:
     id: tab-cart
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible:
       id: cart-total
