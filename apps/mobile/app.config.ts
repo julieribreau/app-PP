@@ -56,7 +56,9 @@ const config: ExpoConfig = {
     infoPlist: { NSFaceIDUsageDescription: faceIdText },
   },
   android: {
-    package: "io.bullify.nutrion-app",
+    // Nom de paquet Java : lettres, chiffres et « _ » seulement. Avec le tiret de l'identifiant
+    // iOS, `expo prebuild` refusait de générer le projet Android.
+    package: "io.bullify.nutrionapp",
     permissions: ["android.permission.USE_BIOMETRIC", "android.permission.USE_FINGERPRINT"],
   },
 };
