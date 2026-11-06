@@ -6,6 +6,7 @@ import { api, cartTokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/api/config";
 import { authClient } from "@/lib/auth/auth-client";
 import { requestPasswordReset } from "@/lib/auth/password-reset";
+import { signUpPayload } from "@/lib/auth/validation";
 import { usePrefsStore } from "@/stores/prefs.store";
 import type { Address, Cart, Category, Me, Page, ProductDetail, ProductSummary } from "@/types/api";
 
@@ -145,6 +146,24 @@ describe("mobile ↔ backend (intégration réelle)", () => {
     const res = await fetch(link, { redirect: "manual" });
     const location = res.headers.get("location") ?? "";
     expect(location).toMatch(/^http:\/\/localhost:3000\/fr\/reinitialiser-mot-de-passe\?token=/);
+  });
+
+  it("inscription depuis l'app en anglais : l'e-mail de confirmation est en anglais", async () => {
+    const email = `qa-e2e+integration-${Date.now()}@exemple.test`;
+    const { error } = await authClient.signUp.email(
+      signUpPayload(
+        { firstName: "Alex", lastName: "Durand", email, password: `Qa-${Date.now()}-9` },
+        "en",
+      ),
+    );
+    expect(error).toBeNull();
+    const link = await latestMailLink(email, "verify-email");
+    expect(link).toContain("%2Fen%2F");
+    const search = await fetch(
+      `${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`,
+    );
+    const { messages } = (await search.json()) as { messages: { Subject: string }[] };
+    expect(messages[0]?.Subject).toBe("Confirm your email address");
   });
 
   it("déconnexion : le profil n'est plus lisible", async () => {
