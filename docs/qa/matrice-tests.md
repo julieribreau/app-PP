@@ -16,29 +16,29 @@ Statut : ✅ couvert et vert · ⚠️ couvert en partie (voir colonne) · ❌ n
 
 ## Compte et authentification
 
-| Exigence                                        | Tests                                                                                                                | Statut                                              |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| Inscription e-mail + mot de passe, vérification | web réel `client` « inscription → e-mail… » ; backend `auth` (5 cas) ; mobile intégration « inscription par l'app… » | ✅                                                  |
-| Règles de mot de passe                          | backend `auth` « refuse un mot de passe sans chiffre » ; web simulé `auth` « trop court refusé »                     | ✅                                                  |
-| Connexion, verrouillage après 5 échecs          | backend `auth` « verrouille 15 minutes… » ; web réel `finition-client` « verrouillage après 5 échecs »               | ✅                                                  |
-| Mot de passe oublié                             | web réel `client` ; mobile intégration `backend` « le lien ouvre la page du site »                                   | ✅                                                  |
-| Changer de mot de passe                         | backend `finition` ; web réel `finition-client` (autre appareil déconnecté) ; mobile intégration                     | ✅                                                  |
-| Changer d'e-mail (lien à la nouvelle adresse)   | backend `finition` ; web réel `finition-client`                                                                      | ✅                                                  |
-| Sessions : liste, révocation d'un appareil      | backend `finition` ; web réel `finition-client` ; mobile intégration `account` + `backend`                           | ✅                                                  |
-| Biométrie (Face ID / empreinte)                 | jest `biometric.test`, `BiometricUnlockScreen.test`, `lock.store.test` (module natif simulé)                         | ⚠️ capteur réel non testable (pas de macOS/iOS ici) |
-| Compte suspendu refusé                          | backend `auth` ; web réel `admin` « suspension (connexion refusée)… »                                                | ✅                                                  |
+| Exigence                                        | Tests                                                                                                                | Statut                             |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Inscription e-mail + mot de passe, vérification | web réel `client` « inscription → e-mail… » ; backend `auth` (5 cas) ; mobile intégration « inscription par l'app… » | ✅                                 |
+| Règles de mot de passe                          | backend `auth` « refuse un mot de passe sans chiffre » ; web simulé `auth` « trop court refusé »                     | ✅                                 |
+| Connexion, verrouillage après 5 échecs          | backend `auth` « verrouille 15 minutes… » ; web réel `finition-client` « verrouillage après 5 échecs »               | ✅                                 |
+| Mot de passe oublié                             | web réel `client` ; mobile intégration `backend` « le lien ouvre la page du site »                                   | ✅                                 |
+| Changer de mot de passe                         | backend `finition` ; web réel `finition-client` (autre appareil déconnecté) ; mobile intégration                     | ✅                                 |
+| Changer d'e-mail (lien à la nouvelle adresse)   | backend `finition` ; web réel `finition-client`                                                                      | ✅                                 |
+| Sessions : liste, révocation d'un appareil      | backend `finition` ; web réel `finition-client` ; mobile intégration `account` + `backend`                           | ✅                                 |
+| Biométrie (Face ID / empreinte)                 | jest `biometric.test`, `BiometricUnlockScreen.test`, `lock.store.test` ; Maestro iOS `biometric/` (capteur simulé)   | ✅ simulateur iOS (rapport-ios.md) |
+| Compte suspendu refusé                          | backend `auth` ; web réel `admin` « suspension (connexion refusée)… »                                                | ✅                                 |
 
 ## Espace personnel
 
-| Exigence                                 | Tests                                                                                                                           | Statut                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Profil (champs validés en réponse 6)     | backend `account` ; web réel `client` « espace personnel… » ; mobile intégration `backend` « profil »                           | ✅                                                                     |
-| Photo de profil, refus d'un faux fichier | backend `finition` (octets magiques, 415/413) ; web réel `finition-client` (compte + barre du site) ; mobile intégration (Blob) | ⚠️ envoi depuis la photothèque RN (`{uri}`) non testable hors appareil |
-| Adresses, une par défaut, PATCH partiel  | backend `account` ; mobile intégration (le pays reste BE)                                                                       | ✅                                                                     |
-| Export RGPD (ZIP)                        | backend `account` ; web réel `finition-client` (contenu lu par `unzip`) ; mobile intégration                                    | ✅                                                                     |
-| Suppression du compte                    | backend `account` (anonymisation) ; web réel `finition-client` ; mobile intégration                                             | ✅                                                                     |
-| Thème clair/sombre/système gardé         | web réel `client` + `finition-site` (posé par le serveur, sans flash ; sombre appliqué) ; Storybook (clair/sombre)              | ✅                                                                     |
-| Langue FR/EN gardée                      | web réel `client` ; mobile intégration `backend` « préférences » + `account` « l'API répond en anglais »                        | ✅                                                                     |
+| Exigence                                 | Tests                                                                                                                                              | Statut                                        |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| Profil (champs validés en réponse 6)     | backend `account` ; web réel `client` « espace personnel… » ; mobile intégration `backend` « profil »                                              | ✅                                            |
+| Photo de profil, refus d'un faux fichier | backend `finition` (octets magiques, 415/413) ; web réel `finition-client` (compte + barre du site) ; mobile intégration (Blob) ; Maestro iOS `08` | ✅ photothèque du simulateur (rapport-ios.md) |
+| Adresses, une par défaut, PATCH partiel  | backend `account` ; mobile intégration (le pays reste BE)                                                                                          | ✅                                            |
+| Export RGPD (ZIP)                        | backend `account` ; web réel `finition-client` (contenu lu par `unzip`) ; mobile intégration                                                       | ✅                                            |
+| Suppression du compte                    | backend `account` (anonymisation) ; web réel `finition-client` ; mobile intégration                                                                | ✅                                            |
+| Thème clair/sombre/système gardé         | web réel `client` + `finition-site` (posé par le serveur, sans flash ; sombre appliqué) ; Storybook (clair/sombre)                                 | ✅                                            |
+| Langue FR/EN gardée                      | web réel `client` ; mobile intégration `backend` « préférences » + `account` « l'API répond en anglais »                                           | ✅                                            |
 
 ## Boutique et panier
 
@@ -87,10 +87,8 @@ Statut : ✅ couvert et vert · ⚠️ couvert en partie (voir colonne) · ❌ n
 
 ## Non testable ici, et pourquoi
 
-- **App native sur simulateur ou appareil (iOS, Android)** : pas de macOS ni de KVM dans ce
-  conteneur. Couvert à la place : jest-expo (écrans), intégration du client de l'app contre
-  l'API réelle, `expo export --platform ios` (le bundle se construit), Storybook mobile.
-- **Face ID / empreinte réels** : module natif simulé dans jest.
-- **Photothèque et appareil photo** (`expo-image-picker`, envoi `{uri}` de React Native) : seul
-  l'envoi en Blob est testé contre l'API.
+- **App native sur simulateur (iOS)** : couverte depuis par la suite Maestro
+  (`apps/mobile/e2e/maestro/`, `scripts/local/test-ios-e2e.sh`), voir `docs/qa/rapport-ios.md`.
+  Android : voir ce rapport.
+- **Face ID / empreinte sur un vrai appareil** : capteur simulé seulement (simulateur iOS).
 - **Envoi d'e-mails réels** : Mailpit capture les messages (liens vérifiés), aucun SMTP public.
