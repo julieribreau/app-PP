@@ -1,4 +1,4 @@
-import { type CaptureClient, trackApiCall } from "./index";
+import { type CaptureClient, trackApiCall } from "./capture";
 
 function parse(text: unknown): unknown {
   if (typeof text !== "string" || !text) return undefined;

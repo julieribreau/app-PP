@@ -1,4 +1,5 @@
-import { eventForApiCall, type ApiCall, type EventName } from "./api-events";
+import type { EventName } from "./api-events";
+import type { CaptureClient } from "./capture";
 import type { EventCatalog } from "./events";
 
 export type { EventCatalog } from "./events";
@@ -35,10 +36,9 @@ export function superProperties(
   return { app_env: appEnv || "development", platform };
 }
 
-/** Ce que `posthog-js` et `posthog-react-native` ont en commun pour un événement nommé. */
-export interface CaptureClient {
-  capture(event: string, properties?: Record<string, unknown>): unknown;
-}
+// Hors de ce fichier : fetch-reporter s'en sert, et l'importer d'ici faisait un cycle
+// (avertissement de Metro, bandeau du mode dev par-dessus le bas de l'écran).
+export { type CaptureClient, trackApiCall } from "./capture";
 
 /** Un événement du catalogue, typé : nom connu, propriétés attendues. */
 export function track<N extends EventName>(
@@ -49,11 +49,4 @@ export function track<N extends EventName>(
   client?.capture(name, properties);
 }
 
-/** L'événement métier d'un appel d'API terminé, envoyé s'il y en a un (et un client : consenti). */
 export { reportFetch, withApiEvents } from "./fetch-reporter";
-
-export function trackApiCall(client: CaptureClient | null, call: ApiCall): void {
-  if (!client) return;
-  const event = eventForApiCall(call);
-  if (event) client.capture(event.name, event.properties as Record<string, unknown>);
-}
